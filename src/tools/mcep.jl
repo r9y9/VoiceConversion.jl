@@ -70,6 +70,8 @@ function main()
          "alpha", alpha,
          "mcgram", mcgram,
          )
+
+    println("Dumped to ", args["<dst>"])
 end
 
 @time main()
