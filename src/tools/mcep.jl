@@ -58,6 +58,7 @@ function main()
     for i=1:size(spectrogram, 1)
         spec = spectrogram[i,:][:]
         symmetrized = [spec, reverse(spec[2:end])]
+        @assert length(symmetrized) == length(spec)*2-1
         logspec = log(symmetrized)
         mcgram[i,:] = logamp2mcep(logspec, order, alpha)
     end
