@@ -91,3 +91,7 @@ $RECYCLE.BIN/
 
 # Julia data
 *.jld
+
+### IPythonNotebook ###
+# Temporary data
+.ipynb_checkpoints/
