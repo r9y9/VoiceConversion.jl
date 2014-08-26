@@ -67,7 +67,7 @@ function main()
          "period", period,
          "fs", fs,
          "framelen", get_fftsize_for_cheaptrick(fs),
-         "nceps", size(mcgram, 2),
+         "order", order,
          "alpha", alpha,
          "mcgram", mcgram,
          )
