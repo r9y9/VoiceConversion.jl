@@ -2,7 +2,7 @@ using DocOpt
 
 doc="""Mel-cepstrum extraction for audio signals using WORLD-based high
 accurate spectral envelope estimation method.
-    
+
 Usage:
     mcep.jl [options] <input_audio> <dst>
     mcep.jl --version
@@ -15,24 +15,16 @@ Options:
     --alpha=ALPHA    all-pass constant [default: 0.35]
 """
 
+using VoiceConversion
 using WORLD
 using WAV
 using HDF5, JLD
-import SPTK
-const sptk = SPTK
-
-# logamp2mcep converts log-amplitude spectrum to mel-cepstrum.
-function logamp2mcep(logamp::Vector{Float64}, order::Int, alpha::Float64)
-    ceps = real(ifft(logamp))
-    ceps[1] /= 2.0
-    return sptk.freqt(ceps, order, alpha)
-end
 
 function main()
     args = docopt(doc, version=v"0.0.1")
 
     x, fs = wavread(args["<input_audio>"], format="int")
-    @assert size(x, 2) == 1 "The input data must be monoral." 
+    @assert size(x, 2) == 1 "The input data must be monoral."
     x = float64(x[:])
     fs = int(fs)
 
@@ -42,13 +34,13 @@ function main()
     println("$(maximum(x)) and $(minimum(x))")
 
     w = World(fs=fs, period=period)
-    
+
     # Fundamental frequency (f0) estimation by DIO
     f0, timeaxis = dio1(w, x)
-    
+
     # F0 re-estimation by StoneMask
     f0 = stonemask(w, x, timeaxis, f0)
-    
+
     # Spectral envelope estimation
     spectrogram = cheaptrick(w, x, timeaxis, f0)
     println(size(spectrogram))
@@ -62,7 +54,7 @@ function main()
         logspec = log(symmetrized)
         mcgram[i,:] = logamp2mcep(logspec, order, alpha)
     end
-    
+
     save(args["<dst>"],
          "period", period,
          "fs", fs,
