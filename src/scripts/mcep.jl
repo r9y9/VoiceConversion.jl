@@ -52,7 +52,7 @@ function main()
         symmetrized = [spec, reverse(spec[2:end])]
         @assert length(symmetrized) == length(spec)*2-1
         logspec = log(symmetrized)
-        mcgram[i,:] = logamp2mcep(logspec, order, alpha)
+        mcgram[:,i] = logamp2mcep(logspec, order, alpha)
     end
 
     save(args["<dst>"],
