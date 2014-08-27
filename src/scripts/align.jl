@@ -62,4 +62,4 @@ function main()
     save(args["<dst>"], "src", src, "tgt", tgt)
 end
 
-main()
+@time main()
