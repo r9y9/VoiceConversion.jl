@@ -46,7 +46,7 @@ function main()
     println(size(spectrogram))
 
     # Spectral envelop -> Mel-cesptrum
-    mcgram = zeros(size(spectrogram, 1), order+1)
+    mcgram = zeros(order+1, size(spectrogram, 1))
     for i=1:size(spectrogram, 1)
         spec = spectrogram[i,:][:]
         symmetrized = [spec, reverse(spec[2:end])]
