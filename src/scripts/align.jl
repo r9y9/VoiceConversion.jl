@@ -1,10 +1,10 @@
 using DocOpt
 
-doc="""Align two mel-cesptrum sequences and create parallel data for training
-voice conversion models.
+doc="""Align two feature vector sequences (feature matrices) and create
+time aligned joint vector sequence (paralell data)
 
 Usage:
-    align.jl [options] <src_mcep> <tgt_mcep> <dst>
+    align.jl [options] <src> <tgt> <dst>
     align.jl --version
     align.jl -h | --help
 
@@ -21,11 +21,11 @@ using PyCall
 function main()
     args = docopt(doc, version=v"0.0.1")
 
-    src = load(args["<src_mcep>"])
-    tgt = load(args["<tgt_mcep>"])
+    src = load(args["<src>"])
+    tgt = load(args["<tgt>"])
 
-    src_mcep = src["mcgram"]
-    tgt_mcep = tgt["mcgram"]
+    src_mcep = src["feature_matrix"]
+    tgt_mcep = tgt["feature_matrix"]
 
     @assert size(src_mcep, 1) == size(tgt_mcep, 1) ||
         error("order of feature vector between source and target speaker ",
@@ -53,7 +53,7 @@ function main()
     # TODO(ryuichi)
 
     # save
-    tgt["mcgram"] = newtgt_mcep
+    tgt["feature_matrix"] = newtgt_mcep
     save(args["<dst>"], "src", src, "tgt", tgt)
 end
 
