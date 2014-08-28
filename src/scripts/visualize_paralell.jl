@@ -19,8 +19,8 @@ using PyCall
 @pyimport matplotlib.pyplot as plt
 
 function visualize_parallel(src, tgt; order=1)
-    src_mcep = src["mcgram"]
-    tgt_mcep = tgt["mcgram"]
+    src_mcep = src["feature_matrix"]
+    tgt_mcep = tgt["feature_matrix"]
 
     @assert size(src_mcep) == size(tgt_mcep)
     @assert order <= size(src_mcep, 1)
