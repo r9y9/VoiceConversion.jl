@@ -9,14 +9,12 @@ Usage:
     align.jl -h | --help
 
 Options:
-    -h --help   show this message
+    -h --help       show this message
+    --threshold=TH  threshold that is used to remove silence [default: 14.0]
 """
 
 using VoiceConversion
 using HDF5, JLD
-using PyCall
-
-@pyimport matplotlib.pyplot as plt
 
 function main()
     args = docopt(doc, version=v"0.0.1")
@@ -49,10 +47,15 @@ function main()
         end
     end
 
-    # remove silence segment
-    # TODO(ryuichi)
+    # Remove silence segment
+    const threshold = float64(args["--threshold"])
+    info("Thresholding by power $(threshold)")
+    E = log(mcep2e(src_mcep, float64(src["alpha"]), int(src["framelen"])))
+    src_mcep = src_mcep[:, E .> threshold]
+    newtgt_mcep = newtgt_mcep[:, E .> threshold]
 
     # save
+    src["feature_matrix"] = src_mcep
     tgt["feature_matrix"] = newtgt_mcep
     save(args["<dst>"], "src", src, "tgt", tgt)
 end
