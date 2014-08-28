@@ -10,7 +10,6 @@ Usage:
 
 Options:
     -h --help   show this message
-    --show  show progress in graphical representation
 """
 
 using VoiceConversion
@@ -21,30 +20,20 @@ using PyCall
 
 function main()
     args = docopt(doc, version=v"0.0.1")
-    vis::Bool = args["--show"]
 
     src = load(args["<src_mcep>"])
     tgt = load(args["<tgt_mcep>"])
 
-    # for debug
-    dump(src)
-    dump(tgt)
-
     src_mcep = src["mcgram"]
     tgt_mcep = tgt["mcgram"]
+
+    @assert size(src_mcep, 1) == size(tgt_mcep, 1) ||
+        error("order of feature vector between source and target speaker ",
+              "must be equal.")
 
     # Alignment
     d = DTW(fstep=0, bstep=2) # allow one skip
     path = fit!(d, src_mcep, tgt_mcep)
-
-    # Visualize alignment result
-    if vis
-        plt.plot(path, linewidth=2.0, linestyle="--")
-        plt.xlabel("source speaker's index")
-        plt.ylabel("target speaker's index")
-        plt.title("estimated path")
-        plt.show()
-    end
 
     # create aligned tgt_mcep
     newtgt_mcep = zeros(eltype(src_mcep), size(src_mcep))
@@ -62,15 +51,6 @@ function main()
 
     # remove silence segment
     # TODO(ryuichi)
-
-    # visualize time aligned mel-cesptrum
-    if vis
-        plt.plot(src_mcep[1,:][:], color="red", linewidth=1.5)
-        plt.plot(newtgt_mcep[1,:][:], color="blue", linewidth=1.5)
-        plt.xlabel("#frame")
-        plt.title("Time aligned mel-cesptrum (0-th order)")
-        plt.show()
-    end
 
     # save
     tgt["mcgram"] = newtgt_mcep
