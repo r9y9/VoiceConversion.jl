@@ -27,7 +27,7 @@ function observation(d::DTW, v::Vector{Float64}, i::Int)
     return sumabs2(v  - d.template[:,i])
 end
 
-# Init state initialization
+# lazy_init! performs state initialization.
 function lazy_init!(d::DTW, T::Int)
     d.costtable = reshape([1:T], T, 1)
     d.backpointer = reshape([1:T], T, 1)
