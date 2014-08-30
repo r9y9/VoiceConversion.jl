@@ -1,7 +1,7 @@
 module VoiceConversion
 
 export DTW, fit!, update!, set_template!, backward, logamp2mcep, mcep2e,
-       align
+       world_mcep, align
 
 export CMUArctic
 
