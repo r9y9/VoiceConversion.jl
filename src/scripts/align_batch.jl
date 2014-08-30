@@ -1,6 +1,6 @@
 using DocOpt
 
-doc="""Align two feature vector sequences and create parallel datain batch.
+doc="""Align two feature vector sequences and create parallel data in batch.
 
 Usage:
     align_batch.jl [options] <src_dir> <tgt_dir> <dst_dir>
