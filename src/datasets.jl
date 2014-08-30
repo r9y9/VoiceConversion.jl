@@ -24,7 +24,8 @@ immutable ParallelDataset <: Dataset
                              ignore0th::Bool=true,
                              add_dynamic::Bool=false,
                              suffix::String="_parallel.jld",
-                             keepstat::Bool=false)
+                             keepstat::Bool=false,
+                             nmax::Int=100)
         files = searchdir(path, suffix)
         sort!(files)
 
@@ -33,6 +34,8 @@ immutable ParallelDataset <: Dataset
         XY = ones(1,1)
         totalframes::Int = 0
         totalphrases::Int = 0
+
+        count = 0
         for filename in files
             # TODO(ryuichi) allow costom file format?
             f = load(joinpath(path, filename))
@@ -64,6 +67,11 @@ immutable ParallelDataset <: Dataset
 
             totalframes += size(combined, 2)
             totalphrases += 1
+            
+            count += 1
+            if count >= nmax 
+                break
+            end
         end
 
         info("total number of frames: $(totalframes)")
