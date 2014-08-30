@@ -29,6 +29,7 @@ function show_parallel(src, tgt; order=1)
     plt.plot(tgt_mcep[order,:][:], color="blue", linewidth=1.5)
     plt.xlabel("frame #")
     plt.title("Time aligned mel-cesptrum ($(order)-th order)")
+    plt.xlim(1, size(src_mcep, 2))
     plt.show()
 
     nothing
