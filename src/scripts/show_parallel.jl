@@ -3,9 +3,9 @@ using DocOpt
 doc="""Visualize parallel data
 
 Usage:
-    visualize_parallel.jl [options] <parallel_data>
-    visualize_parallel.jl --version
-    visualize_parallel.jl -h | --help
+    show_parallel.jl [options] <parallel_jld>
+    show_parallel.jl --version
+    show_parallel.jl -h | --help
 
 Options:
     -h --help         show this message
@@ -18,7 +18,7 @@ using PyCall
 
 @pyimport matplotlib.pyplot as plt
 
-function visualize_parallel(src, tgt; order=1)
+function show_parallel(src, tgt; order=1)
     src_mcep = src["feature_matrix"]
     tgt_mcep = tgt["feature_matrix"]
 
@@ -38,11 +38,11 @@ function main()
     args = docopt(doc, version=v"0.0.1")
     order = int(args["--order"])
 
-    parallel_data = load(args["<parallel_data>"])
+    parallel_data = load(args["<parallel_jld>"])
 
     src, tgt = parallel_data["src"], parallel_data["tgt"]
 
-    visualize_parallel(src, tgt, order=order)
+    show_parallel(src, tgt, order=order)
 
     nothing
 end
