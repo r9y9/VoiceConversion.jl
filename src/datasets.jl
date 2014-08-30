@@ -4,9 +4,9 @@ abstract Dataset
 
 searchdir(path, key) = filter(x -> contains(x, key), readdir(path))
 
-# The CMU_ARCTIC databases were constructed at the Language Technologies 
+# The CMU_ARCTIC databases were constructed at the Language Technologies
 # Institute at Carnegie Mellon University as phonetically balanced,
-# US English single speaker databases designed for unit selection speech 
+# US English single speaker databases designed for unit selection speech
 # synthesis research.
 # http://www.festvox.org/cmu_arctic/
 immutable CMUArctic <: Dataset
@@ -19,10 +19,11 @@ immutable CMUArctic <: Dataset
     Xstd::Matrix{Float64}
     Ymean::Matrix{Float64}
     Ystd::Matrix{Float64}
-    
+
     function CMUArctic(path;
                        start=None,
                        stop=None,
+                       diff::Bool=false,
                        joint::Bool=true,
                        standarize::Bool=false,
                        ignore0th::Bool=true,
@@ -31,33 +32,38 @@ immutable CMUArctic <: Dataset
                        keepstat::Bool=false)
         files = searchdir(path, suffix)
         sort!(files)
-        
+
         info("$(length(files)) training data found")
-        
+
         XY = ones(1,1)
         totalframes::Int = 0
         totalphrases::Int = 0
         for filename in files
             # TODO(ryuichi) allow costom file format?
-            f = load(joinpath(path, filename))            
+            f = load(joinpath(path, filename))
             src, tgt = f["src"], f["tgt"]
             src_x, tgt_x = src["feature_matrix"], tgt["feature_matrix"]
-            
+
             if ignore0th
                 src_x, tgt_x = src_x[2:end,:], tgt_x[2:end,:]
             end
-            
+
             if add_dynamic
                 #TODO
             end
-            
+
+            # use differencial
+            if diff
+                tgt_x = tgt_x - src_x
+            end
+
             # Create joint features matries of source and target speaker
             combined = vcat(src_x, tgt_x)
             @assert size(combined) == (size(src_x, 1)*2, size(src_x, 2))
-            
+
             if totalframes == 0
                 XY = combined
-            else 
+            else
                 XY = hcat(XY, combined)
             end
 
@@ -78,7 +84,7 @@ immutable CMUArctic <: Dataset
             X = XY[1:order,:]
             Y = XY[order+1:end,:]
         end
-        
+
         Xmean = mean(X,2)
         Xstd = std(X,2)
         Ymean = mean(Y,2)
