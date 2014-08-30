@@ -4,12 +4,7 @@ abstract Dataset
 
 searchdir(path, key) = filter(x -> contains(x, key), readdir(path))
 
-# The CMU_ARCTIC databases were constructed at the Language Technologies
-# Institute at Carnegie Mellon University as phonetically balanced,
-# US English single speaker databases designed for unit selection speech
-# synthesis research.
-# http://www.festvox.org/cmu_arctic/
-immutable CMUArctic <: Dataset
+immutable ParallelDataset <: Dataset
     X::Matrix{Float64}
     Y::Matrix{Float64}
 
@@ -20,16 +15,16 @@ immutable CMUArctic <: Dataset
     Ymean::Matrix{Float64}
     Ystd::Matrix{Float64}
 
-    function CMUArctic(path;
-                       start=None,
-                       stop=None,
-                       diff::Bool=false,
-                       joint::Bool=true,
-                       standarize::Bool=false,
-                       ignore0th::Bool=true,
-                       add_dynamic::Bool=false,
-                       suffix::String=".jld",
-                       keepstat::Bool=false)
+    function ParallelDataset(path;
+                             start=None,
+                             stop=None,
+                             diff::Bool=false,
+                             joint::Bool=true,
+                             standarize::Bool=false,
+                             ignore0th::Bool=true,
+                             add_dynamic::Bool=false,
+                             suffix::String="_parallel.jld",
+                             keepstat::Bool=false)
         files = searchdir(path, suffix)
         sort!(files)
 
