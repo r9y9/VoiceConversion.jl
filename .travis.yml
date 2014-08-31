@@ -14,4 +14,8 @@ before_install:
   - sudo apt-get install libpcre3-dev julia -y
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
 script:
-  - julia -e 'Pkg.init(); Pkg.clone(pwd()); Pkg.test("VoiceConversion")'
+  - julia -e 'Pkg.init()'
+  # manually add
+  - julia -e 'Pkg.clone("https://github.com/r9y9/SPTK.jl"); Pkg.build("SPTK");
+  - julia -e 'Pkg.clone("https://github.com/r9y9/WORLD.jl"); Pkg.build("WORLD");
+  - julia -e 'Pkg.clone(pwd()); Pkg.test("VoiceConversion")'
