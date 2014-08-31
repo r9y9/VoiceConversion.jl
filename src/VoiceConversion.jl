@@ -5,7 +5,7 @@ export DTW, fit!, update!, set_template!, backward, logamp2mcep, mcep2e,
 
 export Dataset, ParallelDataset
 
-export FrameByFrameConverter, GMMMap, GMM, gmmmap
+export FrameByFrameConverter, GMMMap, GMM, fvconvert, vc
 
 include("align.jl")
 include("dtw.jl")
@@ -13,5 +13,6 @@ include("datasets.jl")
 include("feature.jl")
 include("gmm.jl")
 include("gmmmap.jl")
+include("converter.jl")
 
 end # module

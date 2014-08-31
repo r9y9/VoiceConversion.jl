@@ -66,7 +66,7 @@ end
 # Mapping source spectral feature x to target spectral feature y
 # so that minimize the mean least squared error.
 # More specifically, it returns the value E(p(y|x)].
-function gmmmap(gmm::GMMMap, x::Vector{Float64})
+function fvconvert(gmm::GMMMap, x::Vector{Float64})
     const order = length(x)
 
     # Eq. (11)
