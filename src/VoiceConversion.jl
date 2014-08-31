@@ -11,6 +11,7 @@ include("align.jl")
 include("dtw.jl")
 include("datasets.jl")
 include("feature.jl")
+include("gmm.jl")
 include("gmmmap.jl")
 
 end # module
