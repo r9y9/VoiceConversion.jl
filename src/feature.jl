@@ -40,9 +40,9 @@ function world_mcep(x, fs, period::Float64=5.0, order::Int=25,
     spectrogram = cheaptrick(w, x, timeaxis, f0)
 
     # Spectral envelop -> Mel-cesptrum
-    mcgram = zeros(order+1, size(spectrogram, 1))
-    for i=1:size(spectrogram, 1)
-        spec = spectrogram[i,:][:]
+    mcgram = zeros(order+1, size(spectrogram, 2))
+    for i=1:size(spectrogram, 2)
+        spec = spectrogram[:,i]
         symmetrized = [spec, reverse(spec[2:end])]
         @assert length(symmetrized) == length(spec)*2-1
         logspec = log(symmetrized)
