@@ -13,7 +13,7 @@ Options:
     --max=MAX       Maximum number that will be processed [default: 100]
 """
 
-using VoiceConversion
+import VoiceConversion: align
 using HDF5, JLD
 
 searchdir(path, key) = filter(x -> contains(x, key), readdir(path))
@@ -51,6 +51,9 @@ function main()
                                    th=float(args["--threshold"]),
                                    alpha=float(src["alpha"]),
                                    framelen=int(src["framelen"]))
+
+        @assert !any(isnan(src_mcep))
+        @assert !any(isnan(tgt_mcep))
 
         src["feature_matrix"] = src_mcep
         tgt["feature_matrix"] = tgt_mcep

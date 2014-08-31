@@ -13,7 +13,7 @@ Options:
     --threshold=TH  threshold that is used to remove silence [default: 14.0]
 """
 
-using VoiceConversion
+import VoiceConversion: align
 using HDF5, JLD
 
 function main()
@@ -31,10 +31,13 @@ function main()
                                alpha=float(src["alpha"]),
                                framelen=int(src["framelen"]))
 
+    @assert !any(isnan(src_mcep))
+    @assert !any(isnan(tgt_mcep))
+
     # save
     src["feature_matrix"] = src_mcep
     tgt["feature_matrix"] = tgt_mcep
     save(args["<dst>"], "src", src, "tgt", tgt)
 end
 
-@time main()
+main()
