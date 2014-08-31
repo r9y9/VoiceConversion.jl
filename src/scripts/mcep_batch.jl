@@ -36,9 +36,6 @@ function main()
     const order = int(args["--order"])
     const nmax = int(args["--max"])
     alpha = float(args["--alpha"])
-    if alpha == 0.0
-        alpha = mcepalpha(fs)
-    end
 
     files = searchdir(srcdir, ".wav")
     info("$(length(files)) data found.")
@@ -50,6 +47,10 @@ function main()
         @assert size(x, 2) == 1 "The input data must be monoral."
         x = float64(x[:])
         fs = int(fs)
+
+        if alpha == 0.0
+            alpha = mcepalpha(fs)
+        end
 
         info("Processing $(path)")        
         mcgram = world_mcep(x, fs, period, order, alpha)
