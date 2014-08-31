@@ -9,12 +9,13 @@ Usage:
 Options:
     -h --help        show this message
     --period=PERIOD  frame period in msec [default: 5.0]
-    --order=ORDER    order of mel cepsrum [default: 25]
-    --alpha=ALPHA    all-pass constant [default: 0.35]
+    --order=ORDER    order of mel cepsrum [default: 40]
+    --alpha=ALPHA    all-pass constant [default: 0.0]
     --max=MAX        Maximum number that will be processed [default: 100]
 """
 
 using VoiceConversion
+using MCepAlpha
 using WORLD
 using WAV
 using HDF5, JLD
@@ -33,8 +34,11 @@ function main()
 
     const period = float(args["--period"])
     const order = int(args["--order"])
-    const alpha = float(args["--alpha"])
     const nmax = int(args["--max"])
+    alpha = float(args["--alpha"])
+    if alpha == 0.0
+        alpha = mcepalpha(fs)
+    end
 
     files = searchdir(srcdir, ".wav")
     info("$(length(files)) data found.")
