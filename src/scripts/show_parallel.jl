@@ -25,6 +25,7 @@ function show_parallel(src, tgt; order=1)
     @assert size(src_mcep) == size(tgt_mcep)
     @assert order <= size(src_mcep, 1)
 
+    plt.figure(figsize=(12, 6), dpi=80, facecolor="w", edgecolor="k")
     plt.plot(src_mcep[order,:][:], color="red", linewidth=1.5)
     plt.plot(tgt_mcep[order,:][:], color="blue", linewidth=1.5)
     plt.xlabel("frame #")
