@@ -16,6 +16,6 @@ before_install:
 script:
   - julia -e 'Pkg.init()'
   # manually add
-  - julia -e 'Pkg.clone("https://github.com/r9y9/SPTK.jl"); Pkg.build("SPTK");
-  - julia -e 'Pkg.clone("https://github.com/r9y9/WORLD.jl"); Pkg.build("WORLD");
+  - julia -e 'Pkg.clone("https://github.com/r9y9/SPTK.jl.git"); Pkg.build("SPTK");'
+  - julia -e 'Pkg.clone("https://github.com/r9y9/WORLD.jl.git"); Pkg.build("WORLD");'
   - julia -e 'Pkg.clone(pwd()); Pkg.test("VoiceConversion")'
