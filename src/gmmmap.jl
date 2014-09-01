@@ -80,3 +80,11 @@ function fvconvert(gmm::GMMMap, x::Vector{Float64})
     # Eq. (13)
     return E * posterior
 end
+
+type TrajectoryGMMMap <: TrajectoryConverter
+    # TODO
+end
+
+function fvconvert(tgmm::TrajectoryGMMMap, x::Matrix{Float64})
+    # TODO
+end
