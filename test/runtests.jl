@@ -1,6 +1,6 @@
 using VoiceConversion
 using Base.Test
 
-include("testdtw.jl")
+include("dtw.jl")
 include("spectrum_differential.jl")
 
