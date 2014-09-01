@@ -17,7 +17,7 @@ function align_mcep(src::Matrix{Float64}, tgt::Matrix{Float64};
     # interpolation
     # TODO(ryuichi) better solution
     hole = setdiff([path[1]:path[end]], path)
-    for i=hole[1]:hole[end]
+    for i in hole
         if i > 1 && i < size(src, 2)
             newtgt[:,i] =
                 (newtgt[:,i-1] + newtgt[:,i+1]) / 2.0
