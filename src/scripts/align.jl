@@ -26,10 +26,10 @@ function main()
     tgt_mcep = tgt["feature_matrix"]
 
     # Perform alignment
-    src_mcep, tgt_mcep = align(src_mcep, tgt_mcep,
-                               th=float(args["--threshold"]),
-                               alpha=float(src["alpha"]),
-                               framelen=int(src["framelen"]))
+    src_mcep, tgt_mcep = align_mcep(src_mcep, tgt_mcep,
+                                    th=float(args["--threshold"]),
+                                    alpha=float(src["alpha"]),
+                                    framelen=int(src["framelen"]))
 
     @assert !any(isnan(src_mcep))
     @assert !any(isnan(tgt_mcep))

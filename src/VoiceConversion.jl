@@ -1,10 +1,15 @@
 module VoiceConversion
 
-export DTW, fit!, update!, set_template!, backward, logamp2mcep, mcep2e,
-       world_mcep, align
+# DTW related functions
+export DTW, fit!, update!, set_template!, backward
 
+# Feature conversion, extractions and alignment
+export logamp2mcep, mcep2e, world_mcep, align_mcep
+
+# Datasets
 export Dataset, ParallelDataset
 
+# Feature conversion
 export FrameByFrameConverter, GMMMap, GMM, fvconvert, vc
 
 include("align.jl")

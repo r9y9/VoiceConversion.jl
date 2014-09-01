@@ -37,7 +37,7 @@ function main()
     count = 0
     for filename in files
         srcpath = joinpath(srcdir, filename)
-        # filename is assumed to be same 
+        # filename is assumed to be same
         tgtpath = joinpath(tgtdir, filename)
 
         src = load(srcpath)
@@ -47,10 +47,10 @@ function main()
         tgt_mcep = tgt["feature_matrix"]
 
         # Perform alignment
-        src_mcep, tgt_mcep = align(src_mcep, tgt_mcep,
-                                   th=float(args["--threshold"]),
-                                   alpha=float(src["alpha"]),
-                                   framelen=int(src["framelen"]))
+        src_mcep, tgt_mcep = align_mcep(src_mcep, tgt_mcep,
+                                        th=float(args["--threshold"]),
+                                        alpha=float(src["alpha"]),
+                                        framelen=int(src["framelen"]))
 
         @assert !any(isnan(src_mcep))
         @assert !any(isnan(tgt_mcep))
@@ -60,15 +60,15 @@ function main()
         dstpath = joinpath(dstdir, string(splitext(basename(srcpath))[1],
                                           "_parallel.jld"))
         save(dstpath, "src", src, "tgt", tgt)
-        
-        info("Dumped to $(dstpath)")        
+
+        info("Dumped to $(dstpath)")
 
         count += 1
         if count >= nmax
             break
         end
     end
-    
+
     println("Finished")
 end
 
