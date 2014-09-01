@@ -10,6 +10,8 @@ function vc(c::FrameByFrameConverter, fm::Matrix{Float64})
     for t=1:T
         converted[2:end,t] = fvconvert(c, src[:,t])
     end
+
+    # keep power
     converted[1,:] = power
 
     return converted
