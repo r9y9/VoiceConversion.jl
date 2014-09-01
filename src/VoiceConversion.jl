@@ -1,6 +1,6 @@
 module VoiceConversion
 
-# DTW related functions
+# Dynamic Time Warping (DTW) related functions
 export DTW, fit!, update!, set_template!, backward
 
 # Feature conversion, extractions and alignment
