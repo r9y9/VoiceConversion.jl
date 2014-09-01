@@ -11,10 +11,11 @@ Options:
     -h --help        show this message
     --period=PERIOD  frame period in msec [default: 5.0]
     --order=ORDER    order of mel cepsrum [default: 25]
-    --alpha=ALPHA    all-pass constant [default: 0.35]
+    --alpha=ALPHA    all-pass constant [default: 0.0]
 """
 
 using VoiceConversion
+using MCepAlpha
 using WAV
 using SPTK
 using HDF5, JLD
@@ -29,7 +30,10 @@ function main()
     
     const period = float(args["--period"])
     const order = int(args["--order"])
-    const alpha = float(args["--alpha"])
+    alpha = float(args["--alpha"])
+    if alpha == 0.0
+        alpha = mcepalpha(fs)
+    end
     
     # shape (order+1, number of frames)
     src = world_mcep(x, fs, period, order, alpha)
