@@ -13,7 +13,7 @@ Options:
     --max=MAX       Maximum number that will be processed [default: 100]
 """
 
-import VoiceConversion: align
+using VoiceConversion
 using HDF5, JLD
 
 searchdir(path, key) = filter(x -> contains(x, key), readdir(path))

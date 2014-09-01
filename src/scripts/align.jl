@@ -13,7 +13,7 @@ Options:
     --threshold=TH  threshold that is used to remove silence [default: 14.0]
 """
 
-import VoiceConversion: align
+using VoiceConversion
 using HDF5, JLD
 
 function main()
