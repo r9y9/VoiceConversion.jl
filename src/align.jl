@@ -1,8 +1,8 @@
 # align_mcep performs dtw-based mel-cesptrum feature alignment.
 function align_mcep(src::Matrix{Float64}, tgt::Matrix{Float64};
-               th::Float64=14.0,
-               alpha::Float64=0.35,
-               framelen::Int=1024)
+                    th::Float64=14.0,
+                    alpha::Float64=0.35,
+                    framelen::Int=1024)
     @assert size(src, 1) == size(tgt, 1) ||
         error("order of feature vector must be equal")
 
