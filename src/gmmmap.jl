@@ -1,5 +1,3 @@
-abstract FrameByFrameConverter
-
 # GMMMap represents a class to transform spectral features of a source
 # speaker to that of a target speaker based on Gaussian Mixture Models
 # of source and target joint spectral features.

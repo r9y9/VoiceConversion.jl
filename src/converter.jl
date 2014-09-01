@@ -11,6 +11,10 @@ function vc(c::FrameByFrameConverter, fm::Matrix{Float64})
         converted[2:end,t] = fvconvert(c, src[:,t])
     end
     converted[1,:] = power
-    
+
     return converted
+end
+
+function vc(c::TrajectoryConverter, fm::Matrix{Float64})
+    # TODO
 end

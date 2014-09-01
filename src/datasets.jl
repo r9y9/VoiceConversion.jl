@@ -1,10 +1,8 @@
 using HDF5, JLD
 
-abstract Dataset
-
 searchdir(path, key) = filter(x -> contains(x, key), readdir(path))
 
-immutable ParallelDataset <: Dataset
+immutable ParallelDataset
     X::Matrix{Float64}
     Y::Matrix{Float64}
 
@@ -67,9 +65,9 @@ immutable ParallelDataset <: Dataset
 
             totalframes += size(combined, 2)
             totalphrases += 1
-            
+
             count += 1
-            if count >= nmax 
+            if count >= nmax
                 break
             end
         end

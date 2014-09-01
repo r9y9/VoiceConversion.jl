@@ -7,10 +7,16 @@ export DTW, fit!, update!, set_template!, backward
 export logamp2mcep, mcep2e, world_mcep, align_mcep
 
 # Datasets
-export Dataset, ParallelDataset
+export ParallelDataset
 
 # Feature conversion
-export FrameByFrameConverter, GMMMap, GMM, fvconvert, vc
+export Converter, FrameByFrameConverter, TrajectoryConverter,
+       GMMMap, GMM, fvconvert, vc
+
+## Type Hierarchy ##
+abstract Converter
+abstract FrameByFrameConverter <: Converter
+abstract TrajectoryConverter <: Converter
 
 include("align.jl")
 include("dtw.jl")
