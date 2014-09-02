@@ -30,6 +30,7 @@ function world_mcep(x, fs, period::Float64=5.0, order::Int=25,
     w = World(fs=fs, period=period)
 
     # Fundamental frequency (f0) estimation by DIO
+    # TODO(ryuichi) replace dio1 to dio
     f0, timeaxis = dio1(w, x)
 
     # F0 re-estimation by StoneMask
