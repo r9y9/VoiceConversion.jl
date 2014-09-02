@@ -17,7 +17,7 @@ Options:
 
 using VoiceConversion
 using MCepAlpha
-using WORLD
+using WORLD: get_fftsize_for_cheaptrick
 using WAV
 using HDF5, JLD
 
