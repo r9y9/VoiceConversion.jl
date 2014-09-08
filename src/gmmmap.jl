@@ -77,7 +77,6 @@ end
 function fvconvert(gmm::GMMMap, x::Vector{Float64})
     const order = length(x)
 
-
     # Eq. (11)
     E = gmm.tgt_means
     @inbounds for m=1:gmm.n_components
