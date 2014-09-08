@@ -11,6 +11,10 @@ type GMMMap <: FrameByFrameConverter
     covarYX::Array{Float64, 3}
     covarYY::Array{Float64, 3}
 
+    # pre-computed in constructor to avoid dupulicate computation
+    # in conversion process
+    covarYX_XXinv::Array{Float64, 3}
+
     # Eq. (12) in [Toda2007]
     D::Array{Float64, 3}
     E::Matrix{Float64}
@@ -42,6 +46,12 @@ type GMMMap <: FrameByFrameConverter
             covarXY, covarYX = covarYX, covarXY
         end
 
+        # pre-allocation and pre-computations
+        covarYX_XXinv = zeros(order, order, n_components)
+        for m=1:n_components
+            covarYX_XXinv[:,:,m] = covarYX[:,:,m] * covarXX[:,:,m]^-1
+        end       
+
         # Eq. (12)
         # Construct covariance matrices of p(Y|X) (Eq. (10))
         D = zeros(order, order, n_components)
@@ -57,7 +67,7 @@ type GMMMap <: FrameByFrameConverter
         px = GMM(src_means, covarXX, weights)
 
         new(n_components, weights, src_means, tgt_means,
-            covarXX, covarXY, covarYX, covarYY, D, E, px)
+            covarXX, covarXY, covarYX, covarYY, covarYX_XXinv, D, E, px)
     end
 end
 
@@ -67,11 +77,11 @@ end
 function fvconvert(gmm::GMMMap, x::Vector{Float64})
     const order = length(x)
 
+
     # Eq. (11)
     E = gmm.tgt_means
     @inbounds for m=1:gmm.n_components
-        gmm.E[:,m] += gmm.covarYX[:,:,m] * gmm.covarXX[:,:,m]^-1 *
-            (x - gmm.src_means[:,m])
+        gmm.E[:,m] += gmm.covarYX_XXinv[:,:,m] * (x - gmm.src_means[:,m])
     end
 
     # Eq. (9) p(m|x)
