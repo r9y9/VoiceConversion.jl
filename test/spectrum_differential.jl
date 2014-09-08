@@ -26,7 +26,7 @@ function spectrum_differetial()
     # Load mapping GMM (mixture: 16, order of mel-cepstrum: 40)
     # clb to slt from CMU Arctic speech database.
     modelpath = joinpath(Pkg.dir("VoiceConversion"), "test", "model",
-                         "clb_to_slt_gmm16_order40_diff.jld")
+                         "clb_to_slt_gmm32_order40_diff.jld")
     gmm = load(modelpath)
     @assert gmm["diff"]
 
