@@ -27,6 +27,7 @@ function main()
     @assert size(x, 2) == 1 "The input data must be monoral."
     x = float64(x[:])
     const fs = int(fs)
+    println("length of input signal is $(length(x)/fs) sec.")
     
     const period = float(args["--period"])
     const order = int(args["--order"])
@@ -34,27 +35,33 @@ function main()
     if alpha == 0.0
         alpha = mcepalpha(fs)
     end
-    
-    # shape (order+1, number of frames)
-    src = world_mcep(x, fs, period, order, alpha)
-    
+        
     # Load mapping model
     gmm = load(args["<model_jld>"])
     if !gmm["diff"]
         error("not supported")
     end
     mapper = GMMMap(gmm)
-    
-    # Perform conversion
-    converted = vc(mapper, src)
+
+    # shape (order+1, number of frames)
+    elapsed_fe = @elapsed src = world_mcep(x, fs, period, order, alpha)
+    println("elapsed time in feature extraction is $(elapsed_fe) sec.")
 
     # remove power coef.
-    converted[1,:] = 0.0
+    src[1,:] = 0.0
+    
+    # Perform conversion
+    elapsed_vc = @elapsed converted = vc(mapper, src)
+    println("elapsed time in conversion process is $(elapsed_vc) sec.")
+    
     
     # Waveform synthesis using Mel-Log Spectrum Approximation filter
     mf = MLSADF(order)
     hopsize = int(fs / (1000 / period))
-    synthesized = synthesis!(mf, x, converted, alpha, hopsize)
+    elapsed_syn = @elapsed begin
+        synthesized = synthesis!(mf, x, converted, alpha, hopsize)
+    end
+    println("elapsed time in waveform moduration is $(elapsed_syn) sec.")
 
     wavwrite(int16(synthesized), args["<dst_wav>"], Fs=fs)
     println("Dumped to ", args["<dst_wav>"])
