@@ -3,7 +3,7 @@
 # WORLD
 # MCepAlpha
 PyCall
-HDF5
+HDF5 v0.3.0
 NumericExtensions
 Distributions
 DocOpt
