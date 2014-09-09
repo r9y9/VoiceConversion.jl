@@ -21,7 +21,7 @@ function spectrum_differetial()
 
     # Feature extraction that will be converted
     src = world_mcep(x, fs, period, order, alpha)
-    @assert !any(isnan(src))
+    @test !any(isnan(src))
 
     # Load mapping GMM (mixture: 16, order of mel-cepstrum: 40)
     # clb to slt from CMU Arctic speech database.
