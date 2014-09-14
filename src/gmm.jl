@@ -25,7 +25,7 @@ ncomponents(gmm::GMM) = gmm.n_components
 # in the model.
 # TODO(ryuichi) do for matrix x
 function predict_proba(gmm::GMM, x::Vector{Float64})
-    @inbounds lpr = [logpdf(m, x) for m in gmm.normals] + log(gmm.weights)
+    lpr = [logpdf(m, x)::Float64 for m in gmm.normals] + log(gmm.weights)
     logprob = logsumexp(lpr)
     posterior = exp(lpr - logprob)
 end
