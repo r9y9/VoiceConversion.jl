@@ -6,9 +6,11 @@ using WAV
 using HDF5, JLD
 import SPTK: MLSADF, synthesis!
 
+# Female (`clb`) to female (`slt`) voice conversion demo based on
 # Statistical Voice Conversion based on Spectrum Differential
 # TODO(ryuichi) proper refer
-function spectrum_differetial()
+function spectrum_differetial_clb_to_slt()
+    # Load source speaker's (`clb`) speech signal.
     wavpath = joinpath(Pkg.dir("VoiceConversion", "test", "data",
                                "clb_a0028.wav"))
     x, fs = wavread(wavpath, format="int")
@@ -19,12 +21,13 @@ function spectrum_differetial()
     const order = 40
     const alpha = mcepalpha(fs)
 
-    # Feature extraction that will be converted
+    # Mel-cepstrum extraction based on WORLD.
     src = world_mcep(x, fs, period, order, alpha)
     @test !any(isnan(src))
 
-    # Load mapping GMM (mixture: 16, order of mel-cepstrum: 40)
-    # clb to slt from CMU Arctic speech database.
+    # Load GMM to convert speech signal of `clb` to that of `slt`,
+    # which is trained on CMU Arctic speech database.
+    # [GMM info] mixture: 16, order of mel-cepstrum: 40
     modelpath = joinpath(Pkg.dir("VoiceConversion"), "test", "model",
                          "clb_to_slt_gmm32_order40_diff.jld")
     gmm = load(modelpath)
@@ -47,4 +50,4 @@ function spectrum_differetial()
     @test !any(isnan(converted))
 end
 
-spectrum_differetial()
+spectrum_differetial_clb_to_slt()
