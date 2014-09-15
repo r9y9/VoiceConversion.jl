@@ -158,6 +158,8 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
         Dinv[:,:,t] = sparse(Dinv[:,:,t]^-1)
     end
     Dinv = blkdiag(Dinv)
+    @assert size(Dinv) == (2*D*T, 2*D*T)
+    @assert issparse(Dinv)
 
     # Compute target static features
     # eq.(39)
