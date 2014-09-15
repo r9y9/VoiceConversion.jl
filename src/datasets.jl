@@ -30,7 +30,7 @@ immutable ParallelDataset
                              joint::Bool=true,
                              standarize::Bool=false,
                              ignore0th::Bool=true,
-                             add_dynamic::Bool=false,
+                             add_delta::Bool=false,
                              suffix::String="_parallel.jld",
                              keepstat::Bool=false,
                              nmax::Int=100)
@@ -54,8 +54,9 @@ immutable ParallelDataset
                 src_x, tgt_x = src_x[2:end,:], tgt_x[2:end,:]
             end
 
-            if add_dynamic
-                #TODO
+            if add_delta
+                src_x = push_delta(src_x)
+                src_y = push_delta(src_x)
             end
 
             # use differencial
