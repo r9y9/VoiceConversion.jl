@@ -138,7 +138,7 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     end
 
     # A suboptimum mixture sequence  (eq.37)
-    optimum_mix = predict(tgmm.gmmmap.px, src)
+    optimum_mix = predict(tgmm.gmmmap.px, X)
     
     # Compute E eq.(40)
     E = zeros(2*D, T)
