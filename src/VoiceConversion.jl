@@ -25,6 +25,7 @@ include("datasets.jl")
 include("feature.jl")
 include("gmm.jl")
 include("gmmmap.jl")
+include("trajectory_gmmmap.jl")
 include("converter.jl")
 
 end # module
