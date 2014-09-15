@@ -56,7 +56,7 @@ immutable ParallelDataset
 
             if add_delta
                 src_x = push_delta(src_x)
-                src_y = push_delta(src_x)
+                tgt_x = push_delta(tgt_x)
             end
 
             # use differencial
