@@ -11,7 +11,7 @@ export ParallelDataset, push_delta
 
 # Feature conversion
 export Converter, FrameByFrameConverter, TrajectoryConverter,
-       GMMMap, GMM, fvconvert, vc
+       GMMMap, GMM, GaussianMixtureModel, fvconvert, vc
 
 ## Type Hierarchy ##
 abstract Converter

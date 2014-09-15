@@ -19,7 +19,7 @@ type GMMMap <: FrameByFrameConverter
     D::Array{Float64, 3}
     E::Matrix{Float64}
 
-    px::GMM
+    px::GMM{PDMat}
 
     function GMMMap(gmm::Dict{Union(UTF8String, ASCIIString), Any};
                     swap::Bool=false)
@@ -64,7 +64,7 @@ type GMMMap <: FrameByFrameConverter
         E = zeros(order, n_components)
 
         # p(x)
-        px = GMM(src_means, covarXX, weights)
+        px = GaussianMixtureModel(src_means, covarXX, weights)
 
         new(n_components, weights, src_means, tgt_means,
             covarXX, covarXY, covarYX, covarYY, covarYX_XXinv, D, E, px)
@@ -88,12 +88,4 @@ function fvconvert(gmm::GMMMap, x::Vector{Float64})
 
     # Eq. (13)
     return E * posterior
-end
-
-type TrajectoryGMMMap <: TrajectoryConverter
-    # TODO
-end
-
-function fvconvert(tgmm::TrajectoryGMMMap, x::Matrix{Float64})
-    # TODO
 end
