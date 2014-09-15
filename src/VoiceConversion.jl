@@ -19,13 +19,15 @@ abstract Converter
 abstract FrameByFrameConverter <: Converter
 abstract TrajectoryConverter <: Converter
 
-include("align.jl")
-include("dtw.jl")
-include("datasets.jl")
-include("feature.jl")
-include("gmm.jl")
-include("gmmmap.jl")
-include("trajectory_gmmmap.jl")
-include("converter.jl")
+for fname in ["align.jl",
+              "dtw.jl",
+              "datasets.jl",
+              "feature.jl",
+              "gmm.jl",
+              "gmmmap.jl",
+              "trajectory_gmmmap.jl",
+              "converter.jl"]
+    include(fname)
+end
 
 end # module
