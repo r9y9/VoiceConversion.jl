@@ -7,7 +7,7 @@ export DTW, fit!, update!, set_template!, backward
 export logamp2mcep, mcep2e, world_mcep, align_mcep
 
 # Datasets
-export ParallelDataset
+export ParallelDataset, push_delta
 
 # Feature conversion
 export Converter, FrameByFrameConverter, TrajectoryConverter,
