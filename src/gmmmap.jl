@@ -128,7 +128,7 @@ function construct_weight_matrix(D::Int, T::Int)
 end
 
 function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
-    const D, T = size(X)
+    const D, T = div(size(X,1),2), size(X,2)
     # input feature vector must contain delta feature
     @assert D == tgmm.D*2
     
@@ -149,13 +149,15 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     end
 
     # Compute D^-1 eq.(41)
+    # TODO work
     Dinv = zeros(2*D, 2*D, T)
     for t=1:T
         m = int(optimum_mix[t])
-        Dinv[:,:,m] = tgmm.gmmmap.covarYY[:,:,m] - tgmm.gmmmap.covarYX_XXinv[:,:,m] * 
+        Dinv[:,:,t] = tgmm.gmmmap.covarYY[:,:,m] - tgmm.gmmmap.covarYX_XXinv[:,:,m] * 
             tgmm.gmmmap.covarXY[:,:,m]
+        Dinv[:,:,t] = sparse(Dinv[:,:,t]^-1)
     end
-    Dinv = sparse(Dinv)
+    Dinv = blkdiag(Dinv)
 
     # Compute target static features
     # eq.(39)
