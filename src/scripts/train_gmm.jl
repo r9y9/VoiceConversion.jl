@@ -10,6 +10,7 @@ Usage:
 Options:
     -h --help           show this message
     --diff              use differencial
+    --add_delta         add delta feature
     --n_components=MIX  number of mixtures [default: 16]
     --n_iter=ITER       number of iterations [default: 200]
     --n_init=N          number of initialization [default: 2]
@@ -28,6 +29,8 @@ function main()
 
     const nmax::Int = int(args["--max"])
     const diff = args["--diff"]
+    const add_delta = args["--add_delta"]
+
     const n_components::Int = int(args["--n_components"])
     const n_iter::Int = int(args["--n_iter"])
     const n_init::Int = int(args["--n_init"])
@@ -36,6 +39,7 @@ function main()
     dataset = ParallelDataset(args["<parallel_dir>"],
                               joint=true,
                               diff=diff,
+                              add_delta=add_delta,
                               nmax=nmax)
 
     gmm = mixture.GMM(n_components=n_components,
