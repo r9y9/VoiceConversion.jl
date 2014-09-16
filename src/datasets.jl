@@ -7,7 +7,7 @@ function push_delta(src)
     const D, T = size(src)
     src = repmat(src, 2)
     for t=2:T-1        
-        src[D+1:end,t] = 0.5*src[1:D,t-1] + 0.5*src[1:D,t+1]
+        src[D+1:end,t] = -0.5*src[1:D,t-1] + 0.5*src[1:D,t+1]
     end
     src
 end
