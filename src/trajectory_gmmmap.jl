@@ -55,7 +55,7 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     # Compute E eq.(40)
     E = zeros(2*D, T)
     for t=1:T
-        m = int(optimum_mix[t])
+        const m = int(optimum_mix[t])
         E[:,t] = tgmm.gmmmap.tgt_means[:,m] + tgmm.gmmmap.covarYX_XXinv[:,:,m] * 
             (X[:,t] - tgmm.gmmmap.src_means[:,m])
     end
@@ -65,7 +65,7 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     # Compute D^-1 eq.(41)
     Dinv = spzeros(2*D, 2*D)
     for t=1:T
-        m = int(optimum_mix[t])
+        const m = int(optimum_mix[t])
         dinv = tgmm.gmmmap.covarYY[:,:,m] - tgmm.gmmmap.covarYX_XXinv[:,:,m] * 
             tgmm.gmmmap.covarXY[:,:,m]
         dinv = dinv^-1
