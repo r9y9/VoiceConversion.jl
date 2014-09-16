@@ -12,6 +12,7 @@ Options:
     --period=PERIOD  frame period in msec [default: 5.0]
     --order=ORDER    order of mel cepsrum [default: 25]
     --alpha=ALPHA    all-pass constant [default: 0.0]
+    --trajectory     trajectory-based parameter conversion
 """
 
 using VoiceConversion
@@ -35,6 +36,7 @@ function main()
     if alpha == 0.0
         alpha = mcepalpha(fs)
     end
+    const trajectory = args["--trajectory"]
         
     # Load mapping model
     gmm = load(args["<model_jld>"])
@@ -42,10 +44,17 @@ function main()
         error("not supported")
     end
     mapper = GMMMap(gmm)
+    if trajectory
+        mapper = TrajectoryGMMMap(mapper, 50)
+    end
 
     # shape (order+1, number of frames)
     elapsed_fe = @elapsed src = world_mcep(x, fs, period, order, alpha)
     println("elapsed time in feature extraction is $(elapsed_fe) sec.")
+    if trajectory
+        # add delta feature
+        src = [src[1,:], push_delta(src[2:end,:])]
+    end
 
     # remove power coef.
     src[1,:] = 0.0
