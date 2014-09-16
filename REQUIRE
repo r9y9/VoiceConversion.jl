@@ -7,3 +7,5 @@ HDF5 v0.3.0
 NumericExtensions
 Distributions
 DocOpt
+ArrayView
+PDMats
