@@ -42,7 +42,7 @@ function vc(c::TrajectoryConverter, fm::Matrix{Float64};
 
         if e == T
             break
-            end
+        end
         count += 1
     end
 
