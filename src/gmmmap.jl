@@ -48,14 +48,14 @@ type GMMMap <: FrameByFrameConverter
         end
 
         # pre-allocation and pre-computations
-        covarYX_XXinv = zeros(order, order, n_components)
+        covarYX_XXinv = Array(Float64, order, order, n_components)
         for m=1:n_components
             covarYX_XXinv[:,:,m] = covarYX[:,:,m] * covarXX[:,:,m]^-1
         end       
 
         # Eq. (12)
         # Construct covariance matrices of p(Y|X) (Eq. (10))
-        D = zeros(order, order, n_components)
+        D = Array(Float64, order, order, n_components)
         for m=1:n_components
             D[:,:,m] = covarYY[:,:,m] - covarYX[:,:,m] *
                 covarXX[:,:,m]^-1 * covarXY[:,:,m]
