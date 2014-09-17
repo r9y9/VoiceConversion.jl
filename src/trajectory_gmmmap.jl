@@ -59,7 +59,7 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
             (X[:,t] - tgmm.gmmmap.src_means[:,m])
     end
     E = vec(E)
-    @assert size(E) == (2*D*T,)    
+    @assert size(E) == (2*D*T,)
 
     # Compute D^-1 eq.(41)
     Dinv = spzeros(2*D, 2*D)
