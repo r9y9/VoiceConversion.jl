@@ -41,8 +41,7 @@ end
 function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     # input feature vector must contain delta feature
     const D, T = div(size(X,1),2), size(X,2)
-    # TODO throw or error
-    @assert D == tgmm.D
+    D == tgmm.D || throw(DimensionMismatch("Inconsistent dimentions."))
     
     if T != tgmm.T
         tgmm.W = construct_weight_matrix(D, T)
