@@ -23,7 +23,7 @@ function vc(c::TrajectoryConverter, fm::Matrix{Float64};
     power, src =  fm[1,:], fm[2:end,:]
 
     # D = length/2 + 1: order of static spectral features + power
-    const D, T = div(size(src,1)/2)+1, size(src,2)
+    const D, T = div(size(src,1),2)+1, size(src,2)
     converted = Array(eltype(fm), D, T)
 
     # Perform Trajectory-based mapping
