@@ -22,9 +22,9 @@ function vc(c::TrajectoryConverter, fm::Matrix{Float64};
     # Split src feature matrix to power and spectral features
     power, src =  fm[1,:], fm[2:end,:]
 
-    const D, T = size(src)
-    # D/2 + 1: order of static spectral features + power
-    converted = Array(eltype(fm), div(D,2)+1, T)
+    # D = length/2 + 1: order of static spectral features + power
+    const D, T = div(size(src,1)/2)+1, size(src,2)
+    converted = Array(eltype(fm), D, T)
 
     # Perform Trajectory-based mapping
     # Split whole sequence to a set of phrases to reduce memory size
