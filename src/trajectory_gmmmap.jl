@@ -18,7 +18,7 @@ type TrajectoryGMMMap <: TrajectoryConverter
         const M = size(gmmmap.src_means, 2)
 
         # pre-computations
-        Dy = zeros(2*D, 2*D, M)
+        Dy = Array(Float64, 2*D, 2*D, M)
         for m=1:M
             Dy[:,:,m] = gmmmap.covarYY[:,:,m] - gmmmap.covarYX_XXinv[:,:,m] *
                 gmmmap.covarXY[:,:,m]
@@ -67,7 +67,7 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     optimum_mix = predict(tgmm.gmmmap.px, X)
     
     # Compute E eq.(40)
-    E = zeros(2*D, T)
+    E = Array(Float64, 2*D, T)
     for t=1:T
         const m = int(optimum_mix[t])
         E[:,t] = tgmm.gmmmap.tgt_means[:,m] + tgmm.gmmmap.covarYX_XXinv[:,:,m] *
