@@ -85,7 +85,9 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     W = tgmm.W # short alias
     Wt_Dinv = W' * Dinv
     @assert issparse(Wt_Dinv)
-    y = full(Wt_Dinv * W)^-1 * Wt_Dinv * E
+    # y = full(Wt_Dinv * W)^-1 * Wt_Dinv * E
+    # much faster
+    y = (Wt_Dinv * W) \ (Wt_Dinv * E)
     @assert size(y) == (D*T,)
 
     # Finally we get static feature vector
