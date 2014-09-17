@@ -6,11 +6,26 @@ type TrajectoryGMMMap <: TrajectoryConverter
     D::Int
     W::SparseMatrixCSC{Float64, Int}
 
+    # diagonal components of eq. (41)
+    Dy::Array{Float64, 3}
+
     # TODO consider gloval variance (gv)
     function TrajectoryGMMMap(gmmmap::GMMMap, T::Int)
         const D = div(size(gmmmap.src_means, 1), 2)
         W = construct_weight_matrix(D, T)
-        new(gmmmap, T, D, W)
+
+        # the number of mixtures
+        const M = size(gmmmap.src_means, 2)
+
+        # pre-computations
+        Dy = zeros(2*D, 2*D, M)
+        for m=1:M
+            Dy[:,:,m] = gmmmap.covarYY[:,:,m] - gmmmap.covarYX_XXinv[:,:,m] *
+                gmmmap.covarXY[:,:,m]
+            Dy[:,:,m] = Dy[:,:,m]^-1
+        end
+        
+        new(gmmmap, T, D, W, Dy)
     end
 end
 
@@ -55,7 +70,7 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     E = zeros(2*D, T)
     for t=1:T
         const m = int(optimum_mix[t])
-        E[:,t] = tgmm.gmmmap.tgt_means[:,m] + tgmm.gmmmap.covarYX_XXinv[:,:,m] * 
+        E[:,t] = tgmm.gmmmap.tgt_means[:,m] + tgmm.gmmmap.covarYX_XXinv[:,:,m] *
             (X[:,t] - tgmm.gmmmap.src_means[:,m])
     end
     E = vec(E)
@@ -65,13 +80,10 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     Dinv = spzeros(2*D, 2*D)
     for t=1:T
         const m = int(optimum_mix[t])
-        dinv = tgmm.gmmmap.covarYY[:,:,m] - tgmm.gmmmap.covarYX_XXinv[:,:,m] * 
-            tgmm.gmmmap.covarXY[:,:,m]
-        dinv = dinv^-1
         if t == 1
-            Dinv[:,:] = sparse(dinv)
+            Dinv[:,:] = sparse(tgmm.Dy[:,:,m])
         else
-            Dinv = blkdiag(Dinv, sparse(dinv))
+            Dinv = blkdiag(Dinv, sparse(tgmm.Dy[:,:,m]))
         end
     end
     # TODO: how can i pass diags as varargs to blkdiag..?
