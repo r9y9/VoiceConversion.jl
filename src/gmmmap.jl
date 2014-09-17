@@ -25,7 +25,8 @@ type GMMMap <: FrameByFrameConverter
                     swap::Bool=false)
         const n_components = gmm["n_components"]
         weights = gmm["weights"]
-        @assert n_components == length(weights)
+        n_components == length(weights) ||
+            throw(DimensionMismatch("Inconsistent number of mixtures."))
         means = gmm["means"]
         covars = gmm["covars"]
 
