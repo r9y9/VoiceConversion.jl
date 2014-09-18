@@ -14,6 +14,9 @@ export Converter, FrameByFrameConverter, TrajectoryConverter,
        GMMMap, GMM, GaussianMixtureModel, fvconvert, vc,
        TrajectoryGMMMap
 
+# Post filters
+export PeseudoGV, fvpostf!, fvpostf
+
 ## Type Hierarchy ##
 abstract Converter
 abstract FrameByFrameConverter <: Converter
@@ -26,6 +29,7 @@ for fname in ["align.jl",
               "gmm.jl",
               "gmmmap.jl",
               "trajectory_gmmmap.jl",
+              "peseudo_gv.jl",
               "converter.jl"]
     include(fname)
 end
