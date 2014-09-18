@@ -77,17 +77,7 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     @assert size(E) == (2*D*T,)
 
     # Compute D^-1 eq.(41)
-    Dinv = spzeros(2*D, 2*D)
-    for t=1:T
-        const m = int(optimum_mix[t])
-        if t == 1
-            Dinv[:,:] = sparse(tgmm.Dy[:,:,m])
-        else
-            Dinv = blkdiag(Dinv, sparse(tgmm.Dy[:,:,m]))
-        end
-    end
-    # TODO: how can i pass diags as varargs to blkdiag..?
-    # Dinv = blkdiag([Dinv[:,:,t] for t=1:T])
+    Dinv = blkdiag([sparse(tgmm.Dy[:,:,optimum_mix[t]]) for t=1:T]...)
 
     @assert size(Dinv) == (2*D*T, 2*D*T)
     @assert issparse(Dinv)
