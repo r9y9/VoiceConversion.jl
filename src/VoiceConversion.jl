@@ -12,7 +12,7 @@ export ParallelDataset, push_delta
 # Feature conversion
 export Converter, FrameByFrameConverter, TrajectoryConverter,
        GMMMap, GMM, GaussianMixtureModel, fvconvert, vc,
-       TrajectoryGMMMap
+       TrajectoryGMMMap, TrajectoryGMMMapWithGV
 
 # Post filters
 export PeseudoGV, fvpostf!, fvpostf
