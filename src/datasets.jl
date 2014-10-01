@@ -92,7 +92,7 @@ immutable ParallelDataset
             X = XY
             Y = ones(1,1) # not used
         else
-            order::Int = int(size(XY, 1)/2)
+            order::Int = div(size(XY, 1), 2)
             X = XY[1:order,:]
             Y = XY[order+1:end,:]
         end
