@@ -111,6 +111,7 @@ type TrajectoryGMMMapWithGV <: TrajectoryConverter
 
     function TrajectoryGMMMapWithGV(tgmm::TrajectoryGMMMap, 
                                     gv_mean, gv_covar)
+        @assert sum(gv_mean .< 0) == 0
         new(tgmm, gv_mean, gv_covar, inv(gv_covar))
     end
     
@@ -119,6 +120,7 @@ type TrajectoryGMMMapWithGV <: TrajectoryConverter
         # assume single mixture
         (size(gvgmm["means"], 2) == 1) || error("not supported for mixture >= 2")
         gv_mean = gvgmm["means"][:,1]
+        @assert sum(gv_mean .< 0) == 0
         gv_covar = gvgmm["covars"][:,:,1]
         new(tgmm, gv_mean, gv_covar, inv(gv_covar))
     end
@@ -128,11 +130,11 @@ function fvconvert(tgv::TrajectoryGMMMapWithGV, X::Matrix{Float64};
                    epochs::Int=100, learning_rate::Float64=1.0e-5)
     # Initialize target static features without considering GV
     y = fvconvert(tgv.tgmm, X)
+    const D, T = size(y)
 
     # eq. (58)
-    # y = sqrt(tgv.gv_mean ./ var(y, 2)) .* (y .- mean(y, 2)) .+ mean(y, 2)
+    y = sqrt(tgv.gv_mean ./ var(X[1:D,:], 2)) .* (y .- mean(y, 2)) .+ mean(y, 2)
 
-    const D, T = size(y)
     const ω = 1.0/(2.0*T)
 
     # aliases
