@@ -58,7 +58,7 @@ immutable ParallelDataset
                 src_x = push_delta(src_x)
                 tgt_x = push_delta(tgt_x)
             end
-
+            
             # use differencial
             if diff
                 tgt_x = tgt_x - src_x
@@ -127,5 +127,61 @@ immutable ParallelDataset
         end
 
         new(X, Y, Xmean, Xstd, Ymean, Ystd)
+    end
+end
+
+# GVDataset represents a Gloval variance dataset.
+immutable GVDataset
+    X::Matrix{Float64}
+
+    function GVDataset(path;
+                       start=None,
+                       stop=None,
+                       ignore0th::Bool=true,
+                       add_delta::Bool=false,
+                       suffix::String=".jld",
+                       nmax::Int=100)
+        files = searchdir(path, suffix)
+        sort!(files)
+
+        info("$(length(files)) training data found")
+
+        X = zeros(0,0)
+        totalphrases::Int = 0
+
+        for filename in files
+            # TODO(ryuichi) allow costom file format?
+            f = load(joinpath(path, filename))
+            tgt = f["feature_matrix"]
+
+            if ignore0th
+                tgt = tgt[2:end,:]
+            end
+
+            if add_delta
+                tgt = push_delta(tgt_x)
+            end
+
+            gv = var(tgt, 2)
+            if sum(isnan(gv)) == 0
+                if totalphrases == 0
+                    X = gv
+                else
+                    X = hcat(X, gv)
+                end
+            end
+            
+            totalphrases += 1
+
+            if totalphrases >= nmax
+                break
+            end
+        end
+
+        info("total number of phrases: $(totalphrases)")
+
+        @assert !any(isnan(X))
+
+        new(X)
     end
 end
