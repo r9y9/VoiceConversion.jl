@@ -16,6 +16,8 @@ Options:
     --n_init=N          number of initialization [default: 2]
     --max=MAX           maximum number of data we use [default: 50]
     --min_covar=MIN     minimum covariance [default: 1.0e-7]
+    --src_only          use only source feature
+    --tgt_only          use only target feature
 """
 
 using VoiceConversion
@@ -35,9 +37,15 @@ function main()
     const n_iter::Int = int(args["--n_iter"])
     const n_init::Int = int(args["--n_init"])
     const min_covar::Float64 = float64(args["--min_covar"])
+    const src_only = args["--src_only"]
+    const tgt_only = args["--tgt_only"]
+    const joint = !src_only && !tgt_only
+    @show joint
+
+    (src_only && tgt_only) && error("invalid option")
 
     dataset = ParallelDataset(args["<parallel_dir>"],
-                              joint=true,
+                              joint=joint,
                               diff=diff,
                               add_delta=add_delta,
                               nmax=nmax)
@@ -49,10 +57,15 @@ function main()
                       min_covar=min_covar
                       )
 
-    println(gmm)
+    @show gmm
+
+    X = dataset.X
+    if tgt_only
+        X = dataset.Y
+    end
 
     # pass transposed matrix because python is row-major language
-    @time gmm[:fit](dataset.X')
+    @time gmm[:fit](X')
 
     # save transposed parameters because julia is column-major language
     # convert means
