@@ -7,7 +7,7 @@ VoiceConversion.jl is a repository of my statistical voice conversion research e
 ## Parameter conversion
 
 - Frame-by-frame parameter conversion using joint Gaussian Mixture Models (GMMs) of source and target feature space
-- Trajectory parameter conversion based on maximum likelihood criterion [Toda 2007]
+- Trajectory parameter conversion based on maximum likelihood criterion w/o Gloval Variance (GV) [Toda 2007]
 
 ## Waveform modification
 
