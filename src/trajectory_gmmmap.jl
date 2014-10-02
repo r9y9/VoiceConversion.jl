@@ -58,6 +58,8 @@ function construct_weight_matrix(D::Int, T::Int)
     return W
 end
 
+# Mapping source spectral feature x to target spectral feature y 
+# so that maximize the likelihood of y given x.
 function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     # input feature vector must contain delta feature
     const D, T = div(size(X,1),2), size(X,2)
