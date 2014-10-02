@@ -7,8 +7,7 @@ using HDF5, JLD
 import SPTK: MLSADF, synthesis!
 
 # Female (`clb`) to female (`slt`) voice conversion demo based on
-# Statistical Voice Conversion based on Spectrum Differential
-# TODO(ryuichi) proper refer
+# Statistical Voice Conversion based on Spectrum Differential [Kobayashi 2014]
 function spectrum_differetial_clb_to_slt()
     # Load source speaker's (`clb`) speech signal.
     wavpath = joinpath(Pkg.dir("VoiceConversion", "test", "data",
