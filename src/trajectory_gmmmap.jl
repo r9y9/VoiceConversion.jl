@@ -106,6 +106,8 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     return reshape(y, D, T)
 end
 
+# Trajectory-based speech parameter mapping considering gloval variance
+# based on the maximum likelihood criterion.
 type TrajectoryGMMMapWithGV <: TrajectoryConverter
     tgmm::TrajectoryGMMMap
     μᵛ::Vector{Float64}
@@ -128,6 +130,10 @@ type TrajectoryGMMMapWithGV <: TrajectoryConverter
     end
 end
 
+# Mapping source spectral feature x to target spectral feature y 
+# so that maximize the likelihood of y given x with considering
+# global variance.
+# Note that α should be carefully chosen.
 function fvconvert(tgv::TrajectoryGMMMapWithGV, X::Matrix{Float64};
                    epochs::Int=100, α::Float64=1.0e-5)
     # Initialize target static features without considering GV
