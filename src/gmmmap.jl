@@ -26,18 +26,18 @@ type GMMMap <: FrameByFrameConverter
         const n_components = gmm["n_components"]
         weights = gmm["weights"]
         @assert n_components == length(weights)
-        means = gmm["means"]
-        covars = gmm["covars"]
+        μ = gmm["means"]
+        Σ = gmm["covars"]
 
         # Split mean and covariance matrices into source and target
         # speaker's ones
-        const order::Int = int(size(means, 1) / 2)
-        μˣ = means[1:order, :]
-        μʸ = means[order+1:end, :]
-        Σˣˣ = covars[1:order,1:order, :]
-        Σˣʸ = covars[1:order,order+1:end, :]
-        Σʸˣ = covars[order+1:end,1:order, :]
-        Σʸʸ = covars[order+1:end,order+1:end, :]
+        const order::Int = int(size(μ, 1) / 2)
+        μˣ = μ[1:order, :]
+        μʸ = μ[order+1:end, :]
+        Σˣˣ = Σ[1:order,1:order, :]
+        Σˣʸ = Σ[1:order,order+1:end, :]
+        Σʸˣ = Σ[order+1:end,1:order, :]
+        Σʸʸ = Σ[order+1:end,order+1:end, :]
 
         # swap src and target parameters
         if swap
