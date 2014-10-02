@@ -1,3 +1,12 @@
+# GMM-based frame-by-frame voice conversion
+#
+# Reference:
+# [Toda 2007] T. Toda et al, “Voice conversion based on maximum likelihood
+# estimation of spectral parameter trajectory,” IEEE
+# Trans. Audio, Speech, Lang. Process, vol. 15, no. 8, pp. 2222–2235,
+# Nov. 2007.
+# http://isw3.naist.jp/~tomoki/Tomoki/Journals/IEEE-Nov-2007_MLVC.pdf
+
 # GMMMap represents a class to transform spectral features of a source
 # speaker to that of a target speaker based on Gaussian Mixture Models
 # of source and target joint spectral features.
