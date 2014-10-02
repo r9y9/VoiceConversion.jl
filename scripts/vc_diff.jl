@@ -46,8 +46,6 @@ function main()
     mapper = GMMMap(gmm)
     if trajectory
         mapper = TrajectoryGMMMap(mapper, 70)
-        gvgmm = load("slt_order40_gv.jld")
-        mapper = TrajectoryGMMMapWithGV(mapper, gvgmm)
     end
 
     # shape (order+1, number of frames)
@@ -74,7 +72,7 @@ function main()
     end
     println("elapsed time in waveform moduration is $(elapsed_syn) sec.")
     
-    wavwrite(float32(synthesized/32768.0), args["<dst_wav>"], Fs=fs)
+    wavwrite(int16(synthesized), args["<dst_wav>"], Fs=fs)
     println("Dumped to ", args["<dst_wav>"])
 end
 
