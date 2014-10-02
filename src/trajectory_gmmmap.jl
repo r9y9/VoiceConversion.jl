@@ -7,50 +7,53 @@ type TrajectoryGMMMap <: TrajectoryConverter
     W::SparseMatrixCSC{Float64, Int}
 
     # diagonal components of eq. (41)
-    Dy::Array{Float64, 3}
-    Dinv::SparseMatrixCSC{Float64, Int}
+    Dʸ::Array{Float64, 3}
+    # Dʸ^-1 in eq. (41)
+    Dʸ⁻¹::SparseMatrixCSC{Float64, Int}
     # vectroized version of eq. (40)
-    E::Vector{Float64}
+    Eʸ::Vector{Float64}
 
     function TrajectoryGMMMap(gmmmap::GMMMap, T::Int)
-        const D = div(size(gmmmap.src_means, 1), 2)
+        # alias
+        g = gmmmap
+        
+        const D = div(size(g.μˣ, 1), 2)
         W = construct_weight_matrix(D, T)
 
         # the number of mixtures
-        const M = size(gmmmap.src_means, 2)
+        const M = size(g.μˣ, 2)
 
         # pre-computations
-        Dy = Array(Float64, 2*D, 2*D, M)
+        Dʸ = Array(Float64, 2D, 2D, M)
         for m=1:M
-            Dy[:,:,m] = gmmmap.covarYY[:,:,m] - gmmmap.covarYX_XXinv[:,:,m] *
-                gmmmap.covarXY[:,:,m]
-            Dy[:,:,m] = Dy[:,:,m]^-1
+            Dʸ[:,:,m] = g.Σʸʸ[:,:,m] - g.ΣʸˣΣˣˣ⁻¹[:,:,m] * g.Σˣʸ[:,:,m]
+            Dʸ[:,:,m] = Dʸ[:,:,m]^-1
         end
         
-        new(gmmmap, T, D, W, Dy, spzeros(0,0), zeros(0))
+        new(g, T, D, W, Dʸ, spzeros(0,0), zeros(0))
     end
 end
 
 function construct_weight_matrix(D::Int, T::Int)
-    W = spzeros(2*D*T, D*T)
+    W = spzeros(2D*T, D*T)
 
     for t=1:T
-        w0 = spzeros(D, D*T)
-        w1 = spzeros(D, D*T)
-        w0[1:end, (t-1)*D+1:t*D] = spdiagm(ones(D))
+        w⁰ = spzeros(D, D*T)
+        w¹ = spzeros(D, D*T)
+        w⁰[1:end, (t-1)*D+1:t*D] = spdiagm(ones(D))
         
         if t-1 >= 1
-            w1[1:end, (t-1)*D+1:t*D] = spdiagm(-0.5*ones(D))
+            w¹[1:end, (t-1)*D+1:t*D] = spdiagm(-0.5*ones(D))
         end
         if t < T
-            w1[1:end, (t-1)*D+1:t*D] = spdiagm(0.5*ones(D))
+            w¹[1:end, (t-1)*D+1:t*D] = spdiagm(0.5*ones(D))
         end
         
-        W[2*D*(t-1)+1:2*D*t,:] = [w0, w1]
+        W[2*D*(t-1)+1:2*D*t,:] = [w⁰, w¹]
     end
 
     @assert issparse(W)
-    @assert size(W) == (2*D*T, D*T)
+    @assert size(W) == (2D*T, D*T)
 
     return W
 end
@@ -65,93 +68,94 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
         tgmm.T = T
     end
 
-    # A suboptimum mixture sequence  (eq.37)
-    optimum_mix = predict(tgmm.gmmmap.px, X)
+    # alias
+    g = tgmm.gmmmap
+
+    # A suboptimum mixture sequence  eq. (37)
+    m̂ = predict(g.px, X)
     
-    # Compute E eq.(40)
-    E = Array(Float64, 2*D, T)
+    # Compute Eʸ eq.(40)
+    Eʸ = Array(Float64, 2*D, T)
     for t=1:T
-        const m = int(optimum_mix[t])
-        E[:,t] = tgmm.gmmmap.tgt_means[:,m] + tgmm.gmmmap.covarYX_XXinv[:,:,m] *
-            (X[:,t] - tgmm.gmmmap.src_means[:,m])
+        const m = int(m̂[t])
+        Eʸ[:,t] = g.μʸ[:,m] + g.ΣʸˣΣˣˣ⁻¹[:,:,m] * (X[:,t] - g.μˣ[:,m])
     end
-    E = vec(E)
-    tgmm.E = E # keep E for GV optimization
-    @assert size(E) == (2*D*T,)
-    @assert size(tgmm.E) == (2*D*T,)
+    Eʸ = vec(Eʸ)
+    tgmm.Eʸ = Eʸ # keep Eʸ for GV optimization
+    @assert size(Eʸ) == (2D*T,)
+    @assert size(tgmm.Eʸ) == (2D*T,)
 
     # Compute D^-1 eq.(41)
-    Dinv = blkdiag([sparse(tgmm.Dy[:,:,optimum_mix[t]]) for t=1:T]...)
-    tgmm.Dinv = Dinv # Keep Dinv for GV
+    Dʸ⁻¹ = blkdiag([sparse(tgmm.Dʸ[:,:,m̂[t]]) for t=1:T]...)
+    tgmm.Dʸ⁻¹ = Dʸ⁻¹ # Keep Dʸ⁻¹ for GV
 
-    @assert size(Dinv) == (2*D*T, 2*D*T)
-    @assert size(tgmm.Dinv) == (2*D*T, 2*D*T)
-    @assert issparse(Dinv)
-    @assert issparse(tgmm.Dinv)
+    @assert size(Dʸ⁻¹) == (2D*T, 2D*T)
+    @assert size(tgmm.Dʸ⁻¹) == (2D*T, 2D*T)
+    @assert issparse(Dʸ⁻¹)
+    @assert issparse(tgmm.Dʸ⁻¹)
 
     # Compute target static feature vector
-    # eq.(39)
+    # eq. (39)
     W = tgmm.W # short alias
-    Wt_Dinv = W' * Dinv
-    @assert issparse(Wt_Dinv)
-    y = (Wt_Dinv * W) \ (Wt_Dinv * E)
+    WᵀDʸ⁻¹ = W' * Dʸ⁻¹
+    @assert issparse(WᵀDʸ⁻¹)
+    y = (WᵀDʸ⁻¹ * W) \ (WᵀDʸ⁻¹ * Eʸ)
     @assert size(y) == (D*T,)
 
     # Finally we get static feature vector
-    y = reshape(y, D, T)
-
-    return y
+    return reshape(y, D, T)
 end
 
 type TrajectoryGMMMapWithGV <: TrajectoryConverter
     tgmm::TrajectoryGMMMap
-    gv_mean::Vector{Float64}
-    gv_covar::Matrix{Float64}
-    pv::Matrix{Float64}
+    μᵛ::Vector{Float64}
+    Σᵛᵛ::Matrix{Float64}
+    pᵥ::Matrix{Float64}
 
-    function TrajectoryGMMMapWithGV(tgmm::TrajectoryGMMMap, 
-                                    gv_mean, gv_covar)
-        @assert sum(gv_mean .< 0) == 0
-        new(tgmm, gv_mean, gv_covar, inv(gv_covar))
+    function TrajectoryGMMMapWithGV(tgmm::TrajectoryGMMMap, μᵛ, Σᵛᵛ)
+        @assert sum(μᵛ .< 0) == 0
+        new(tgmm, μᵛ, Σᵛᵛ, inv(Σᵛᵛ))
     end
     
     function TrajectoryGMMMapWithGV(tgmm::TrajectoryGMMMap,
                                     gvgmm::Dict{Union(UTF8String, ASCIIString)})
         # assume single mixture
         (size(gvgmm["means"], 2) == 1) || error("not supported for mixture >= 2")
-        gv_mean = gvgmm["means"][:,1]
-        @assert sum(gv_mean .< 0) == 0
-        gv_covar = gvgmm["covars"][:,:,1]
-        new(tgmm, gv_mean, gv_covar, inv(gv_covar))
+        μᵛ = gvgmm["means"][:,1]
+        @assert sum(μᵛ .< 0) == 0
+        Σᵛᵛ = gvgmm["covars"][:,:,1]
+        new(tgmm, μᵛ, Σᵛᵛ, inv(Σᵛᵛ))
     end
 end
 
 function fvconvert(tgv::TrajectoryGMMMapWithGV, X::Matrix{Float64};
-                   epochs::Int=100, learning_rate::Float64=1.0e-5)
+                   epochs::Int=100, α::Float64=1.0e-5)
     # Initialize target static features without considering GV
-    y = fvconvert(tgv.tgmm, X)
-    const D, T = size(y)
+    y⁰ = fvconvert(tgv.tgmm, X)
+    const D, T = size(y⁰)
 
-    # eq. (58)
-    y = sqrt(tgv.gv_mean ./ var(X[1:D,:], 2)) .* (y .- mean(y, 2)) .+ mean(y, 2)
+    # Better initial value based on eq. (58)
+    y⁰ = sqrt(tgv.μᵛ ./ var(X[1:D,:], 2)) .* (y⁰ .- mean(y⁰, 2)) .+ mean(y⁰, 2)
 
-    const ω = 1.0/(2.0*T)
+    const ω = 1.0/(2T)
 
     # aliases
-    E = tgv.tgmm.E
+    Eʸ = tgv.tgmm.Eʸ
     W = tgv.tgmm.W
-    Dinv = tgv.tgmm.Dinv
-    Wt_Dinv = W' * Dinv
+    Dʸ⁻¹ = tgv.tgmm.Dʸ⁻¹
+    WᵀDʸ⁻¹ = W' * Dʸ⁻¹
     
-    # Gradient decent
+    # update y based on gradient decent
+    yⁱ = y⁰
     for epoch=1:epochs
-        grad_y = -Wt_Dinv * W * vec(y) + Wt_Dinv * E
-        grad = ω*grad_y + vec(gvgrad(tgv, y))
-        println("Epoch #$(epoch): norm $(norm(grad))")
-        y = y + learning_rate * reshape(grad, D, T)
+        Δyⁱ = ω*(-WᵀDʸ⁻¹ * W * vec(yⁱ) + WᵀDʸ⁻¹ * Eʸ) + vec(gvgrad(tgv, yⁱ))
+        println("Epoch #$(epoch): norm $(norm(Δyⁱ))")
+        Δyⁱ = reshape(Δyⁱ, D, T)
+        # eq. (52)
+        yⁱ = yⁱ + α * Δyⁱ
     end
 
-    return y
+    return yⁱ
 end
 
 # gvgrad computes gradient of the likelihood with regard to GV.
@@ -160,12 +164,12 @@ function gvgrad(tgv::TrajectoryGMMMapWithGV, y::Matrix{Float64})
     
     gv = var(y, 2) # global variance over time
     @assert size(gv) == (D, 1)
-    y_mean = mean(y, 2)
-    @assert size(y_mean) == (D, 1)
+    μʸ = mean(y, 2)
+    @assert size(μʸ) == (D, 1)
     
     v = Array(Float64, D, T)
     for t=1:T
-        @inbounds v[:,t] = -2.0/T*(tgv.pv'*(gv - tgv.gv_mean)) .* (y[:,t] - y_mean)
+        @inbounds v[:,t] = -2.0/T*(tgv.pᵥ'*(gv - tgv.μᵛ)) .* (y[:,t] - μʸ)
     end
     
     return v

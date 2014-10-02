@@ -4,20 +4,20 @@
 type GMMMap <: FrameByFrameConverter
     n_components::Int
     weights::Vector{Float64}
-    src_means::Matrix{Float64}
-    tgt_means::Matrix{Float64}
-    covarXX::Array{Float64, 3}
-    covarXY::Array{Float64, 3}
-    covarYX::Array{Float64, 3}
-    covarYY::Array{Float64, 3}
+    μˣ::Matrix{Float64}
+    μʸ::Matrix{Float64}
+    Σˣˣ::Array{Float64, 3}
+    Σˣʸ::Array{Float64, 3}
+    Σʸˣ::Array{Float64, 3}
+    Σʸʸ::Array{Float64, 3}
 
     # pre-computed in constructor to avoid dupulicate computation
     # in conversion process
-    covarYX_XXinv::Array{Float64, 3}
+    ΣʸˣΣˣˣ⁻¹::Array{Float64, 3}
 
     # Eq. (12) in [Toda2007]
-    D::Array{Float64, 3}
-    E::Matrix{Float64}
+    Dʸ::Array{Float64, 3}
+    Eʸ::Matrix{Float64}
 
     px::GMM{PDMat}
 
@@ -32,42 +32,41 @@ type GMMMap <: FrameByFrameConverter
         # Split mean and covariance matrices into source and target
         # speaker's ones
         const order::Int = int(size(means, 1) / 2)
-        src_means = means[1:order, :]
-        tgt_means = means[order+1:end, :]
-        covarXX = covars[1:order,1:order, :]
-        covarXY = covars[1:order,order+1:end, :]
-        covarYX = covars[order+1:end,1:order, :]
-        covarYY = covars[order+1:end,order+1:end, :]
+        μˣ = means[1:order, :]
+        μʸ = means[order+1:end, :]
+        Σˣˣ = covars[1:order,1:order, :]
+        Σˣʸ = covars[1:order,order+1:end, :]
+        Σʸˣ = covars[order+1:end,1:order, :]
+        Σʸʸ = covars[order+1:end,order+1:end, :]
 
         # swap src and target parameters
         if swap
-            src_means, tgt_means = tgt_means, src_means
-            covarXX, covarYY = covarYY, covarXX
-            covarXY, covarYX = covarYX, covarXY
+            μˣ, μʸ = μʸ, μˣ
+            Σˣˣ, Σʸʸ = Σʸʸ, Σˣˣ
+            Σˣʸ, Σʸˣ = Σʸˣ, Σˣʸ
         end
 
         # pre-allocation and pre-computations
-        covarYX_XXinv = Array(Float64, order, order, n_components)
+        ΣʸˣΣˣˣ⁻¹ = Array(Float64, order, order, n_components)
         for m=1:n_components
-            covarYX_XXinv[:,:,m] = covarYX[:,:,m] * covarXX[:,:,m]^-1
+            ΣʸˣΣˣˣ⁻¹[:,:,m] = Σʸˣ[:,:,m] * Σˣˣ[:,:,m]^-1
         end       
 
         # Eq. (12)
         # Construct covariance matrices of p(Y|X) (Eq. (10))
-        D = Array(Float64, order, order, n_components)
+        Dʸ = Array(Float64, order, order, n_components)
         for m=1:n_components
-            D[:,:,m] = covarYY[:,:,m] - covarYX[:,:,m] *
-                covarXX[:,:,m]^-1 * covarXY[:,:,m]
+            Dʸ[:,:,m] = Σʸʸ[:,:,m] - Σʸˣ[:,:,m] * Σˣˣ[:,:,m]^-1 * Σˣʸ[:,:,m]
         end
 
         # pre-allocation
-        E = zeros(order, n_components)
+        Eʸ = zeros(order, n_components)
 
         # p(x)
-        px = GaussianMixtureModel(src_means, covarXX, weights)
+        px = GaussianMixtureModel(μˣ, Σˣˣ, weights)
 
-        new(n_components, weights, src_means, tgt_means,
-            covarXX, covarXY, covarYX, covarYY, covarYX_XXinv, D, E, px)
+        new(n_components, weights, μˣ, μʸ,
+            Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ, ΣʸˣΣˣˣ⁻¹, Dʸ, Eʸ, px)
     end
 end
 
@@ -78,14 +77,14 @@ function fvconvert(gmm::GMMMap, x::Vector{Float64})
     const order = length(x)
 
     # Eq. (11)
-    E = gmm.tgt_means
+    Eʸ = gmm.μʸ
     @inbounds for m=1:gmm.n_components
-        gmm.E[:,m] += gmm.covarYX_XXinv[:,:,m] * (x - gmm.src_means[:,m])
+        gmm.Eʸ[:,m] += (gmm.ΣʸˣΣˣˣ⁻¹[:,:,m]) * (x - gmm.μˣ[:,m])
     end
 
     # Eq. (9) p(m|x)
     posterior = predict_proba(gmm.px, x)
 
     # Eq. (13)
-    return E * posterior
+    return Eʸ * posterior
 end

@@ -146,7 +146,7 @@ immutable GVDataset
 
         info("$(length(files)) training data found")
 
-        X = zeros(0,0)
+        X = zeros(0, 0)
         totalphrases::Int = 0
 
         for filename in files
