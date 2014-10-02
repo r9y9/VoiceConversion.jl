@@ -86,14 +86,14 @@ function fvconvert(gmm::GMMMap, x::Vector{Float64})
     const order = length(x)
 
     # Eq. (11)
-    Eʸ = gmm.μʸ
-    @inbounds for m=1:gmm.n_components
-        gmm.Eʸ[:,m] += (gmm.ΣʸˣΣˣˣ⁻¹[:,:,m]) * (x - gmm.μˣ[:,m])
+    for m=1:gmm.n_components
+        @inbounds gmm.Eʸ[:,m] = gmm.μʸ[:,m] +
+            (gmm.ΣʸˣΣˣˣ⁻¹[:,:,m]) * (x - gmm.μˣ[:,m])
     end
 
     # Eq. (9) p(m|x)
     posterior = predict_proba(gmm.px, x)
 
     # Eq. (13)
-    return Eʸ * posterior
+    return gmm.Eʸ * posterior
 end
