@@ -87,8 +87,10 @@ function fvconvert(gmm::GMMMap, x::Vector{Float64})
 
     # Eq. (11)
     for m=1:gmm.n_components
-        @inbounds gmm.Eʸ[:,m] = gmm.μʸ[:,m] +
-            (gmm.ΣʸˣΣˣˣ⁻¹[:,:,m]) * (x - gmm.μˣ[:,m])
+        @inbounds begin
+            gmm.Eʸ[:,m] = gmm.μʸ[:,m] +
+                (gmm.ΣʸˣΣˣˣ⁻¹[:,:,m]) * (x - gmm.μˣ[:,m])
+        end
     end
 
     # Eq. (9) p(m|x)
