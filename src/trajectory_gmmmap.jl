@@ -13,10 +13,7 @@ type TrajectoryGMMMap <: TrajectoryConverter
     # vectroized version of eq. (40)
     Eʸ::Vector{Float64}
 
-    function TrajectoryGMMMap(gmmmap::GMMMap, T::Int)
-        # alias
-        g = gmmmap
-        
+    function TrajectoryGMMMap(g::GMMMap, T::Int)
         const D = div(size(g.μˣ, 1), 2)
         W = construct_weight_matrix(D, T)
 

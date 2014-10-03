@@ -82,20 +82,19 @@ end
 # Mapping source spectral feature x to target spectral feature y
 # so that minimize the mean least squared error.
 # More specifically, it returns the value E(p(y|x)].
-function fvconvert(gmm::GMMMap, x::Vector{Float64})
+function fvconvert(g::GMMMap, x::Vector{Float64})
     const order = length(x)
 
     # Eq. (11)
-    for m=1:gmm.n_components
+    for m=1:g.n_components
         @inbounds begin
-            gmm.Eʸ[:,m] = gmm.μʸ[:,m] +
-                (gmm.ΣʸˣΣˣˣ⁻¹[:,:,m]) * (x - gmm.μˣ[:,m])
+            g.Eʸ[:,m] = g.μʸ[:,m] + (g.ΣʸˣΣˣˣ⁻¹[:,:,m]) * (x - g.μˣ[:,m])
         end
     end
 
     # Eq. (9) p(m|x)
-    posterior = predict_proba(gmm.px, x)
+    posterior = predict_proba(g.px, x)
 
     # Eq. (13)
-    return gmm.Eʸ * posterior
+    return g.Eʸ * posterior
 end
