@@ -51,7 +51,7 @@ function constructW(D::Int, T::Int)
     W = spzeros(2D*T, D*T)
 
     for t=1:T
-        W[2*D*(t-1)+1:2*D*t,:] = compute_w(t, D, T)
+        W[2*D*(t-1)+1:2*D*t,:] = compute_wt(t, D, T)
     end
 
     @assert issparse(W)
