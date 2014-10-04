@@ -37,13 +37,13 @@ function construct_weight_matrix(D::Int, T::Int)
     for t=1:T
         w⁰ = spzeros(D, D*T)
         w¹ = spzeros(D, D*T)
-        w⁰[1:end, (t-1)*D+1:t*D] = spdiagm(ones(D))
+        w⁰[:, (t-1)*D+1:t*D] = spdiagm(ones(D))
         
         if t-1 >= 1
-            w¹[1:end, (t-1)*D+1:t*D] = spdiagm(-0.5*ones(D))
+            w¹[:, (t-1)*D+1:t*D] = spdiagm(-0.5*ones(D))
         end
         if t < T
-            w¹[1:end, (t-1)*D+1:t*D] = spdiagm(0.5*ones(D))
+            w¹[:, (t-1)*D+1:t*D] = spdiagm(0.5*ones(D))
         end
         
         W[2*D*(t-1)+1:2*D*t,:] = [w⁰, w¹]
@@ -82,16 +82,13 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     Eʸ = vec(Eʸ)
     tgmm.Eʸ = Eʸ # keep Eʸ for GV optimization
     @assert size(Eʸ) == (2D*T,)
-    @assert size(tgmm.Eʸ) == (2D*T,)
 
     # Compute D^-1 eq.(41)
     Dʸ⁻¹ = blkdiag([sparse(tgmm.Dʸ[:,:,m̂[t]]) for t=1:T]...)
     tgmm.Dʸ⁻¹ = Dʸ⁻¹ # Keep Dʸ⁻¹ for GV
 
     @assert size(Dʸ⁻¹) == (2D*T, 2D*T)
-    @assert size(tgmm.Dʸ⁻¹) == (2D*T, 2D*T)
     @assert issparse(Dʸ⁻¹)
-    @assert issparse(tgmm.Dʸ⁻¹)
 
     # Compute target static feature vector
     # eq. (39)
