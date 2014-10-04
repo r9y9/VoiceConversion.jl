@@ -31,7 +31,7 @@ type TrajectoryGMMMap <: TrajectoryConverter
     end
 end
 
-function compute_wₜ(t::Int, D::Int, T::Int)
+function compute_wt(t::Int, D::Int, T::Int)
     @assert t > 0
     w⁰ = spzeros(D, D*T)
     w¹ = spzeros(D, D*T)
@@ -51,7 +51,7 @@ function constructW(D::Int, T::Int)
     W = spzeros(2D*T, D*T)
 
     for t=1:T
-        W[2*D*(t-1)+1:2*D*t,:] = compute_wₜ(t, D, T)
+        W[2*D*(t-1)+1:2*D*t,:] = compute_w(t, D, T)
     end
 
     @assert issparse(W)
