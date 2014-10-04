@@ -1,5 +1,7 @@
 using VoiceConversion
 using Base.Test
 
-include("dtw.jl")
-include("spectrum_differential.jl")
+for fname in ["dtw",
+              "spectrum_differential"]
+    include(string(fname, ".jl"))
+end
