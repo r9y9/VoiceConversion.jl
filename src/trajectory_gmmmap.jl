@@ -15,7 +15,7 @@ type TrajectoryGMMMap <: TrajectoryConverter
 
     function TrajectoryGMMMap(g::GMMMap, T::Int)
         const D = div(size(g.μˣ, 1), 2)
-        W = construct_weight_matrix(D, T)
+        W = constructW(D, T)
 
         # the number of mixtures
         const M = size(g.μˣ, 2)
@@ -31,7 +31,7 @@ type TrajectoryGMMMap <: TrajectoryConverter
     end
 end
 
-function construct_weight_matrix(D::Int, T::Int)
+function constructW(D::Int, T::Int)
     W = spzeros(2D*T, D*T)
 
     for t=1:T
@@ -63,7 +63,7 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     D == tgmm.D || throw(DimensionMismatch("Inconsistent dimentions."))
     
     if T != tgmm.T
-        tgmm.W = construct_weight_matrix(D, T)
+        tgmm.W = constructW(D, T)
         tgmm.T = T
     end
 
