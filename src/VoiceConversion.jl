@@ -25,7 +25,7 @@ abstract TrajectoryConverter <: Converter
 for fname in ["align.jl",
               "dtw.jl",
               "datasets.jl",
-              "feature.jl",
+              "mcep.jl",
               "gmm.jl",
               "gmmmap.jl",
               "trajectory_gmmmap.jl",
