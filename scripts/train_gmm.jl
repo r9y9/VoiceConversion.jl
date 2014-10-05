@@ -40,7 +40,6 @@ function main()
     const src_only = args["--src_only"]
     const tgt_only = args["--tgt_only"]
     const joint = !src_only && !tgt_only
-    @show joint
 
     (src_only && tgt_only) && error("invalid option")
 
