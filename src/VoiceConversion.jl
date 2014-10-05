@@ -12,7 +12,8 @@ export PeseudoGV, fvpostf!, fvpostf
 export DTW, fit!, update!, set_template!, backward
 
 # Feature conversion, extractions and alignment
-export logamp2mcep, mcep2e, world_mcep, align_mcep
+export logamp2mc, mc2logamp, mc2e, world_mcep, align_mcep, 
+       wsp2mc, mc2wsp
 
 # Datasets
 export ParallelDataset, GVDataset, push_delta
