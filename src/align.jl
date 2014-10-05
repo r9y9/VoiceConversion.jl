@@ -25,7 +25,7 @@ function align_mcep(src::Matrix{Float64}, tgt::Matrix{Float64};
     end
 
     # Remove silence segment
-    E = log(mcep2e(src, alpha, framelen))
+    E = log(mc2e(src, alpha, framelen))
     src = src[:, E .> th]
     newtgt = newtgt[:, E .> th]
 
