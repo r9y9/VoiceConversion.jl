@@ -4,12 +4,14 @@
 
 VoiceConversion.jl is a repository of my statistical voice conversion research experiments.
 
-## Parameter conversion
+## Features
 
-- Frame-by-frame parameter conversion using joint Gaussian Mixture Models (GMMs) of source and target feature space
-- Trajectory parameter conversion based on maximum likelihood criterion w/o considering Gloval Variance (GV) [Toda 2007]
+### Parameter conversion
 
-## Waveform modification
+- Frame-by-frame parameter conversion using joint Gaussian Mixture Models (GMMs) of source and target feature space [src/gmmmap.jl](src/gmmmap.jl)
+- Trajectory parameter conversion based on maximum likelihood criterion w/o considering Gloval Variance (GV) [Toda 2007] [src/trajectory_gmmmap.jl](src/trajectory_gmmmap.jl)
+
+### Waveform modification
 
 - WORLD-based vocoding
 - Direct waveform modification using Mel log Spectrum Approximation (MLSA) digital filter based on spectrum differencial [Kobayashi 2014]
