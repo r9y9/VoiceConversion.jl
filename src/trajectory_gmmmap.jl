@@ -51,7 +51,7 @@ function constructW(D::Int, T::Int)
     W = spzeros(2D*T, D*T)
 
     for t=1:T
-        W[2*D*(t-1)+1:2*D*t,:] = compute_wt(t, D, T)
+        W[2D*(t-1)+1:2D*t,:] = compute_wt(t, D, T)
     end
 
     @assert issparse(W)
@@ -79,7 +79,7 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     m̂ = predict(g.px, X)
     
     # Compute Eʸ eq.(40)
-    Eʸ = Array(Float64, 2*D, T)
+    Eʸ = Array(Float64, 2D, T)
     for t=1:T
         const m = int(m̂[t])
         Eʸ[:,t] = g.μʸ[:,m] + g.ΣʸˣΣˣˣ⁻¹[:,:,m] * (X[:,t] - g.μˣ[:,m])
