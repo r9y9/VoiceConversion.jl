@@ -21,11 +21,26 @@ alpha = mcepalpha(fs)
 src_clb28 = world_mcep(x, fs, period, order, alpha)
 @test !any(isnan(src_clb28))
 
-# Female (`clb`) to female (`slt`) voice conversion demo based on
 # Statistical Voice Conversion based on Spectrum Differential [Kobayashi 2014]
+function vc_spectrum_differential(src, mapper)
+    # Perform parameter conversion
+    converted = vc(mapper, src)
+    @test !any(isnan(converted))
+
+    # remove power coef. in the converted signal
+    converted[1,:] = 0.0
+
+    # Waveform modification
+    mf = MLSADF(order)
+    hopsize = int(fs / (1000 / period))
+    synthesized = synthesis!(mf, x, converted, alpha, hopsize)
+    return synthesized
+end
+
+# Female (`clb`) to female (`slt`) voice conversion demo
 # frame-by-frame mapping
-function spectrum_differetial_clb_to_slt()
-    src = copy(src_clb28)
+function spectrum_differential_clb_to_slt()
+    x = copy(src_clb28)
 
     # Load GMM to convert speech signal of `clb` to that of `slt`,
     # which is trained on CMU Arctic speech database.
@@ -35,31 +50,20 @@ function spectrum_differetial_clb_to_slt()
     gmm = load(modelpath)
     @assert gmm["diff"]
 
-    # Construct frame-by-frame GMM parameter mapping
+    # Construct GMM-based frame-by-frame mapping
     mapper = GMMMap(gmm)
 
-    # Perform parameter conversion
-    converted = vc(mapper, src)
-    @test !any(isnan(converted))
-
-    # remove power coef. in the original signal
-    converted[1,:] = 0.0
-
-    # Waveform modification
-    mf = MLSADF(order)
-    hopsize = int(fs / (1000 / period))
-    synthesized = synthesis!(mf, x, converted, alpha, hopsize)
-    @test !any(isnan(converted))
+    y = vc_spectrum_differential(x, mapper)
+    @test !any(isnan(y))
 end
 
-# Female (`clb`) to female (`slt`) voice conversion demo based on
-# Statistical Voice Conversion based on Spectrum Differential [Kobayashi 2014]
+# Female (`clb`) to female (`slt`) voice conversion demo
 # trajectory-based paramter mapping
-function spectrum_differetial_trajectory_clb_to_slt()
-    src = copy(src_clb28)
+function spectrum_differential_trajectory_clb_to_slt()
+    x = copy(src_clb28)
     
     # add dynamic feature
-    src = [src[1,:], push_delta(src[2:end,:])]
+    x = [x[1,:], push_delta(x[2:end,:])]
 
     # Load GMM to convert speech signal of `clb` to that of `slt`,
     # which is trained on CMU Arctic speech database.
@@ -72,19 +76,10 @@ function spectrum_differetial_trajectory_clb_to_slt()
     # Construct trajectory-based GMM parameter mapping
     mapper = TrajectoryGMMMap(GMMMap(gmm), 70)
 
-    # Perform parameter conversion
-    converted = vc(mapper, src)
-    @test !any(isnan(converted))
+    y = vc_spectrum_differential(x, mapper)
 
-    # remove power coef. in the original signal
-    converted[1,:] = 0.0
-
-    # Waveform modification
-    mf = MLSADF(order)
-    hopsize = int(fs / (1000 / period))
-    synthesized = synthesis!(mf, x, converted, alpha, hopsize)
-    @test !any(isnan(converted))
+    @test !any(isnan(y))
 end
 
-spectrum_differetial_clb_to_slt()
-spectrum_differetial_trajectory_clb_to_slt()
+spectrum_differential_clb_to_slt()
+spectrum_differential_trajectory_clb_to_slt()
