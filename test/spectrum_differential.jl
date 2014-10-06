@@ -39,7 +39,7 @@ end
 
 # Female (`clb`) to female (`slt`) voice conversion demo
 # frame-by-frame mapping
-function spectrum_differential_clb_to_slt()
+function spectrum_differential_clb2slt()
     x = copy(src_clb28)
 
     # Load GMM to convert speech signal of `clb` to that of `slt`,
@@ -59,7 +59,7 @@ end
 
 # Female (`clb`) to female (`slt`) voice conversion demo
 # trajectory-based paramter mapping
-function spectrum_differential_trajectory_clb_to_slt()
+function spectrum_differential_trajectory_clb2slt()
     x = copy(src_clb28)
     
     # add dynamic feature
@@ -80,5 +80,5 @@ function spectrum_differential_trajectory_clb_to_slt()
     @test !any(isnan(y))
 end
 
-spectrum_differential_clb_to_slt()
-spectrum_differential_trajectory_clb_to_slt()
+spectrum_differential_clb2slt()
+spectrum_differential_trajectory_clb2slt()
