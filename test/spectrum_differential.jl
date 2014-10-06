@@ -77,7 +77,6 @@ function spectrum_differential_trajectory_clb_to_slt()
     mapper = TrajectoryGMMMap(GMMMap(gmm), 70)
 
     y = vc_spectrum_differential(x, mapper)
-
     @test !any(isnan(y))
 end
 
