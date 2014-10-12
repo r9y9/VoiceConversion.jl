@@ -13,6 +13,7 @@ Options:
     --period=PERIOD  frame period in msec [default: 5.0]
     --order=ORDER    order of mel cepsrum [default: 25]
     --alpha=ALPHA    all-pass constant [default: 0.0]
+    --gv=MODEL       global variance [default: ]
     --trajectory     trajectory-based parameter conversion
 """
 
@@ -26,9 +27,9 @@ using WORLD
 function main()
     args = docopt(doc, version=v"0.0.1")
 
-    x, fs = wavread(args["<input_wav>"], format="int")
+    x, fs = wavread(args["<input_wav>"])
     @assert size(x, 2) == 1 "The input data must be monoral."
-    x = float64(x[:])
+    x = float64(vec(x))
     const fs = int(fs)
     println("length of input signal is $(length(x)/fs) sec.")
     
@@ -39,6 +40,7 @@ function main()
         alpha = mcepalpha(fs)
     end
     const trajectory = args["--trajectory"]
+    const gvmodel = string(args["--gv"])
         
     # Load mapping model
     gmm = load(args["<model_jld>"])
@@ -47,6 +49,11 @@ function main()
     mapper = GMMMap(gmm)
     if trajectory
         mapper = TrajectoryGMMMap(mapper, 70)
+    end
+
+    if trajectory && !isempty(gvmodel)
+        gv = load(gvmodel)
+        mapper = TrajectoryGMMMapWithGV(mapper, gv)
     end
 
     elapsed_fe = @elapsed begin
@@ -88,7 +95,7 @@ function main()
     end
     println("elapsed time in waveform synthesis is $(elapsed_syn) sec.")
     
-    wavwrite(float32(y/32768), args["<dst_wav>"], Fs=fs)
+    wavwrite(float32(y), args["<dst_wav>"], Fs=fs)
     println("Dumped to ", args["<dst_wav>"])
 end
 

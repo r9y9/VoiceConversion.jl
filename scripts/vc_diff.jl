@@ -24,9 +24,9 @@ using HDF5, JLD
 function main()
     args = docopt(doc, version=v"0.0.1")
 
-    x, fs = wavread(args["<input_wav>"], format="int")
+    x, fs = wavread(args["<input_wav>"])
     @assert size(x, 2) == 1 "The input data must be monoral."
-    x = float64(x[:])
+    x = float64(vec(x))
     const fs = int(fs)
     println("length of input signal is $(length(x)/fs) sec.")
     
@@ -68,11 +68,11 @@ function main()
     mf = MLSADF(order)
     hopsize = int(fs / (1000 / period))
     elapsed_syn = @elapsed begin
-        synthesized = synthesis!(mf, x, converted, alpha, hopsize)
+        y = synthesis!(mf, x, converted, alpha, hopsize)
     end
     println("elapsed time in waveform moduration is $(elapsed_syn) sec.")
     
-    wavwrite(int16(synthesized), args["<dst_wav>"], Fs=fs)
+    wavwrite(float32(y), args["<dst_wav>"], Fs=fs)
     println("Dumped to ", args["<dst_wav>"])
 end
 
