@@ -2,6 +2,7 @@
 # SPTK
 # WORLD
 # MCepAlpha
+Julia 0.3
 PyCall
 HDF5 v0.3.0
 NumericExtensions
