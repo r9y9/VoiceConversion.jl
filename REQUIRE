@@ -4,7 +4,7 @@
 # MCepAlpha
 julia 0.3
 PyCall
-HDF5 -0.3.0
+HDF5 0.3.0 0.4-
 NumericExtensions
 Distributions
 DocOpt
