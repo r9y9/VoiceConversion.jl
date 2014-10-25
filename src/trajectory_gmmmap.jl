@@ -10,7 +10,7 @@ type TrajectoryGMMMap <: TrajectoryConverter
     Dʸ::Array{Float64, 3}
     # Dʸ^-1 in eq. (41)
     Dʸ⁻¹::SparseMatrixCSC{Float64, Int}
-    # vectroized version of eq. (40)
+    # vectorized version of eq. (40)
     Eʸ::Vector{Float64}
 
     function TrajectoryGMMMap(g::GMMMap, T::Int)
