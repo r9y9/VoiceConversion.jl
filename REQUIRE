@@ -2,7 +2,6 @@
 # SPTK
 # WORLD
 # MCepAlpha
-https://github.com/r9y9/MCepAlpha.jl
 julia 0.3
 PyCall
 HDF5 0.3

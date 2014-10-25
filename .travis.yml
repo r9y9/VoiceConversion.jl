@@ -15,8 +15,4 @@ before_install:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
 script:
   - julia -e 'Pkg.init()'
-  # manually add
-  - julia -e 'Pkg.clone("https://github.com/r9y9/SPTK.jl"); Pkg.build("SPTK");'
-  - julia -e 'Pkg.clone("https://github.com/r9y9/WORLD.jl"); Pkg.build("WORLD");'
-  - julia -e 'Pkg.clone("https://github.com/r9y9/MCepAlpha.jl");'
-  - julia -e 'Pkg.clone(pwd()); Pkg.test("VoiceConversion")'
+  - julia -e 'Pkg.clone(pwd()); Pkg.build("VoiceConversion"); Pkg.test("VoiceConversion")'
