@@ -16,7 +16,7 @@ VoiceConversion.jl is a repository of my statistical voice conversion research e
 - WORLD-based vocoding
 - Direct waveform modification using Mel log Spectrum Approximation (MLSA) digital filter based on spectrum differencial [Kobayashi 2014]
 
-### Installation
+## Installation
 
 ```julia
 Pkg.clone("https://github.com/r9y9/VoiceConversion.jl")
