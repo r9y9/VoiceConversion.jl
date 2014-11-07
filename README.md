@@ -19,8 +19,8 @@ VoiceConversion.jl is a repository of my statistical voice conversion research e
 ## Installation
 
 ```julia
-Pkg.clone("https://github.com/r9y9/VoiceConversion.jl")
-Pkg.build("VoiceConversion")
+julia> Pkg.clone("https://github.com/r9y9/VoiceConversion.jl")
+julia> Pkg.build("VoiceConversion")
 ```
 
 All dependencies are resolved with `Pkg.clone` and `Pkg.build`.
