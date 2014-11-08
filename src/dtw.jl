@@ -28,8 +28,8 @@ end
 
 # lazy_init! performs state initialization.
 function lazy_init!(d::DTW, S::Int)
-    d.costtable = reshape([1:S], S, 1)
-    d.backpointer = reshape([1:S], S, 1)
+    d.costtable = reshape(1:S, S, 1)
+    d.backpointer = reshape(1:S, S, 1)
 end
 
 # lazy_init! performs pre-allocations
@@ -57,14 +57,14 @@ function update!(d::DTW, v::Vector{Float64})
     currentcost = zeros(S)
     current_backpointer = zeros(Int, S)
 
-    @inbounds for i=1:S
+    for i=1:S
         minindex = i
         const obs = observation(d, v, i)
         const trans = transition(d, minindex, i)
         mincost = lastcost[minindex] + obs + trans
 
         # search minindex
-        @inbounds for j=i-d.bstep:i+d.fstep
+        for j=i-d.bstep:i+d.fstep
             if j < 1 || j > S
                 continue
             end
@@ -95,24 +95,24 @@ function fit!(d::DTW, template::Matrix{Float64}, sequence::Matrix{Float64})
 
     for t=1:T
         const v = sequence[:,t]
-        @inbounds for i=1:S
+        for i=1:S
             minindex = i
             const ocost = observation(d, v, i)
             const tcost = transition(d, minindex, i)
-            mincost = d.costtable[minindex, t] + ocost + tcost
+            @inbounds mincost = d.costtable[minindex, t] + ocost + tcost
 
             # search minindex
-            @inbounds for j=i-d.bstep:i+d.fstep
+            for j=i-d.bstep:i+d.fstep
                 if j < 1 || j > S
                     continue
                 end
-                cost = d.costtable[j, t] + ocost + transition(d, j, i)
+                @inbounds cost = d.costtable[j, t] + ocost + transition(d, j, i)
                 if cost < mincost
                     mincost, minindex = cost, j
                 end
             end
-            d.costtable[i, t+1] = mincost
-            d.backpointer[i, t+1] = minindex
+            @inbounds d.costtable[i, t+1] = mincost
+            @inbounds d.backpointer[i, t+1] = minindex
         end
     end
 
@@ -130,7 +130,7 @@ function backward(d::DTW)
 
     # revursive search
     for i=reverse(2:T)
-        minpath[i-1] = d.backpointer[minpath[i], i+1]
+        @inbounds minpath[i-1] = d.backpointer[minpath[i], i+1]
     end
 
     return minpath
