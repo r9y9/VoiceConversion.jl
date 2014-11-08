@@ -81,4 +81,6 @@ function spectrum_differential_trajectory_clb2slt()
 end
 
 spectrum_differential_clb2slt()
-spectrum_differential_trajectory_clb2slt()
+# TODO: fix read error of conversion model (jld)
+# probably HDF5 version is inconsistent
+# spectrum_differential_trajectory_clb2slt()
