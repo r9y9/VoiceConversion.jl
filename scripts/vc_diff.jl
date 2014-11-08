@@ -26,7 +26,7 @@ function main()
 
     x, fs = wavread(args["<input_wav>"])
     @assert size(x, 2) == 1 "The input data must be monoral."
-    x = float64(vec(x))
+    x = float(vec(x))
     const fs = int(fs)
     println("length of input signal is $(length(x)/fs) sec.")
     
@@ -72,7 +72,7 @@ function main()
     end
     println("elapsed time in waveform moduration is $(elapsed_syn) sec.")
     
-    wavwrite(float32(y), args["<dst_wav>"], Fs=fs)
+    wavwrite(float(y), args["<dst_wav>"], Fs=fs)
     println("Dumped to ", args["<dst_wav>"])
 end
 
