@@ -7,11 +7,8 @@
 # Nov. 2007.
 # http://isw3.naist.jp/~tomoki/Tomoki/Journals/IEEE-Nov-2007_MLVC.pdf
 
-# GMMMap represents a composit type to transform spectral features of a source
-# speaker to that of a target speaker based on Gaussian Mixture Models
-# of source and target joint spectral features.
-type GMMMap <: FrameByFrameConverter
-    n_components::Int
+# GMMMapParm represents a set of immutable parameters of GMM-based conversion
+immutable GMMMapParam
     weights::Vector{Float64}
     μˣ::Matrix{Float64}
     μʸ::Matrix{Float64}
@@ -24,23 +21,45 @@ type GMMMap <: FrameByFrameConverter
     # in conversion process
     ΣʸˣΣˣˣ⁻¹::Array{Float64, 3}
 
-    # Eq. (12) in [Toda2007]
-    Dʸ::Array{Float64, 3}
-    Eʸ::Matrix{Float64}
+    function GMMMapParam(weights::Vector{Float64},
+                         μˣ::Matrix{Float64},
+                         μʸ::Matrix{Float64},
+                         Σˣˣ::Array{Float64, 3},
+                         Σˣʸ::Array{Float64, 3},
+                         Σʸˣ::Array{Float64, 3},
+                         Σʸʸ::Array{Float64, 3})
+        const n_components = length(weights)
+        const order = size(μˣ, 1)
+        # pre-allocation and pre-computations
+        ΣʸˣΣˣˣ⁻¹ = Array(Float64, order, order, n_components)
+        for m=1:n_components
+            ΣʸˣΣˣˣ⁻¹[:,:,m] = Σʸˣ[:,:,m] * Σˣˣ[:,:,m]^-1
+        end
+        new(weights, μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ, ΣʸˣΣˣˣ⁻¹)
+    end
+end
+
+# GMMMap represents a composit type to transform spectral features of a source
+# speaker to that of a target speaker based on Gaussian Mixture Models
+# of source and target joint spectral features.
+type GMMMap <: FrameByFrameConverter
+    params::GMMMapParam
+
+    Eʸ::Matrix{Float64}    # Eq. (11)
+    Dʸ::Array{Float64, 3}  # Eq. (12)
 
     px::GMM
 
     function GMMMap(gmm::Dict{Union(UTF8String, ASCIIString), Any};
                     swap::Bool=false)
-        const n_components = gmm["n_components"]
         weights = gmm["weights"]
-        @assert n_components == length(weights)
+        const n_components = length(weights)
         μ = gmm["means"]
         Σ = gmm["covars"]
 
         # Split mean and covariance matrices into source and target
         # speaker's ones
-        const order::Int = int(size(μ, 1) / 2)
+        const order = div(size(μ, 1), 2)
         μˣ = μ[1:order, :]
         μʸ = μ[order+1:end, :]
         Σˣˣ = Σ[1:order,1:order, :]
@@ -55,11 +74,11 @@ type GMMMap <: FrameByFrameConverter
             Σˣʸ, Σʸˣ = Σʸˣ, Σˣʸ
         end
 
-        # pre-allocation and pre-computations
-        ΣʸˣΣˣˣ⁻¹ = Array(Float64, order, order, n_components)
-        for m=1:n_components
-            ΣʸˣΣˣˣ⁻¹[:,:,m] = Σʸˣ[:,:,m] * Σˣˣ[:,:,m]^-1
-        end       
+        # construct params
+        param = GMMMapParam(weights, μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ)
+
+        ## pre-allocations and pre-computations
+        Eʸ = zeros(order, n_components)
 
         # Eq. (12)
         # Construct covariance matrices of p(Y|X) (Eq. (10))
@@ -68,16 +87,14 @@ type GMMMap <: FrameByFrameConverter
             Dʸ[:,:,m] = Σʸʸ[:,:,m] - Σʸˣ[:,:,m] * Σˣˣ[:,:,m]^-1 * Σˣʸ[:,:,m]
         end
 
-        # pre-allocation
-        Eʸ = zeros(order, n_components)
-
         # p(x)
         px = GaussianMixtureModel(μˣ, Σˣˣ, weights)
 
-        new(n_components, weights, μˣ, μʸ,
-            Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ, ΣʸˣΣˣˣ⁻¹, Dʸ, Eʸ, px)
+        new(param, Eʸ, Dʸ, px)
     end
 end
+
+n_components(g::GMMMap) = length(g.params.weights)
 
 # Mapping source spectral feature x to target spectral feature y
 # so that minimize the mean least squared error.
@@ -85,11 +102,13 @@ end
 function fvconvert(g::GMMMap, x::Vector{Float64})
     const order = length(x)
 
+    μˣ = g.params.μˣ
+    μʸ = g.params.μʸ
+    ΣʸˣΣˣˣ⁻¹ = g.params.ΣʸˣΣˣˣ⁻¹
+
     # Eq. (11)
-    for m=1:g.n_components
-        @inbounds begin
-            g.Eʸ[:,m] = g.μʸ[:,m] + (g.ΣʸˣΣˣˣ⁻¹[:,:,m]) * (x - g.μˣ[:,m])
-        end
+    for m=1:n_components(g)
+        @inbounds g.Eʸ[:,m] = μʸ[:,m] + (ΣʸˣΣˣˣ⁻¹[:,:,m]) * (x - μˣ[:,m])
     end
 
     # Eq. (9) p(m|x)

@@ -2,34 +2,38 @@
 # based on the maximum likelihood criterion.
 type TrajectoryGMMMap <: TrajectoryConverter
     gmmmap::GMMMap
-    T::Int
-    D::Int
+    T::Int  # length of trajectory
+    D::Int  # dimention of input feature
     W::SparseMatrixCSC{Float64, Int}
 
-    # diagonal components of eq. (41)
-    Dʸ::Array{Float64, 3}
-    # Dʸ^-1 in eq. (41)
-    Dʸ⁻¹::SparseMatrixCSC{Float64, Int}
-    # vectorized version of eq. (40)
-    Eʸ::Vector{Float64}
+    Eʸ::Vector{Float64}                  # vectorized version of eq. (40)
+    Dʸ::Array{Float64, 3}                # diagonal components of eq. (41)
+    Dʸ⁻¹::SparseMatrixCSC{Float64, Int}  # Dʸ^-1 in eq. (41)
 
     function TrajectoryGMMMap(g::GMMMap, T::Int)
-        const D = div(size(g.μˣ, 1), 2)
+        const D = div(size(g.params.μˣ, 1), 2)
+
         W = constructW(D, T)
 
         # the number of mixtures
-        const M = size(g.μˣ, 2)
+        const M = n_components(g)
+
+        Σˣʸ = g.params.Σˣʸ
+        Σʸʸ = g.params.Σʸʸ
+        ΣʸˣΣˣˣ⁻¹ = g.params.ΣʸˣΣˣˣ⁻¹
 
         # pre-computations
         Dʸ = Array(Float64, 2D, 2D, M)
         for m=1:M
-            Dʸ[:,:,m] = g.Σʸʸ[:,:,m] - g.ΣʸˣΣˣˣ⁻¹[:,:,m] * g.Σˣʸ[:,:,m]
+            Dʸ[:,:,m] = Σʸʸ[:,:,m] - ΣʸˣΣˣˣ⁻¹[:,:,m] * Σˣʸ[:,:,m]
             Dʸ[:,:,m] = Dʸ[:,:,m]^-1
         end
         
-        new(g, T, D, W, Dʸ, spzeros(0,0), zeros(0))
+        new(g, T, D, W, zeros(0), Dʸ, spzeros(0, 0))
     end
 end
+
+n_components(t::TrajectoryGMMMap) = length(t.gmmmap)
 
 function compute_wt(t::Int, D::Int, T::Int)
     @assert t > 0
@@ -64,7 +68,7 @@ end
 # so that maximize the likelihood of y given x.
 function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     # input feature vector must contain delta feature
-    const D, T = div(size(X,1),2), size(X,2)
+    const D, T = div(size(X, 1), 2), size(X, 2)
     D == tgmm.D || throw(DimensionMismatch("Inconsistent dimentions."))
     
     if T != tgmm.T
@@ -72,8 +76,11 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
         tgmm.T = T
     end
 
-    # alias
+    # aliases
     g = tgmm.gmmmap
+    μʸ = g.params.μʸ
+    μˣ = g.params.μˣ
+    ΣʸˣΣˣˣ⁻¹ = g.params.ΣʸˣΣˣˣ⁻¹
 
     # A suboptimum mixture sequence  eq. (37)
     m̂ = predict(g.px, X)
@@ -81,8 +88,8 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     # Compute Eʸ eq.(40)
     Eʸ = Array(Float64, 2D, T)
     for t=1:T
-        const m = int(m̂[t])
-        Eʸ[:,t] = g.μʸ[:,m] + g.ΣʸˣΣˣˣ⁻¹[:,:,m] * (X[:,t] - g.μˣ[:,m])
+        @inbounds m = m̂[t]
+        @inbounds Eʸ[:,t] = μʸ[:,m] + ΣʸˣΣˣˣ⁻¹[:,:,m] * (X[:,t] - μˣ[:,m])
     end
     Eʸ = vec(Eʸ)
     tgmm.Eʸ = Eʸ # keep Eʸ for GV optimization
@@ -158,7 +165,7 @@ function fvconvert(tgv::TrajectoryGMMMapWithGV, X::Matrix{Float64};
         Δyⁱ = ω*(-WᵀDʸ⁻¹ * W * vec(yⁱ) + WᵀDʸ⁻¹ * Eʸ) + vec(gvgrad(tgv, yⁱ))
         println("Epoch #$(epoch): norm $(norm(Δyⁱ))")
         Δyⁱ = reshape(Δyⁱ, D, T)
-        # eq. (52)
+        # Eq. (52)
         yⁱ = yⁱ + α * Δyⁱ
     end
 
