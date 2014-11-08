@@ -64,6 +64,7 @@ function main()
              "order", order,
              "alpha", alpha,
              "feature_matrix", mcgram,
+             "jl-version", VERSION
              )
         info("Dumped to $(dstpath)")
 

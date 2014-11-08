@@ -1,6 +1,7 @@
 using DocOpt
 
 doc="""Align two feature vector sequences and create parallel data in batch.
+Note that filename of source and target feature is assumed to be same.
 
 Usage:
     align_batch.jl [options] <src_dir> <tgt_dir> <dst_dir>
@@ -46,6 +47,16 @@ function main()
         src_mcep = src["feature_matrix"]
         tgt_mcep = tgt["feature_matrix"]
 
+        # version check
+        v1 = src["jl-version"]
+        v2 = src["jl-version"]
+        if v1 != v2
+            warn("$(filename) $(v1) != $(v2) different version of julia was used to create source and target feature jld")
+        end
+        if v1 != VERSION || v2 != VERSION
+            warn("$(filename) $(v1) != $(VERSION) or $(v2) != $(VERSION) you are using different version of julia since jld data was created.")
+        end
+
         # Perform alignment
         src_mcep, tgt_mcep = align_mcep(src_mcep, tgt_mcep,
                                         th=float(args["--threshold"]),
@@ -59,7 +70,10 @@ function main()
         tgt["feature_matrix"] = tgt_mcep
         dstpath = joinpath(dstdir, string(splitext(basename(srcpath))[1],
                                           "_parallel.jld"))
-        save(dstpath, "src", src, "tgt", tgt)
+        save(dstpath,
+             "src", src,
+             "tgt", tgt,
+             "jl-version", VERSION)
 
         info("Dumped to $(dstpath)")
 

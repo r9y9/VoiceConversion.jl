@@ -85,7 +85,8 @@ function main()
          "n_components", n_components,
          "weights", gmm[:weights_],
          "means", means,
-         "covars", covars
+         "covars", covars,
+         "jl-version", VERSION
          )
 end
 
