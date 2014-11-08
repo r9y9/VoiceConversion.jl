@@ -2,7 +2,7 @@ module VoiceConversion
 
 # Voice conversion
 export FrameByFrameConverter, TrajectoryConverter,
-       fvconvert, vc,
+       fvconvert, vc, n_components,
        GMMMap, TrajectoryGMMMap, TrajectoryGMMMapWithGV
 
 # Post filters
