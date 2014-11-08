@@ -1,10 +1,9 @@
 # GMM-based frame-by-frame voice conversion
 #
 # Reference:
-# [Toda 2007] T. Toda et al, “Voice conversion based on maximum likelihood
-# estimation of spectral parameter trajectory,” IEEE
-# Trans. Audio, Speech, Lang. Process, vol. 15, no. 8, pp. 2222–2235,
-# Nov. 2007.
+# [Toda 2007] T. Toda, A. W. Black, and K. Tokuda, “Voice conversion based on
+# maximum likelihood estimation of spectral parameter trajectory,” IEEE
+# Trans. Audio, Speech, Lang. Process, vol. 15, no. 8, pp. 2222–2235, Nov. 2007.
 # http://isw3.naist.jp/~tomoki/Tomoki/Journals/IEEE-Nov-2007_MLVC.pdf
 
 # GMMMapParm represents a set of immutable parameters of GMM-based conversion
