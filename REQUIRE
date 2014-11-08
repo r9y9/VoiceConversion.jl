@@ -6,7 +6,7 @@ julia 0.3
 PyCall
 HDF5 0.3.0 0.4.0-
 NumericExtensions
-Distributions 0.5.15
+Distributions 0.6.0
 DocOpt
 ArrayViews
 PDMats
