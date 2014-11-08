@@ -29,6 +29,7 @@ for fname in ["align",
               "mcep",
               "gmm",
               "gmmmap",
+              "diffgmm",
               "trajectory_gmmmap",
               "peseudo_gv",
               "converter"]
