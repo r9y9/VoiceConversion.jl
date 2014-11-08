@@ -39,9 +39,9 @@ immutable GMMMapParam
     end
 end
 
-# GMMMap represents a composit type to transform spectral features of a source
-# speaker to that of a target speaker based on Gaussian Mixture Models
-# of source and target joint spectral features.
+# GMMMap represents a composite type to transform spectral features of a source
+# speaker to that of a target speaker based on GMM of source and target joint
+# spectral features.
 type GMMMap <: FrameByFrameConverter
     params::GMMMapParam
 
