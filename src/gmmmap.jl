@@ -45,7 +45,6 @@ type GMMMap <: FrameByFrameConverter
     params::GMMMapParam
 
     Eʸ::Matrix{Float64}    # Eq. (11)
-    Dʸ::Array{Float64, 3}  # Eq. (12)
 
     px::GMM
 
@@ -76,20 +75,13 @@ type GMMMap <: FrameByFrameConverter
         # construct params
         params = GMMMapParam(weights, μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ)
 
-        ## pre-allocations and pre-computations
+        ## pre-allocations
         Eʸ = zeros(order, n_components)
-
-        # Eq. (12)
-        # Construct covariance matrices of p(Y|X) (Eq. (10))
-        Dʸ = Array(Float64, order, order, n_components)
-        for m=1:n_components
-            Dʸ[:,:,m] = Σʸʸ[:,:,m] - Σʸˣ[:,:,m] * Σˣˣ[:,:,m]^-1 * Σˣʸ[:,:,m]
-        end
 
         # p(x)
         px = GaussianMixtureModel(μˣ, Σˣˣ, weights)
 
-        new(params, Eʸ, Dʸ, px)
+        new(params, Eʸ, px)
     end
 end
 
