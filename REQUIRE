@@ -4,9 +4,9 @@
 # MCepAlpha
 julia 0.3
 PyCall
-HDF5 0.3
+HDF5 0.3.0 0.4.0-
 NumericExtensions
-Distributions
+Distributions 0.5.15
 DocOpt
 ArrayViews
 PDMats
