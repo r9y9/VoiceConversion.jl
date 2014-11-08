@@ -1,5 +1,9 @@
+# Common conversion functions
+
 # vc performs voice conversion based on specified converter.
-function vc(c::FrameByFrameConverter, fm::Matrix{Float64})
+function vc(c::FrameByFrameConverter,
+            fm::Matrix{Float64} # feature matrix
+            )
     # Split src feature matrix to power and spectral features
     power, src =  fm[1,:], fm[2:end,:]
 
@@ -11,14 +15,20 @@ function vc(c::FrameByFrameConverter, fm::Matrix{Float64})
         converted[2:end,t] = fvconvert(c, src[:,t])
     end
 
-    # keep power
+    # keep original power
+    # note that it is assumed that 0-th coef. represents power coef.
     converted[1,:] = power
 
     return converted
 end
 
-function vc(c::TrajectoryConverter, fm::Matrix{Float64};
-            limit::Int=70)
+# vc performs trajectory-based feature conversion. To reduce computational
+# complexiy in practice, we split the input sequence to a set of sub-sequences
+# and performe trajectory-based conversion for each sub-sequence.
+function vc(c::TrajectoryConverter,
+            fm::Matrix{Float64};  # feature matrix
+            limit::Int=70         # maximum length of sub-sequence
+            )
     # Split src feature matrix to power and spectral features
     power, src =  fm[1,:], fm[2:end,:]
 
@@ -27,9 +37,6 @@ function vc(c::TrajectoryConverter, fm::Matrix{Float64};
     converted = Array(eltype(fm), D, T)
 
     # Perform Trajectory-based mapping
-    # Split whole sequence to a set of phrases to reduce memory size
-    # that is used in conversion process.
-    # Conversion is performed for each phrase.
     count::Int = 0
     while true
         b = count * limit + 1
@@ -46,7 +53,7 @@ function vc(c::TrajectoryConverter, fm::Matrix{Float64};
         count += 1
     end
 
-    # keep power
+    # keep original power
     converted[1,:] = power
 
     return converted

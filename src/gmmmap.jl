@@ -7,7 +7,7 @@
 # Nov. 2007.
 # http://isw3.naist.jp/~tomoki/Tomoki/Journals/IEEE-Nov-2007_MLVC.pdf
 
-# GMMMap represents a class to transform spectral features of a source
+# GMMMap represents a composit type to transform spectral features of a source
 # speaker to that of a target speaker based on Gaussian Mixture Models
 # of source and target joint spectral features.
 type GMMMap <: FrameByFrameConverter

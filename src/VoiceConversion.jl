@@ -19,9 +19,9 @@ export logamp2mc, mc2logamp, mc2e, world_mcep, align_mcep,
 export ParallelDataset, GVDataset, push_delta
 
 ## Type Hierarchy ##
-abstract Converter
-abstract FrameByFrameConverter <: Converter
-abstract TrajectoryConverter <: Converter
+abstract AbstractConverter
+abstract FrameByFrameConverter <: AbstractConverter
+abstract TrajectoryConverter <: AbstractConverter
 
 for fname in ["align",
               "dtw",

@@ -1,3 +1,5 @@
+# Mel-cesptrum related functions
+
 using WORLD
 
 import SPTK: freqt, c2ir
@@ -9,6 +11,7 @@ function logamp2mc(logamp::Vector{Float64}, order::Int, alpha::Float64)
     return freqt(ceps, order, alpha)
 end
 
+# mc2logamp performs mel-cepstrum to log amplitude conversion
 function mc2logamp(mc::Vector{Float64}, freqbins::Int, alpha::Float64)
     ceps = freqt(mc, length(mc)-1, alpha)
     ceps[1] *= 2.0
@@ -37,8 +40,8 @@ end
 mc2e(mat::Matrix{Float64}, alpha, len) =
     [mc2e(mat[:,i], alpha, len) for i=1:size(mat, 2)]
 
-# world_mcep computes mel-cepstrum for whole input signal using
-# WORLD-based spectral envelope estimation.
+# world_mcep computes mel-cepstrum for whole input signal using WORLD-based
+# spectral envelope estimation.
 function world_mcep(x, fs, period::Float64=5.0, order::Int=25,
                     alpha::Float64=0.35)
     w = World(fs=fs, period=period)
@@ -59,6 +62,8 @@ function world_mcep(x, fs, period::Float64=5.0, order::Int=25,
     return mcgram
 end
 
+# TODO(ryuichi): rename to sp2mc
+# wsp2mc peforms conversion from WORLD-based spectral envelope to mel-cepstrum
 function wsp2mc(spec::Vector{Float64}, order::Int, alpha::Float64)
     symmetrized = [spec, reverse(spec[2:end-1])]
     @assert length(symmetrized) == (length(spec)-1)*2
@@ -75,6 +80,8 @@ function wsp2mc(spectrogram::Matrix{Float64}, order::Int, alpha::Float64)
     return mcgram
 end
 
+# TODO(ryuichi): rename to mc2sp
+# mc2wsp performs conversion from mel-cepstrum to WORLD-based spectral envelope
 function mc2wsp(mc::Vector{Float64}, freqbins::Int, alpha::Float64)
     const symmetrized_len = (freqbins-1)*2
     logamp = mc2logamp(mc, symmetrized_len, alpha)
