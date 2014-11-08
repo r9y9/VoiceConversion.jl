@@ -43,9 +43,7 @@ end
 # spectral features.
 type GMMMap <: FrameByFrameConverter
     params::GMMMapParam
-
     Eʸ::Matrix{Float64}    # Eq. (11)
-
     px::GMM
 
     function GMMMap(gmm::Dict{Union(UTF8String, ASCIIString), Any};
