@@ -4,10 +4,9 @@ using ArrayViews
 
 import NumericExtensions: logsumexp
 
-typealias GMM{Cov<:AbstractPDMat} 
-    MixtureModel{Multivariate,Continuous,GenericMvNormal{Cov}}
+typealias GMM{Cov,Mean} MixtureModel{Multivariate,Continuous,MvNormal{Cov,Mean}}
 
-# proxy to MixtureModel{Multivariate,Continuous,GenericMvNormal{Cov}}
+# proxy to MixtureModel{Multivariate,Continuous,MvNormal{Cov, Mean}}
 function GaussianMixtureModel(means, covars, weights)
     const n_components::Int = size(means, 2)
     normals = Array(MvNormal, n_components)
@@ -19,41 +18,37 @@ end
 
 # predict_proba predicts posterior probability of data under eash Gaussian
 # in the model.
-function predict_proba{Cov<:AbstractPDMat}(gmm::GMM{Cov}, x)
-    lpr = [(logpdf(gmm.components[i],x)+log(gmm.probs[i]))::Float64
-           for i in find(gmm.probs .> 0.)]
+function predict_proba(gmm::GMM, x)
+    lpr = [(logpdf(gmm.components[i],x)+log(gmm.prior.prob[i]))::Float64
+           for i in find(gmm.prior.prob .> 0.)]
     logprob = logsumexp(lpr)
     posterior = exp(lpr - logprob)
 end
 
-function predict_proba!{Cov<:AbstractPDMat}(r::AbstractMatrix,
-                                            gmm::GMM{Cov},
-                                            X::DenseMatrix)
+function predict_proba!(r::AbstractMatrix, gmm::GMM, X::DenseMatrix)
     for i in 1:size(X,2)
         @inbounds r[:,i] = predict_proba(gmm, view(X,:,i))
     end
     return r
 end
 
-function predict_proba{Cov<:AbstractPDMat}(gmm::GMM{Cov}, X::DenseMatrix)
-    predict_proba!(Array(Float64, length(gmm.probs), size(X,2)), gmm, X)
+function predict_proba(gmm::GMM, X::DenseMatrix)
+    predict_proba!(Array(Float64, length(gmm.prior.prob), size(X,2)), gmm, X)
 end
 
 # predict label for x.
-function predict{Cov<:AbstractPDMat}(gmm::GMM{Cov}, x)
+function predict(gmm::GMM, x)
     posterior = predict_proba(gmm, x)
     indmax(posterior)
 end
 
-function predict!{Cov<:AbstractPDMat}(r::AbstractArray,
-                                      gmm::GMM{Cov},
-                                      X::DenseMatrix)
+function predict!(r::AbstractArray, gmm::GMM, X::DenseMatrix)
     for i in 1:size(X,2)
         @inbounds r[i] = predict(gmm, view(X,:,i))
     end
     return r
 end
 
-function predict{Cov<:AbstractPDMat}(gmm::GMM{Cov}, X::DenseMatrix)
+function predict(gmm::GMM, X::DenseMatrix)
     predict!(Array(Float64, size(X,2)), gmm, X)
 end

@@ -28,7 +28,7 @@ type GMMMap <: FrameByFrameConverter
     Dʸ::Array{Float64, 3}
     Eʸ::Matrix{Float64}
 
-    px::GMM{PDMat}
+    px::GMM
 
     function GMMMap(gmm::Dict{Union(UTF8String, ASCIIString), Any};
                     swap::Bool=false)
