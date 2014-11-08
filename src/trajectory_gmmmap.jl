@@ -16,7 +16,7 @@ type TrajectoryGMMMap <: TrajectoryConverter
         W = constructW(D, T)
 
         # the number of mixtures
-        const M = n_components(g)
+        const M = ncomponents(g)
 
         Σˣʸ = g.params.Σˣʸ
         Σʸʸ = g.params.Σʸʸ
@@ -33,7 +33,7 @@ type TrajectoryGMMMap <: TrajectoryConverter
     end
 end
 
-n_components(t::TrajectoryGMMMap) = length(t.gmmmap)
+ncomponents(t::TrajectoryGMMMap) = ncomponents(t.gmmmap)
 
 function compute_wt(t::Int, D::Int, T::Int)
     @assert t > 0

@@ -27,11 +27,11 @@ immutable GMMMapParam
                          Σˣʸ::Array{Float64, 3},
                          Σʸˣ::Array{Float64, 3},
                          Σʸʸ::Array{Float64, 3})
-        const n_components = length(weights)
+        const M = length(weights)
         const order = size(μˣ, 1)
         # pre-allocation and pre-computations
-        ΣʸˣΣˣˣ⁻¹ = Array(Float64, order, order, n_components)
-        for m=1:n_components
+        ΣʸˣΣˣˣ⁻¹ = Array(Float64, order, order, M)
+        for m=1:M
             ΣʸˣΣˣˣ⁻¹[:,:,m] = Σʸˣ[:,:,m] * Σˣˣ[:,:,m]^-1
         end
         new(weights, μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ, ΣʸˣΣˣˣ⁻¹)
@@ -49,7 +49,7 @@ type GMMMap <: FrameByFrameConverter
     function GMMMap(gmm::Dict{Union(UTF8String, ASCIIString), Any};
                     swap::Bool=false)
         weights = gmm["weights"]
-        const n_components = length(weights)
+        const M = length(weights)
         μ = gmm["means"]
         Σ = gmm["covars"]
 
@@ -74,7 +74,7 @@ type GMMMap <: FrameByFrameConverter
         params = GMMMapParam(weights, μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ)
 
         ## pre-allocations
-        Eʸ = zeros(order, n_components)
+        Eʸ = zeros(order, M)
 
         # p(x)
         px = GaussianMixtureModel(μˣ, Σˣˣ, weights)
@@ -83,7 +83,7 @@ type GMMMap <: FrameByFrameConverter
     end
 end
 
-n_components(g::GMMMap) = length(g.params.weights)
+ncomponents(g::GMMMap) = length(g.params.weights)
 
 # Mapping source spectral feature x to target spectral feature y
 # so that minimize the mean least squared error.
@@ -96,7 +96,7 @@ function fvconvert(g::GMMMap, x::Vector{Float64})
     ΣʸˣΣˣˣ⁻¹ = g.params.ΣʸˣΣˣˣ⁻¹
 
     # Eq. (11)
-    for m=1:n_components(g)
+    for m=1:ncomponents(g)
         @inbounds g.Eʸ[:,m] = μʸ[:,m] + (ΣʸˣΣˣˣ⁻¹[:,:,m]) * (x - μˣ[:,m])
     end
 
