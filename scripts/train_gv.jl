@@ -48,7 +48,9 @@ function main()
     @show gmm
 
     # pass transposed matrix because python is row-major language
-    @time gmm[:fit](dataset.X')
+    elapsed = @elapsed gmm[:fit](dataset.X')
+    info("Elapsed time in training: $(elapsed)")
+
 
     # save transposed parameters because julia is column-major language
     # convert means
@@ -73,4 +75,4 @@ function main()
          )
 end
 
-@time main()
+main()
