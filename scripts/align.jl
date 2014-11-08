@@ -10,7 +10,7 @@ Usage:
 
 Options:
     -h --help       show this message
-    --threshold=TH  threshold that is used to remove silence [default: 14.0]
+    --threshold=TH  threshold that is used to remove silence [default: -14.0]
     --max=MAX       Maximum number that will be processed [default: 100]
 """
 
@@ -43,6 +43,10 @@ function _align(srcpath, tgtpath, threshold::Float64, dstpath)
                                     th=threshold,
                                     alpha=float(src["alpha"]),
                                     framelen=int(src["framelen"]))
+    println("The number of aligned frames: $(size(src_mcep, 2))")
+    if size(src_mcep, 2) ==  0
+        warn("No frame found in aligned data. Probably threshold is too high.")
+    end
 
     @assert !any(isnan(src_mcep))
     @assert !any(isnan(tgt_mcep))

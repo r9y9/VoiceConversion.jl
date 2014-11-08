@@ -4,7 +4,7 @@
 # speakers.
 function align_mcep(src::Matrix{Float64}, # feature matrix of source speaker
                     tgt::Matrix{Float64}; # feature matrix of target speaker
-                    th::Float64=14.0,     # threshold to cut off silence frames
+                    th::Float64=-14.0,    # threshold to cut off silence frames
                     alpha::Float64=0.35,  # all-pass constant
                     framelen::Int=1024
                     )
