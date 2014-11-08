@@ -75,7 +75,7 @@ type GMMMap <: FrameByFrameConverter
         end
 
         # construct params
-        param = GMMMapParam(weights, μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ)
+        params = GMMMapParam(weights, μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ)
 
         ## pre-allocations and pre-computations
         Eʸ = zeros(order, n_components)
@@ -90,7 +90,7 @@ type GMMMap <: FrameByFrameConverter
         # p(x)
         px = GaussianMixtureModel(μˣ, Σˣˣ, weights)
 
-        new(param, Eʸ, Dʸ, px)
+        new(params, Eʸ, Dʸ, px)
     end
 end
 
