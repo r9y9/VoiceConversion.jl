@@ -72,7 +72,7 @@ function main()
 
         info("Start processing $(path)")
         elapsed = @elapsed _mcep(path, period, order, alpha, dstpath)
-        info("Elapsed time $(elapsed)")
+        info("Elapsed time in feature extraction is $(elapsed) sec.")
         info("Dumped to $(dstpath)")
 
         count += 1

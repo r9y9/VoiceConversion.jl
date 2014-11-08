@@ -87,7 +87,7 @@ function main()
 
         info("Start processing $(srcpath) and $(tgtpath)")
         elapsed = @elapsed _align(srcpath, tgtpath, threshold, dstpath)
-        info("Elapsed time $(elapsed)")
+        info("Elapsed time in alignment is $(elapsed) sec.")
         info("Dumped to $(dstpath)")
 
         count += 1

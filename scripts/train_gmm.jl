@@ -102,7 +102,7 @@ function main()
 
     # pass transposed matrix because python is row-major language
     elapsed = @elapsed gmm[:fit](X')
-    info("Elapsed time in training: $(elapsed)")
+    info("Elapsed time in training is $(elapsed) sec.")
 
     save(dstpath,
          "description", "Parameters of Gaussian Mixture Model",

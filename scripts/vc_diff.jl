@@ -40,9 +40,6 @@ function main()
         
     # Load mapping model
     gmm = load(args["<model_jld>"])
-    if !gmm["diff"]
-        error("not supported")
-    end
 
     version = gmm["jl-version"]
     if version != VERSION
