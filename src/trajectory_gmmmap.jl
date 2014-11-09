@@ -48,7 +48,7 @@ function compute_wt(t::Int, D::Int, T::Int)
         w¹[:, (t-1)*D+1:t*D] = spdiagm(0.5*ones(D))
     end
     
-    return [w⁰, w¹]
+    [w⁰, w¹]
 end
 
 function constructW(D::Int, T::Int)
@@ -61,7 +61,7 @@ function constructW(D::Int, T::Int)
     @assert issparse(W)
     @assert size(W) == (2D*T, D*T)
 
-    return W
+    W
 end
 
 # Mapping source spectral feature x to target spectral feature y 
@@ -111,7 +111,7 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     @assert size(y) == (D*T,)
 
     # Finally we get static feature vector
-    return reshape(y, D, T)
+    reshape(y, D, T)
 end
 
 # Trajectory-based speech parameter mapping considering gloval variance
@@ -169,7 +169,7 @@ function fvconvert(tgv::TrajectoryGMMMapWithGV, X::Matrix{Float64};
         yⁱ = yⁱ + α * Δyⁱ
     end
 
-    return yⁱ
+    yⁱ
 end
 
 # gvgrad computes gradient of the likelihood with regard to GV.
@@ -186,5 +186,5 @@ function gvgrad(tgv::TrajectoryGMMMapWithGV, y::Matrix{Float64})
         @inbounds v[:,t] = -2.0/T*(tgv.pᵥ'*(gv - tgv.μᵛ)) .* (y[:,t] - μʸ)
     end
     
-    return v
+    v
 end

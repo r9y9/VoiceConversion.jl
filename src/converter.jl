@@ -19,7 +19,7 @@ function vc(c::FrameByFrameConverter,
     # note that it is assumed that 0-th coef. represents power coef.
     converted[1,:] = power
 
-    return converted
+    converted
 end
 
 # vc performs trajectory-based feature conversion. To reduce computational
@@ -56,5 +56,5 @@ function vc(c::TrajectoryConverter,
     # keep original power
     converted[1,:] = power
 
-    return converted
+    converted
 end

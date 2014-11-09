@@ -19,11 +19,11 @@ function transition(d::DTW, i::Int, j::Int)
         return 1.0
     end
 
-    return 2.0 # abs(i-j)
+    2.0 # abs(i-j)
 end
 
 function observation(d::DTW, v::Vector{Float64}, i::Int)
-    return sumabs2(v  - d.template[:,i])
+    sumabs2(v  - d.template[:,i])
 end
 
 # lazy_init! performs state initialization.
@@ -116,7 +116,7 @@ function fit!(d::DTW, template::Matrix{Float64}, sequence::Matrix{Float64})
         end
     end
 
-    return backward(d)
+    backward(d)
 end
 
 fit!(d::DTW, sequence::Matrix{Float64}) = fit!(d, d.template, sequence)
@@ -133,5 +133,5 @@ function backward(d::DTW)
         @inbounds minpath[i-1] = d.backpointer[minpath[i], i+1]
     end
 
-    return minpath
+    minpath
 end

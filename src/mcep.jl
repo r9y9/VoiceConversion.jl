@@ -8,7 +8,7 @@ import SPTK: freqt, c2ir
 function logamp2mc(logamp::Vector{Float64}, order::Int, alpha::Float64)
     ceps = real(ifft(logamp))
     ceps[1] /= 2.0
-    return freqt(ceps, order, alpha)
+    freqt(ceps, order, alpha)
 end
 
 # mc2logamp performs mel-cepstrum to log amplitude conversion
@@ -23,7 +23,7 @@ function mc2logamp(mc::Vector{Float64}, freqbins::Int, alpha::Float64)
         actualceps[i] = ceps[i]
         actualceps[freqbins-i+2] = ceps[i]
     end
-    return real(fft(actualceps))
+    real(fft(actualceps))
 end
 
 # mc2e computes energy from mel-cepstrum.
@@ -34,7 +34,7 @@ function mc2e(mc::Vector{Float64}, alpha::Float64, len::Int)
     # compute impule response from cepsturm
     ir = c2ir(c, len)
 
-    return sumabs2(ir)
+    sumabs2(ir)
 end
 
 mc2e(mat::Matrix{Float64}, alpha, len) =
@@ -59,7 +59,7 @@ function world_mcep(x, fs, period::Float64=5.0, order::Int=25,
     # Spectral envelop -> Mel-cesptrum
     mcgram = wsp2mc(spectrogram, order, alpha)
 
-    return mcgram
+    mcgram
 end
 
 # TODO(ryuichi): rename to sp2mc
@@ -68,7 +68,7 @@ function wsp2mc(spec::Vector{Float64}, order::Int, alpha::Float64)
     symmetrized = [spec, reverse(spec[2:end-1])]
     @assert length(symmetrized) == (length(spec)-1)*2
     logspec = log(symmetrized)
-    return logamp2mc(logspec, order, alpha)
+    logamp2mc(logspec, order, alpha)
 end
 
 function wsp2mc(spectrogram::Matrix{Float64}, order::Int, alpha::Float64)
@@ -77,7 +77,7 @@ function wsp2mc(spectrogram::Matrix{Float64}, order::Int, alpha::Float64)
     for i=1:T
         mcgram[:,i] = wsp2mc(spectrogram[:,i], order, alpha)
     end
-    return mcgram
+    mcgram
 end
 
 # TODO(ryuichi): rename to mc2sp
@@ -85,7 +85,7 @@ end
 function mc2wsp(mc::Vector{Float64}, freqbins::Int, alpha::Float64)
     const symmetrized_len = (freqbins-1)*2
     logamp = mc2logamp(mc, symmetrized_len, alpha)
-    return exp(logamp[1:freqbins])
+    exp(logamp[1:freqbins])
 end
 
 function mc2wsp(mcgram::Matrix{Float64}, freqbins::Int, alpha::Float64)
@@ -94,5 +94,5 @@ function mc2wsp(mcgram::Matrix{Float64}, freqbins::Int, alpha::Float64)
     for t=1:T
         spectrogram[:,t] = mc2wsp(mcgram[:,t], freqbins, alpha)
     end
-    return spectrogram
+    spectrogram
 end

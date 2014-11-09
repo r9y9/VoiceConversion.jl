@@ -15,5 +15,5 @@ end
 function fvpostf(pgv::PeseudoGV, src::AbstractVector)
     filtered = copy(src)
     fvpostf!(pgv, filtered)
-    return filtered
+    filtered
 end

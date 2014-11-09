@@ -29,7 +29,7 @@ function predict_proba!(r::AbstractMatrix, gmm::GMM, X::DenseMatrix)
     for i in 1:size(X,2)
         @inbounds r[:,i] = predict_proba(gmm, view(X,:,i))
     end
-    return r
+    r
 end
 
 function predict_proba(gmm::GMM, X::DenseMatrix)
@@ -46,7 +46,7 @@ function predict!(r::AbstractArray, gmm::GMM, X::DenseMatrix)
     for i in 1:size(X,2)
         @inbounds r[i] = predict(gmm, view(X,:,i))
     end
-    return r
+    r
 end
 
 function predict(gmm::GMM, X::DenseMatrix)

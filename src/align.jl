@@ -34,5 +34,5 @@ function align_mcep(src::Matrix{Float64}, # feature matrix of source speaker
     src = src[:, E .> th]
     newtgt = newtgt[:, E .> th]
 
-    return src, newtgt
+    src, newtgt
 end

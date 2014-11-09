@@ -102,5 +102,5 @@ function fvconvert(g::GMMMap, x::Vector{Float64})
     posterior = predict_proba(g.px, x)
 
     # Eq. (13)
-    return g.Eʸ * posterior
+    g.Eʸ * posterior
 end
