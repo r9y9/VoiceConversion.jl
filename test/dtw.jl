@@ -1,5 +1,4 @@
-using VoiceConversion
-using Base.Test
+# Dynamic Time Warping (DTW)
 
 function testdtw_case1()
     # template sequence [1,2,3,4]
@@ -26,6 +25,8 @@ function testdtw_case2()
     expected = Int[1, 1, 2, 3, 4, 5, 5, 6]
     @test indices == expected
 end
+
+### Tests
 
 testdtw_case1()
 testdtw_case2()

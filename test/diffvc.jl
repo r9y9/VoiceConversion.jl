@@ -1,15 +1,11 @@
-using VoiceConversion
-using Base.Test
+# Statistical Voice Conversion based on Spectrum Differential [Kobayashi 2014]
 
-using MCepAlpha
-using WAV
-using HDF5, JLD
-using SPTK
+### basic setup
 
 # Load source speaker's (`clb`) speech signal.
 wavpath = joinpath(Pkg.dir("VoiceConversion", "test", "data",
                            "clb_a0028.wav"))
-x, fs = wavread(wavpath, format="int")
+x, fs = wavread(wavpath)
 @assert size(x, 2) == 1 "The input data must be monoral."
 x = float(vec(x))
 fs = int(fs)
@@ -21,8 +17,7 @@ alpha = mcepalpha(fs)
 src_clb28 = world_mcep(x, fs, period, order, alpha)
 @test !any(isnan(src_clb28))
 
-# Statistical Voice Conversion based on Spectrum Differential [Kobayashi 2014]
-function diffvc(src, mapper)
+function diffvc_base(src, mapper)
     # Perform parameter conversion
     converted = vc(mapper, src)
     @test !any(isnan(converted))
@@ -33,8 +28,7 @@ function diffvc(src, mapper)
     # Waveform modification
     mf = MLSADF(order)
     hopsize = int(fs / (1000 / period))
-    synthesized = synthesis!(mf, x, converted, alpha, hopsize)
-    synthesized
+    synthesis!(mf, x, converted, alpha, hopsize)
 end
 
 # Female (`clb`) to female (`slt`) voice conversion demo
@@ -43,7 +37,6 @@ function diffvc_clb2slt()
     x = copy(src_clb28)
 
     # Load GMM to convert speech signal of `clb` to that of `slt`,
-    # which is trained on CMU Arctic speech database.
     # mixture: 32, order of mel-cepstrum: 40
     modelpath = joinpath(Pkg.dir("VoiceConversion"), "test", "model",
                          "clb_to_slt_gmm32_order40_diff.jld")
@@ -53,7 +46,7 @@ function diffvc_clb2slt()
     # Construct GMM-based frame-by-frame mapping
     mapper = GMMMap(gmm)
 
-    y = diffvc(x, mapper)
+    y = diffvc_base(x, mapper)
     @test !any(isnan(y))
 end
 
@@ -66,8 +59,7 @@ function trajectory_diffvc_clb2slt()
     x = [x[1,:], push_delta(x[2:end,:])]
 
     # Load GMM to convert speech signal of `clb` to that of `slt`,
-    # which is trained on CMU Arctic speech database.
-    # mixture: 32, order of mel-cepstrum: 40+40 (with dynamic feature)
+    # mixture: 32, order of mel-cepstrum: 40+40 (with delta feature)
     modelpath = joinpath(Pkg.dir("VoiceConversion"), "test", "model",
                          "clb_to_slt_gmm32_order40_diff_with_delta.jld")
     gmm = load(modelpath)
@@ -76,9 +68,11 @@ function trajectory_diffvc_clb2slt()
     # Construct trajectory-based GMM parameter mapping
     mapper = TrajectoryGMMMap(GMMMap(gmm), 70)
 
-    y = diffvc(x, mapper)
+    y = diffvc_base(x, mapper)
     @test !any(isnan(y))
 end
+
+### Tests
 
 diffvc_clb2slt()
 trajectory_diffvc_clb2slt()
