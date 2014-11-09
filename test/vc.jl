@@ -64,7 +64,7 @@ end
 # trajectory-based paramter mapping
 function trajectory_vc_clb2slt()
     x = copy(src_clb28)
-    
+
     # add dynamic feature
     x = [x[1,:], push_delta(x[2:end,:])]
 
