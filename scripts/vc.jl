@@ -44,7 +44,9 @@ function main()
         
     # Load mapping model
     gmm = load(args["<model_jld>"])
-    gmm["diff"] && error("not supported")
+    if gmm["diff"]
+        warn("The model seem to be trained on differencial features")
+    end
 
     version = gmm["jl-version"]
     if version != VERSION
