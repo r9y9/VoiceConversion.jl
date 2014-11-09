@@ -3,9 +3,9 @@ using DocOpt
 doc="""Voice conversion based on differencial spectral compensation
 
 Usage:
-    vc_diff.jl [options] <input_wav> <model_jld> <dst_wav>
-    vc_diff.jl --version
-    vc_diff.jl -h | --help
+    diffvc.jl [options] <input_wav> <model_jld> <dst_wav>
+    diffvc.jl --version
+    diffvc.jl -h | --help
 
 Options:
     -h --help        show this message
