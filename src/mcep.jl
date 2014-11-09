@@ -1,9 +1,5 @@
 # Mel-cesptrum related functions
 
-using WORLD
-
-import SPTK: freqt, c2ir
-
 # logamp2mc converts log-amplitude spectrum to mel-cepstrum.
 function logamp2mc(logamp::Vector{Float64}, order::Int, alpha::Float64)
     ceps = real(ifft(logamp))

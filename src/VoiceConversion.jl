@@ -1,22 +1,51 @@
 module VoiceConversion
 
-# Voice conversion
-export FrameByFrameConverter, TrajectoryConverter,
-       fvconvert, vc, ncomponents,
-       GMMMap, TrajectoryGMMMap, TrajectoryGMMMapWithGV
+using NumericExtensions
+using ArrayViews
+using PDMats
+using Distributions
+using WORLD
+using SPTK
+using HDF5, JLD
 
-# Post filters
-export PeseudoGV, fvpostf!, fvpostf
+export
+    # Voice conversion
+    AbstractConverter,
+    FrameByFrameConverter,
+    TrajectoryConverter,
+    GMMMapParam,
+    GMMMap,
+    TrajectoryGMMMap,
+    TrajectoryGMMMapWithGV,
+    fvconvert,    # feature vector conversion
+    vc,           # voice conversion routine
+    ncomponents,  # number of mixture components
 
-# Dynamic Time Warping (DTW) related functions
-export DTW, fit!, update!, set_template!, backward
+    # Post filters
+    PeseudoGV,
+    fvpostf!,
+    fvpostf,
 
-# Feature conversion, extractions and alignment
-export logamp2mc, mc2logamp, mc2e, world_mcep, align_mcep, 
-       wsp2mc, mc2wsp
+    # Dynamic Time Warping (DTW) related functions
+    DTW,
+    fit!,
+    update!,
+    set_template!,
+    backward,
 
-# Datasets
-export ParallelDataset, GVDataset, push_delta
+    # Feature conversion, extractions and alignment
+    logamp2mc,
+    mc2logamp,
+    mc2e,
+    world_mcep,
+    align_mcep,
+    wsp2mc,
+    mc2wsp,
+
+    # Datasets
+    ParallelDataset,
+    GVDataset,
+    push_delta
 
 ## Type Hierarchy ##
 abstract AbstractConverter
@@ -32,7 +61,7 @@ for fname in ["align",
               "diffgmm",
               "trajectory_gmmmap",
               "peseudo_gv",
-              "converter"]
+              "vc"]
     include(string(fname, ".jl"))
 end
 

@@ -1,8 +1,4 @@
-using Distributions
-using PDMats
-using ArrayViews
-
-import NumericExtensions: logsumexp
+# Gaussian Mixture Model (GMM)
 
 typealias GMM{Cov,Mean} MixtureModel{Multivariate,Continuous,MvNormal{Cov,Mean}}
 

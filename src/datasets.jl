@@ -1,7 +1,5 @@
 # Dataset types and utility functions to construct datasets
 
-using HDF5, JLD
-
 searchdir(path, key) = filter(x -> contains(x, key), readdir(path))
 
 # TODO(ryuichi): should be more generic
