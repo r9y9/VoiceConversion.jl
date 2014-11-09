@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/r9y9/VoiceConversion.jl.svg?branch=master)](https://travis-ci.org/r9y9/VoiceConversion.jl)
 
-VoiceConversion.jl is a repository of my statistical voice conversion research experiments.
+Statistical Voice Conversion based on Gaussian Mixture Models (GMMs)
 
 ## Features
 
