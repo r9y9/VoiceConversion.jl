@@ -84,4 +84,4 @@ end
 ### Tests
 
 vc_clb2slt()
-# trajectory_diffvc_clb2slt()
+trajectory_diffvc_clb2slt()
