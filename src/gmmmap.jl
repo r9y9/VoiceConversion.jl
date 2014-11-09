@@ -89,8 +89,6 @@ ncomponents(g::GMMMap) = length(g.params.weights)
 # so that minimize the mean least squared error.
 # More specifically, it returns the value E(p(y|x)].
 function fvconvert(g::GMMMap, x::Vector{Float64})
-    const order = length(x)
-
     μˣ = g.params.μˣ
     μʸ = g.params.μʸ
     ΣʸˣΣˣˣ⁻¹ = g.params.ΣʸˣΣˣˣ⁻¹
