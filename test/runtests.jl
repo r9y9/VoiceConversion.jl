@@ -2,6 +2,6 @@ using VoiceConversion
 using Base.Test
 
 for fname in ["dtw",
-              "spectrum_differential"]
+              "diffvc"]
     include(string(fname, ".jl"))
 end
