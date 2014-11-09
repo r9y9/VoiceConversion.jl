@@ -11,7 +11,7 @@ wavpath = joinpath(Pkg.dir("VoiceConversion", "test", "data",
                            "clb_a0028.wav"))
 x, fs = wavread(wavpath, format="int")
 @assert size(x, 2) == 1 "The input data must be monoral."
-x = float64(x[:])
+x = float(vec(x))
 fs = int(fs)
 period = 5.0
 order = 40
@@ -22,7 +22,7 @@ src_clb28 = world_mcep(x, fs, period, order, alpha)
 @test !any(isnan(src_clb28))
 
 # Statistical Voice Conversion based on Spectrum Differential [Kobayashi 2014]
-function vc_spectrum_differential(src, mapper)
+function diffvc(src, mapper)
     # Perform parameter conversion
     converted = vc(mapper, src)
     @test !any(isnan(converted))
@@ -39,7 +39,7 @@ end
 
 # Female (`clb`) to female (`slt`) voice conversion demo
 # frame-by-frame mapping
-function spectrum_differential_clb2slt()
+function diffvc_clb2slt()
     x = copy(src_clb28)
 
     # Load GMM to convert speech signal of `clb` to that of `slt`,
@@ -53,13 +53,13 @@ function spectrum_differential_clb2slt()
     # Construct GMM-based frame-by-frame mapping
     mapper = GMMMap(gmm)
 
-    y = vc_spectrum_differential(x, mapper)
+    y = diffvc(x, mapper)
     @test !any(isnan(y))
 end
 
 # Female (`clb`) to female (`slt`) voice conversion demo
 # trajectory-based paramter mapping
-function spectrum_differential_trajectory_clb2slt()
+function trajectory_diffvc_clb2slt()
     x = copy(src_clb28)
     
     # add dynamic feature
@@ -76,9 +76,9 @@ function spectrum_differential_trajectory_clb2slt()
     # Construct trajectory-based GMM parameter mapping
     mapper = TrajectoryGMMMap(GMMMap(gmm), 70)
 
-    y = vc_spectrum_differential(x, mapper)
+    y = diffvc(x, mapper)
     @test !any(isnan(y))
 end
 
-spectrum_differential_clb2slt()
-spectrum_differential_trajectory_clb2slt()
+diffvc_clb2slt()
+trajectory_diffvc_clb2slt()
