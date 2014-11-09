@@ -41,11 +41,11 @@ function compute_wt(t::Int, D::Int, T::Int)
     w¹ = spzeros(D, D*T)
     w⁰[:, (t-1)*D+1:t*D] = spdiagm(ones(D))
     
-    if t-1 >= 1
-        w¹[:, (t-1)*D+1:t*D] = spdiagm(-0.5*ones(D))
+    if t >= 2
+        w¹[:, (t-2)*D+1:(t-1)*D] = spdiagm(-0.5*ones(D))
     end
     if t < T
-        w¹[:, (t-1)*D+1:t*D] = spdiagm(0.5*ones(D))
+        w¹[:, t*D+1:(t+1)*D] = spdiagm(0.5*ones(D))
     end
     
     [w⁰, w¹]
