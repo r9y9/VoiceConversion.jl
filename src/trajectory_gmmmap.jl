@@ -114,7 +114,7 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     reshape(y, D, T)
 end
 
-# Trajectory-based speech parameter mapping considering gloval variance
+# Trajectory-based speech parameter mapping considering global variance
 # based on the maximum likelihood criterion.
 type TrajectoryGMMMapWithGV <: TrajectoryConverter
     tgmm::TrajectoryGMMMap

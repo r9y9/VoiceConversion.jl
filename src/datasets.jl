@@ -130,7 +130,7 @@ immutable ParallelDataset
     end
 end
 
-# GVDataset represents a Gloval variance dataset.
+# GVDataset represents a Global variance dataset.
 immutable GVDataset
     X::Matrix{Float64}
 

@@ -1,6 +1,6 @@
 using DocOpt
 
-doc="""Training (Single) Gaussian Mixture model for Gloval variance.
+doc="""Training (Single) Gaussian Mixture model for global variance.
 
 Usage:
     train_gv.jl [options] <tgt_dir> <dst_jld>
