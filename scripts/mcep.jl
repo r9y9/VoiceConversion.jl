@@ -11,7 +11,7 @@ Options:
     --period=PERIOD  frame period in msec [default: 5.0]
     --order=ORDER    order of mel cepsrum [default: 40]
     --alpha=ALPHA    all-pass constant [default: 0.0]
-    --max=MAX        Maximum number that will be processed [default: 100]
+    --max=MAX        Maximum number that will be processed [default: 200]
 """
 
 using VoiceConversion

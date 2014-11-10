@@ -14,7 +14,7 @@ Options:
     --n_components=MIX  number of mixtures [default: 16]
     --n_iter=ITER       number of iterations [default: 200]
     --n_init=N          number of initialization [default: 2]
-    --max=MAX           maximum number of data we use [default: 50]
+    --max=MAX           maximum number of data we use [default: 100]
     --min_covar=MIN     minimum covariance [default: 1.0e-7]
     --refine            refine pre-trained GMM (<dst_jld>)
 """

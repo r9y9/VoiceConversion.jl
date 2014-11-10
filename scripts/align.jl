@@ -11,7 +11,7 @@ Usage:
 Options:
     -h --help       show this message
     --threshold=TH  threshold that is used to remove silence [default: -14.0]
-    --max=MAX       Maximum number that will be processed [default: 100]
+    --max=MAX       Maximum number that will be processed [default: 200]
 """
 
 using VoiceConversion
