@@ -8,6 +8,7 @@ using SPTK
 using WORLD
 
 for fname in ["dtw",
+              "trajectory_gmmmap",
               "vc",
               "diffvc"
               ]
