@@ -24,7 +24,7 @@ end
 
 # vc performs trajectory-based feature conversion. To reduce computational
 # complexiy in practice, we split the input sequence to a set of sub-sequences
-# and performe trajectory-based conversion for each sub-sequence.
+# and perform trajectory-based conversion for each sub-sequence.
 function vc(c::TrajectoryConverter,
             fm::Matrix{Float64};  # feature matrix
             limit::Int=140        # maximum length of sub-sequence
