@@ -39,13 +39,13 @@ function compute_wt(t::Int, D::Int, T::Int)
     @assert t > 0
     w⁰ = spzeros(D, D*T)
     w¹ = spzeros(D, D*T)
-    w⁰[:, (t-1)*D+1:t*D] = spdiagm(ones(D))
+    w⁰[:, (t-1)*D+1:t*D] = speye(D)
     
     if t >= 2
-        w¹[:, (t-2)*D+1:(t-1)*D] = spdiagm(-0.5*ones(D))
+        w¹[:, (t-2)*D+1:(t-1)*D] = -0.5*speye(D)
     end
     if t < T
-        w¹[:, t*D+1:(t+1)*D] = spdiagm(0.5*ones(D))
+        w¹[:, t*D+1:(t+1)*D] = 0.5*speye(D)
     end
     
     [w⁰, w¹]
