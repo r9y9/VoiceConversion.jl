@@ -24,8 +24,6 @@ immutable ParallelDataset
     Ystd::Matrix{Float64}
 
     function ParallelDataset(path;
-                             start=None,
-                             stop=None,
                              diff::Bool=false,
                              joint::Bool=true,
                              standarize::Bool=false,
@@ -135,8 +133,6 @@ immutable GVDataset
     X::Matrix{Float64}
 
     function GVDataset(path;
-                       start=None,
-                       stop=None,
                        ignore0th::Bool=true,
                        add_delta::Bool=false,
                        suffix::String=".jld",
