@@ -46,8 +46,7 @@ type GMMMap <: FrameByFrameConverter
     Eʸ::Matrix{Float64}    # Eq. (11)
     px::GMM
 
-    function GMMMap(gmm::Dict{Union(UTF8String, ASCIIString), Any};
-                    swap::Bool=false)
+    function GMMMap(gmm::Dict; swap::Bool=false)
         weights = gmm["weights"]
         const M = length(weights)
         μ = gmm["means"]

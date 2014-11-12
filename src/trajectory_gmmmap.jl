@@ -121,8 +121,7 @@ type TrajectoryGMMMapWithGV <: TrajectoryConverter
         new(tgmm, μᵛ, Σᵛᵛ, inv(Σᵛᵛ))
     end
     
-    function TrajectoryGMMMapWithGV(tgmm::TrajectoryGMMMap,
-                                    gvgmm::Dict{Union(UTF8String, ASCIIString)})
+    function TrajectoryGMMMapWithGV(tgmm::TrajectoryGMMMap, gvgmm::Dict)
         # assume single mixture
         (size(gvgmm["means"], 2) == 1) || error("not supported for mixture >= 2")
         μᵛ = gvgmm["means"][:,1]
