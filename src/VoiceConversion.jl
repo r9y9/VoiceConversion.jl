@@ -20,6 +20,7 @@ export
     fvconvert,    # feature vector conversion
     vc,           # voice conversion routine
     ncomponents,  # number of mixture components
+    dim,
 
     # Post filters
     PeseudoGV,
