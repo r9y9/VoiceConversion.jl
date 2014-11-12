@@ -75,6 +75,7 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     μʸ = g.params.μʸ
     μˣ = g.params.μˣ
     ΣʸˣΣˣˣ⁻¹ = g.params.ΣʸˣΣˣˣ⁻¹
+    W = tgmm.W
 
     # A suboptimum mixture sequence  eq. (37)
     m̂ = predict(g.px, X)
@@ -98,7 +99,6 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
 
     # Compute target static feature vector
     # eq. (39)
-    W = tgmm.W # short alias
     WᵀDʸ⁻¹ = W' * Dʸ⁻¹
     @assert issparse(WᵀDʸ⁻¹)
     y = (WᵀDʸ⁻¹ * W) \ (WᵀDʸ⁻¹ * Eʸ)
@@ -135,9 +135,12 @@ end
 # Mapping source spectral feature x to target spectral feature y 
 # so that maximize the likelihood of y given x with considering
 # global variance.
-# Note that α should be carefully chosen.
+# Note that step size `α` should be carefully chosen.
 function fvconvert(tgv::TrajectoryGMMMapWithGV, X::Matrix{Float64};
-                   epochs::Int=100, α::Float64=1.0e-5)
+                   epochs::Int=100,
+                   α::Float64=1.0e-5, # step-size
+                   verbose::Bool=false
+                   )
     # Initialize target static features without considering GV
     y⁰ = fvconvert(tgv.tgmm, X)
     const D, T = size(y⁰)
@@ -157,7 +160,10 @@ function fvconvert(tgv::TrajectoryGMMMapWithGV, X::Matrix{Float64};
     yⁱ = y⁰
     for epoch=1:epochs
         Δyⁱ = ω*(-WᵀDʸ⁻¹ * W * vec(yⁱ) + WᵀDʸ⁻¹ * Eʸ) + vec(gvgrad(tgv, yⁱ))
-        println("Epoch #$(epoch): norm $(norm(Δyⁱ))")
+        if verbose
+            println("Epoch #$(epoch): norm $(norm(Δyⁱ))")
+        end
+        @assert !any(isnan(Δyⁱ))
         Δyⁱ = reshape(Δyⁱ, D, T)
         # Eq. (52)
         yⁱ = yⁱ + α * Δyⁱ
