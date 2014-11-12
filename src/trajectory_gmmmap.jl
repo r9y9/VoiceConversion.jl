@@ -2,16 +2,14 @@
 # based on the maximum likelihood criterion.
 type TrajectoryGMMMap <: TrajectoryConverter
     gmmmap::GMMMap
-    T::Int  # length of trajectory
-    D::Int  # dimention of input feature
-    W::SparseMatrixCSC{Float64, Int}
 
+    W::SparseMatrixCSC{Float64, Int}     # weight matrix
     Eʸ::Vector{Float64}                  # vectorized version of eq. (40)
     Dʸ::Array{Float64, 3}                # diagonal components of eq. (41)
     Dʸ⁻¹::SparseMatrixCSC{Float64, Int}  # Dʸ^-1 in eq. (41)
 
     function TrajectoryGMMMap(g::GMMMap, T::Int)
-        const D = div(size(g.params.μˣ, 1), 2)
+        const D = div(dim(g), 2) # dimension of static feature vector
 
         W = constructW(D, T)
 
@@ -29,10 +27,12 @@ type TrajectoryGMMMap <: TrajectoryConverter
             Dʸ[:,:,m] = Dʸ[:,:,m]^-1
         end
         
-        new(g, T, D, W, zeros(0), Dʸ, spzeros(0, 0))
+        new(g, W, zeros(0), Dʸ, spzeros(0, 0))
     end
 end
 
+Base.length(t::TrajectoryGMMMap) = div(size(t.W, 2), dim(t))
+dim(t::TrajectoryGMMMap) = dim(t.gmmmap)
 ncomponents(t::TrajectoryGMMMap) = ncomponents(t.gmmmap)
 
 function compute_wt(t::Int, D::Int, T::Int)
@@ -64,11 +64,10 @@ end
 function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     # input feature vector must contain delta feature
     const D, T = div(size(X, 1), 2), size(X, 2)
-    D == tgmm.D || throw(DimensionMismatch("Inconsistent dimentions."))
+    2D == dim(tgmm) || throw(DimensionMismatch("Inconsistent dimentions."))
     
-    if T != tgmm.T
+    if T != length(tgmm)
         tgmm.W = constructW(D, T)
-        tgmm.T = T
     end
 
     # aliases

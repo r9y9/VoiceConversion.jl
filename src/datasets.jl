@@ -90,9 +90,9 @@ immutable ParallelDataset
             X = XY
             Y = ones(1,1) # not used
         else
-            order::Int = div(size(XY, 1), 2)
-            X = XY[1:order,:]
-            Y = XY[order+1:end,:]
+            D = div(size(XY, 1), 2)
+            X = XY[1:D,:]
+            Y = XY[D+1:end,:]
         end
 
         Xmean = mean(X,2)

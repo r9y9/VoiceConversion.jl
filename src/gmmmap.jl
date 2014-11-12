@@ -28,9 +28,9 @@ immutable GMMMapParam
                          Σʸˣ::Array{Float64, 3},
                          Σʸʸ::Array{Float64, 3})
         const M = length(weights)
-        const order = size(μˣ, 1)
+        const D = size(μˣ, 1)
         # pre-allocation and pre-computations
-        ΣʸˣΣˣˣ⁻¹ = Array(Float64, order, order, M)
+        ΣʸˣΣˣˣ⁻¹ = Array(Float64, D, D, M)
         for m=1:M
             ΣʸˣΣˣˣ⁻¹[:,:,m] = Σʸˣ[:,:,m] * Σˣˣ[:,:,m]^-1
         end
@@ -55,13 +55,13 @@ type GMMMap <: FrameByFrameConverter
 
         # Split mean and covariance matrices into source and target
         # speaker's ones
-        const order = div(size(μ, 1), 2)
-        μˣ = μ[1:order, :]
-        μʸ = μ[order+1:end, :]
-        Σˣˣ = Σ[1:order,1:order, :]
-        Σˣʸ = Σ[1:order,order+1:end, :]
-        Σʸˣ = Σ[order+1:end,1:order, :]
-        Σʸʸ = Σ[order+1:end,order+1:end, :]
+        const D = div(size(μ, 1), 2) # dimension of feature vector
+        μˣ = μ[1:D, :]
+        μʸ = μ[D+1:end, :]
+        Σˣˣ = Σ[1:D,1:D, :]
+        Σˣʸ = Σ[1:D,D+1:end, :]
+        Σʸˣ = Σ[D+1:end,1:D, :]
+        Σʸʸ = Σ[D+1:end,D+1:end, :]
 
         # swap src and target parameters
         if swap
@@ -74,7 +74,7 @@ type GMMMap <: FrameByFrameConverter
         params = GMMMapParam(weights, μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ)
 
         ## pre-allocations
-        Eʸ = zeros(order, M)
+        Eʸ = zeros(D, M)
 
         # p(x)
         px = GaussianMixtureModel(μˣ, Σˣˣ, weights)
@@ -83,12 +83,15 @@ type GMMMap <: FrameByFrameConverter
     end
 end
 
+dim(g::GMMMap) = size(g.params.μˣ, 1)
 ncomponents(g::GMMMap) = length(g.params.weights)
 
 # Mapping source spectral feature x to target spectral feature y
 # so that minimize the mean least squared error.
 # More specifically, it returns the value E(p(y|x)].
 function fvconvert(g::GMMMap, x::Vector{Float64})
+    dim(g) == length(x) || throw(DimensionMismatch("Inconsistent dimentions."))
+
     μˣ = g.params.μˣ
     μʸ = g.params.μʸ
     ΣʸˣΣˣˣ⁻¹ = g.params.ΣʸˣΣˣˣ⁻¹
