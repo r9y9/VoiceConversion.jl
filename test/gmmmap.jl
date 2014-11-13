@@ -10,6 +10,7 @@ function test_gmmmap()
     const D = div(size(gmm["means"], 1), 2)
     @test dim(mapper) == D
     @test ncomponents(mapper) == length(gmm["weights"])
+    @test size(mapper) == (D, 1)
 end
 
 test_gmmmap()

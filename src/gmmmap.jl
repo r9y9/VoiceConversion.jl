@@ -85,6 +85,7 @@ end
 Base.length(g::GMMMap) = 1 # GMMMap represents `frame-by-frame` converter
 dim(g::GMMMap) = size(g.params.μˣ, 1)
 ncomponents(g::GMMMap) = length(g.params.weights)
+Base.size(g::GMMMap) = (dim(g), length(g))
 
 # Mapping source spectral feature x to target spectral feature y
 # so that minimize the mean least squared error.

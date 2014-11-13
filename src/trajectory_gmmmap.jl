@@ -34,6 +34,7 @@ end
 Base.length(t::TrajectoryGMMMap) = div(size(t.W, 2), div(dim(t), 2))
 dim(t::TrajectoryGMMMap) = dim(t.gmmmap)
 ncomponents(t::TrajectoryGMMMap) = ncomponents(t.gmmmap)
+Base.size(g::TrajectoryGMMMap) = (dim(g), length(g))
 
 function compute_wt(t::Int, D::Int, T::Int)
     @assert t > 0

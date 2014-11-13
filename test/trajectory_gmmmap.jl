@@ -45,6 +45,7 @@ function test_trajectory(T::Int)
     const D = div(size(gmm["means"], 1), 4)
     @test dim(mapper) == 2D # must contains delta
     @test ncomponents(mapper) == length(gmm["weights"])
+    @test size(mapper) == (2D, T)
 end
 
 test_constructW(30, 40)
