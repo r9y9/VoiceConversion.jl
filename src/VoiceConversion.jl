@@ -16,7 +16,7 @@ export
     GMMMapParam,
     GMMMap,
     TrajectoryGMMMap,
-    TrajectoryGMMMapWithGV,
+    TrajectoryGVGMMMapp,
     fvconvert,    # feature vector conversion
     vc,           # voice conversion routine
     ncomponents,  # number of mixture components

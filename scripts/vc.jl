@@ -61,7 +61,7 @@ function main()
 
     if trajectory && !isempty(gvmodel)
         gv = load(gvmodel)
-        mapper = TrajectoryGMMMapWithGV(mapper, gv)
+        mapper = TrajectoryGVGMMMapp(mapper, gv)
     end
 
     elapsed_fe = @elapsed begin

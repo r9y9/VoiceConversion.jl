@@ -110,18 +110,18 @@ end
 
 # Trajectory-based speech parameter mapping considering global variance
 # based on the maximum likelihood criterion.
-type TrajectoryGMMMapWithGV <: TrajectoryConverter
+type TrajectoryGVGMMMapp <: TrajectoryConverter
     tgmm::TrajectoryGMMMap
     μᵛ::Vector{Float64}
     Σᵛᵛ::Matrix{Float64}
     pᵥ::Matrix{Float64}
 
-    function TrajectoryGMMMapWithGV(tgmm::TrajectoryGMMMap, μᵛ, Σᵛᵛ)
+    function TrajectoryGVGMMMapp(tgmm::TrajectoryGMMMap, μᵛ, Σᵛᵛ)
         @assert sum(μᵛ .< 0) == 0
         new(tgmm, μᵛ, Σᵛᵛ, inv(Σᵛᵛ))
     end
     
-    function TrajectoryGMMMapWithGV(tgmm::TrajectoryGMMMap, gvgmm::Dict)
+    function TrajectoryGVGMMMapp(tgmm::TrajectoryGMMMap, gvgmm::Dict)
         # assume single mixture
         (size(gvgmm["means"], 2) == 1) || error("not supported for mixture >= 2")
         μᵛ = gvgmm["means"][:,1]
@@ -135,7 +135,7 @@ end
 # so that maximize the likelihood of y given x with considering
 # global variance.
 # Note that step size `α` should be carefully chosen.
-function fvconvert(tgv::TrajectoryGMMMapWithGV, X::Matrix{Float64};
+function fvconvert(tgv::TrajectoryGVGMMMapp, X::Matrix{Float64};
                    epochs::Int=100,
                    α::Float64=1.0e-5, # step-size
                    verbose::Bool=false
@@ -172,7 +172,7 @@ function fvconvert(tgv::TrajectoryGMMMapWithGV, X::Matrix{Float64};
 end
 
 # gvgrad computes gradient of the likelihood with regard to GV.
-function gvgrad(tgv::TrajectoryGMMMapWithGV, y::Matrix{Float64})
+function gvgrad(tgv::TrajectoryGVGMMMapp, y::Matrix{Float64})
     const D, T = size(y)
     
     gv = var(y, 2) # global variance over time
