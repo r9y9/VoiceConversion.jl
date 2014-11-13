@@ -68,7 +68,7 @@ function main()
     dstdir = args["<dst_dir>"]
     if !isdir(dstdir)
         info("Create $(dstdir)")
-        mkdir(dstdir)
+        run(`mkdir -p $dstdir`)
     end
 
     const threshold = float(args["--threshold"])
