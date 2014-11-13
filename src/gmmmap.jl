@@ -82,6 +82,7 @@ type GMMMap <: FrameByFrameConverter
     end
 end
 
+Base.length(g::GMMMap) = 1 # GMMMap represents `frame-by-frame` converter
 dim(g::GMMMap) = size(g.params.μˣ, 1)
 ncomponents(g::GMMMap) = length(g.params.weights)
 

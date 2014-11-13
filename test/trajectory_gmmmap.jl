@@ -33,4 +33,19 @@ function test_constructW(D::Int, T::Int)
     end
 end
 
+function test_trajectory(T::Int)
+    modelpath = joinpath(Pkg.dir("VoiceConversion"), "test", "model",
+                         "clb_to_slt_gmm32_order40_diff_with_delta.jld")
+    gmm = load(modelpath)
+    @assert gmm["diff"]
+
+    mapper = TrajectoryGMMMap(GMMMap(gmm), T)
+    @test length(mapper) == T
+
+    const D = div(size(gmm["means"], 1), 4)
+    @test dim(mapper) == 2D # must contains delta
+    @test ncomponents(mapper) == length(gmm["weights"])
+end
+
 test_constructW(30, 40)
+test_trajectory(100)
