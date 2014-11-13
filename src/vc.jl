@@ -27,7 +27,6 @@ end
 # and perform trajectory-based conversion for each sub-sequence.
 function vc(c::TrajectoryConverter,
             fm::Matrix{Float64};  # feature matrix
-            limit::Int=140        # maximum length of sub-sequence
             )
     # Split src feature matrix to power and spectral features
     power, src =  fm[1,:], fm[2:end,:]
@@ -38,6 +37,7 @@ function vc(c::TrajectoryConverter,
 
     # Perform Trajectory-based mapping
     count::Int = 0
+    const limit = length(c) # maximum length of sub-sequence
     while true
         b = count * limit + 1
         e = (count+1) * limit

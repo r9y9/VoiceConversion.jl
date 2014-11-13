@@ -15,6 +15,7 @@ Options:
     --alpha=ALPHA    all-pass constant [default: 0.0]
     --gv=MODEL       global variance [default: ]
     --trajectory     trajectory-based parameter conversion
+    --T=t            maximum length for one-step trajectory conversion [default: 100]
 """
 
 using VoiceConversion
@@ -55,7 +56,7 @@ function main()
 
     mapper = GMMMap(gmm)
     if trajectory
-        mapper = TrajectoryGMMMap(mapper, 70)
+        mapper = TrajectoryGMMMap(mapper, float(args["--T"]))
     end
 
     if trajectory && !isempty(gvmodel)

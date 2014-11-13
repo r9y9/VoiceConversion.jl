@@ -13,6 +13,7 @@ Options:
     --order=ORDER    order of mel cepsrum [default: 25]
     --alpha=ALPHA    all-pass constant [default: 0.0]
     --trajectory     trajectory-based parameter conversion
+    --T=t            maximum length for one-step trajectory conversion [default: 100]
 """
 
 using VoiceConversion
@@ -51,7 +52,7 @@ function main()
 
     mapper = GMMMap(gmm)
     if trajectory
-        mapper = TrajectoryGMMMap(mapper, 70)
+        mapper = TrajectoryGMMMap(mapper, float(args["--T"]))
     end
 
     # shape (order+1, number of frames)
