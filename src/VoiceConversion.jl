@@ -2,7 +2,6 @@ module VoiceConversion
 
 using NumericExtensions
 using ArrayViews
-using PDMats
 using Distributions
 using WORLD
 using SPTK
