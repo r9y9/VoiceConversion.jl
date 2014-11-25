@@ -23,11 +23,6 @@ function _align(srcpath, tgtpath, threshold::Float64, dstpath)
     src = load(srcpath)
     tgt = load(tgtpath)
 
-    save(dstpath,
-         "src", src,
-         "tgt", tgt,
-         "jl-version", VERSION)
-
     src_mcep = src["feature_matrix"]
     tgt_mcep = tgt["feature_matrix"]
 
