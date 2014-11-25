@@ -42,8 +42,7 @@ function _mcep(path, period::Float64, order::Int, alpha::Float64, dstpath)
          "framelen", get_fftsize_for_cheaptrick(fs),
          "order", order,
          "alpha", alpha,
-         "feature_matrix", mcgram,
-         "jl-version", VERSION
+         "feature_matrix", mcgram
          )
 end
 

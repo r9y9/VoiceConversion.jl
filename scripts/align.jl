@@ -26,18 +26,6 @@ function _align(srcpath, tgtpath, threshold::Float64, dstpath)
     src_mcep = src["feature_matrix"]
     tgt_mcep = tgt["feature_matrix"]
 
-    # check version consistency
-    v1 = src["jl-version"]
-    v2 = src["jl-version"]
-    if v1 != v2
-        warn("$(filename) $(v1) != $(v2)
-             different version of julia was used to create source and target feature jld")
-    end
-    if v1 != VERSION || v2 != VERSION
-        warn("$(filename) $(v1) != $(VERSION) or $(v2) != $(VERSION)
-             you are using different version of julia since jld data was created.")
-    end
-
     # Perform alignment
     src_mcep, tgt_mcep = align_mcep(src_mcep, tgt_mcep,
                                     th=threshold,
@@ -61,8 +49,8 @@ function _align(srcpath, tgtpath, threshold::Float64, dstpath)
     @assert isa(tgt, Dict{Union(UTF8String, ASCIIString), Any})
     save(dstpath,
          "src", Dict{UTF8String,Any}(src),
-         "tgt", Dict{UTF8String,Any}(tgt),
-         "jl-version", VERSION)
+         "tgt", Dict{UTF8String,Any}(tgt)
+    )
 end
 
 function main()

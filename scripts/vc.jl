@@ -49,11 +49,6 @@ function main()
         warn("The model seem to be trained on differencial features")
     end
 
-    version = gmm["jl-version"]
-    if version != VERSION
-        warn("$(version) != $(VERSION) you are using different version of julia since conversion model was created")
-    end
-
     mapper = GMMMap(gmm)
     if trajectory
         mapper = TrajectoryGMMMap(mapper, float(args["--T"]))

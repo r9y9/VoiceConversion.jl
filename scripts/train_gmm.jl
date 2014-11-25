@@ -110,8 +110,7 @@ function main()
          "n_components", n_components,
          "weights", gmm[:weights_],
          "means", pygmmmean2jl(gmm[:means_]),
-         "covars", pygmmcovar2jl(gmm[:covars_]),
-         "jl-version", VERSION
+         "covars", pygmmcovar2jl(gmm[:covars_])
          )
 
     info("Dumped to $(dstpath)")
