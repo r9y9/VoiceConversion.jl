@@ -54,9 +54,14 @@ function _align(srcpath, tgtpath, threshold::Float64, dstpath)
     src["feature_matrix"] = src_mcep
     tgt["feature_matrix"] = tgt_mcep
 
+    # type Dict{Union(UTF8String, ASCIIString), Any} is saved as
+    # Dict{UTF8String, Any} and cause error in reading JLD file.
+    # remove off Union and then save do the trick (but why? bug in HDF5?)
+    @assert isa(src, Dict{Union(UTF8String, ASCIIString), Any})
+    @assert isa(tgt, Dict{Union(UTF8String, ASCIIString), Any})
     save(dstpath,
-         "src", src,
-         "tgt", tgt,
+         "src", Dict{UTF8String,Any}(src),
+         "tgt", Dict{UTF8String,Any}(tgt),
          "jl-version", VERSION)
 end
 
