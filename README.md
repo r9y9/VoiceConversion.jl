@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/r9y9/VoiceConversion.jl.svg?branch=master)](https://travis-ci.org/r9y9/VoiceConversion.jl)
 
-Statistical Voice Conversion based on Gaussian Mixture Models (GMMs)
+`VoiceConverision.jl` is a statistical voice conversion library for Julia.
+
+Please note that this package is still under developement. Both bug reports and feature requests are welcome.
 
 ## Features
 
