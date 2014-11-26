@@ -18,7 +18,14 @@ Please note that this package is still under developement. Both bug reports and 
 - WORLD-based vocoding
 - Direct waveform modification using Mel log Spectrum Approximation (MLSA) digital filter based on spectrum differencial [Kobayashi 2014]
 
+## Supported Platforms
+
+- Linux
+- Mac OS X
+
 ## Installation
+
+Run the following commands on your julia interactive settion (REPL):
 
 ```julia
 julia> Pkg.clone("https://github.com/r9y9/VoiceConversion.jl")
