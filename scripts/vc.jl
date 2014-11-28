@@ -51,7 +51,7 @@ function main()
 
     mapper = GMMMap(gmm)
     if trajectory
-        mapper = TrajectoryGMMMap(mapper, float(args["--T"]))
+        mapper = TrajectoryGMMMap(mapper, int(args["--T"]))
     end
 
     if trajectory && !isempty(gvmodel)

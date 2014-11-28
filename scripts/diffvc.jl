@@ -47,7 +47,7 @@ function main()
 
     mapper = GMMMap(gmm)
     if trajectory
-        mapper = TrajectoryGMMMap(mapper, float(args["--T"]))
+        mapper = TrajectoryGMMMap(mapper, int(args["--T"]))
     end
 
     # shape (order+1, number of frames)
