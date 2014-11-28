@@ -62,7 +62,7 @@ function main()
         w = World(fs=fs, period=period)
         
         # Fundamental frequency (f0) estimation by DIO
-        f0, timeaxis = dio1(w, x)
+        f0, timeaxis = dio(w, x)
         
         # F0 re-estimation by StoneMask
         f0 = stonemask(w, x, timeaxis, f0)
