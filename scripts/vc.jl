@@ -21,7 +21,6 @@ Options:
 using VoiceConversion
 using MCepAlpha
 using WAV
-using SPTK
 using HDF5, JLD
 using WORLD
 
