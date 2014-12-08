@@ -46,11 +46,11 @@ type GMMMap <: FrameByFrameConverter
     Eʸ::Matrix{Float64}    # Eq. (11)
     px::GMM
 
-    function GMMMap(gmm::Dict; swap::Bool=false)
-        weights = gmm["weights"]
+    function GMMMap(weights::Vector{Float64},# shape: (M,)
+                    μ::Matrix{Float64},      # shape: (D, M)
+                    Σ::Array{Float64,3};     # shape: (D, D, M)
+                    swap::Bool=false)
         const M = length(weights)
-        μ = gmm["means"]
-        Σ = gmm["covars"]
 
         # Split mean and covariance matrices into source and target
         # speaker's ones

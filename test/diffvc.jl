@@ -44,7 +44,7 @@ function diffvc_clb2slt()
     @assert gmm["diff"]
 
     # Construct GMM-based frame-by-frame mapping
-    mapper = GMMMap(gmm)
+    mapper = GMMMap(gmm["weights"], gmm["means"], gmm["covars"])
 
     y = diffvc_base(x, mapper)
     @test !any(isnan(y))
@@ -66,7 +66,8 @@ function trajectory_diffvc_clb2slt()
     @assert gmm["diff"]
 
     # Construct trajectory-based GMM parameter mapping
-    mapper = TrajectoryGMMMap(GMMMap(gmm), 70)
+    mapper = GMMMap(gmm["weights"], gmm["means"], gmm["covars"])
+    mapper = TrajectoryGMMMap(mapper, 70)
 
     y = diffvc_base(x, mapper)
     @test !any(isnan(y))

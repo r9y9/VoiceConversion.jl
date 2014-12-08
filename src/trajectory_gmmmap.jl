@@ -121,15 +121,6 @@ type TrajectoryGVGMMMapp <: TrajectoryConverter
         @assert sum(μᵛ .< 0) == 0
         new(tgmm, μᵛ, Σᵛᵛ, inv(Σᵛᵛ))
     end
-    
-    function TrajectoryGVGMMMapp(tgmm::TrajectoryGMMMap, gvgmm::Dict)
-        # assume single mixture
-        (size(gvgmm["means"], 2) == 1) || error("not supported for mixture >= 2")
-        μᵛ = gvgmm["means"][:,1]
-        @assert sum(μᵛ .< 0) == 0
-        Σᵛᵛ = gvgmm["covars"][:,:,1]
-        new(tgmm, μᵛ, Σᵛᵛ, inv(Σᵛᵛ))
-    end
 end
 
 # Mapping source spectral feature x to target spectral feature y 

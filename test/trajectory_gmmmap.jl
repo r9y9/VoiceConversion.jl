@@ -39,7 +39,8 @@ function test_trajectory(T::Int)
     gmm = load(modelpath)
     @assert gmm["diff"]
 
-    mapper = TrajectoryGMMMap(GMMMap(gmm), T)
+    mapper = GMMMap(gmm["weights"], gmm["means"], gmm["covars"])
+    mapper = TrajectoryGMMMap(mapper, T)
     @test length(mapper) == T
 
     const D = div(size(gmm["means"], 1), 4)

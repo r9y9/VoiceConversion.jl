@@ -4,7 +4,7 @@ function test_gmmmap()
     gmm = load(modelpath)
     @assert gmm["diff"]
     
-    mapper = GMMMap(gmm)
+    mapper = GMMMap(gmm["weights"], gmm["means"], gmm["covars"])
     @test length(mapper) == 1
 
     const D = div(size(gmm["means"], 1), 2)
