@@ -45,7 +45,7 @@ function main()
         warn("The model doesn't seem to be trained on differencial features")
     end
 
-    mapper = GMMMap(gmm)
+    mapper = GMMMap(gmm["weights"], gmm["means"], gmm["covars"])
     if trajectory
         mapper = TrajectoryGMMMap(mapper, int(args["--T"]))
     end
