@@ -23,6 +23,7 @@ export
 
     # Post filters
     PeseudoGV,
+    VarianceScaling,
     fvpostf!,
     fvpostf,
 
@@ -60,6 +61,7 @@ for fname in ["align",
               "gmmmap",
               "diffgmm",
               "trajectory_gmmmap",
+              "gv",
               "peseudo_gv",
               "vc"]
     include(string(fname, ".jl"))
