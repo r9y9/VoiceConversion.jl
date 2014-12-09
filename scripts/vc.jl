@@ -55,7 +55,10 @@ function main()
 
     if trajectory && !isempty(gvmodel)
         gv = load(gvmodel)
-        mapper = TrajectoryGVGMMMapp(mapper, gv)
+        gv["n_components"] == 1 || error("only single Gaussian for GV is supported")
+        μᵛ = gv["means"][:,1]
+        Σᵛᵛ = gv["covars"][:,:,1]
+        mapper = TrajectoryGVGMMMap(mapper, μᵛ, Σᵛᵛ)
     end
 
     elapsed_fe = @elapsed begin
