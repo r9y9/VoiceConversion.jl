@@ -111,23 +111,28 @@ end
 
 # Trajectory-based speech parameter mapping considering global variance
 # based on the maximum likelihood criterion.
-type TrajectoryGVGMMMapp <: TrajectoryConverter
+type TrajectoryGVGMMMap <: TrajectoryConverter
     tgmm::TrajectoryGMMMap
     μᵛ::Vector{Float64}
     Σᵛᵛ::Matrix{Float64}
     pᵥ::Matrix{Float64}
 
-    function TrajectoryGVGMMMapp(tgmm::TrajectoryGMMMap, μᵛ, Σᵛᵛ)
+    function TrajectoryGVGMMMap(tgmm::TrajectoryGMMMap, μᵛ, Σᵛᵛ)
         @assert sum(μᵛ .< 0) == 0
         new(tgmm, μᵛ, Σᵛᵛ, inv(Σᵛᵛ))
     end
 end
 
+Base.length(t::TrajectoryGVGMMMap) = Base.length(t.tgmm)
+dim(t::TrajectoryGVGMMMap) = dim(t.tgmm)
+ncomponents(t::TrajectoryGVGMMMap) = ncomponents(t.tgmm)
+Base.size(g::TrajectoryGVGMMMap) = Base.size(t.tgmm)
+
 # Mapping source spectral feature x to target spectral feature y 
 # so that maximize the likelihood of y given x with considering
 # global variance.
 # Note that step size `α` should be carefully chosen.
-function fvconvert(tgv::TrajectoryGVGMMMapp, X::Matrix{Float64};
+function fvconvert(tgv::TrajectoryGVGMMMap, X::Matrix{Float64};
                    epochs::Int=100,
                    α::Float64=1.0e-5, # step-size
                    verbose::Bool=false
@@ -164,7 +169,7 @@ function fvconvert(tgv::TrajectoryGVGMMMapp, X::Matrix{Float64};
 end
 
 # gvgrad computes gradient of the likelihood with regard to GV.
-function gvgrad(tgv::TrajectoryGVGMMMapp, y::Matrix{Float64})
+function gvgrad(tgv::TrajectoryGVGMMMap, y::Matrix{Float64})
     const D, T = size(y)
     
     gv = var(y, 2) # global variance over time
