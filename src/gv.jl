@@ -19,3 +19,22 @@ function fvpostf(vs::VarianceScaling, src::AbstractMatrix)
     fvpostf!(vs, filtered)
     filtered
 end
+
+# Peseudo GV emphasis filter (heuristic)
+immutable PeseudoGV
+    p::Float64
+end
+
+const magic_paramter = 1.4
+
+function fvpostf!(pgv::PeseudoGV, src::AbstractVector)
+    # simply multiply constant
+    src *= pgv.p
+    nothing
+end
+
+function fvpostf(pgv::PeseudoGV, src::AbstractVector)
+    filtered = copy(src)
+    fvpostf!(pgv, filtered)
+    filtered
+end

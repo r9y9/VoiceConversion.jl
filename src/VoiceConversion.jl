@@ -62,7 +62,6 @@ for fname in ["align",
               "diffgmm",
               "trajectory_gmmmap",
               "gv",
-              "peseudo_gv",
               "vc"]
     include(string(fname, ".jl"))
 end
