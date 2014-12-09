@@ -142,7 +142,8 @@ function fvconvert(tgv::TrajectoryGVGMMMap, X::Matrix{Float64};
     const D, T = size(y⁰)
 
     # Better initial value based on eq. (58)
-    y⁰ = sqrt(tgv.μᵛ ./ var(X[1:D,:], 2)) .* (y⁰ .- mean(y⁰, 2)) .+ mean(y⁰, 2)
+    y⁰ = sqrt(tgv.μᵛ ./ var(y⁰[1:D,:], 2)) .* (y⁰ .- mean(y⁰, 2)) .+ mean(y⁰, 2)
+    # y⁰ = sqrt(tgv.μᵛ ./ var(X[1:D,:], 2)) .* (y⁰ .- mean(y⁰, 2)) .+ mean(y⁰, 2)
 
     const ω = 1.0/(2T)
 
