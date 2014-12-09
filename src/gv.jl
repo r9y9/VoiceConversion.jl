@@ -4,13 +4,13 @@
 # Synthesis." INTERSPEECH. 2012.
 
 immutable VarianceScaling
-    σ::Vector{Float64}
+    σ²::Vector{Float64}
 end
 
 function fvpostf!(vs::VarianceScaling, src::AbstractMatrix)
     const D = size(src, 1)
     μ = mean(src, 2)
-    src[:,:] = sqrt(vs.σ ./ var(src[1:D,:], 2)) .* (src .- μ) .+ μ
+    src[:,:] = sqrt(vs.σ² ./ var(src[1:D,:], 2)) .* (src .- μ) .+ μ
     nothing
 end
 
