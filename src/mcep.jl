@@ -40,7 +40,7 @@ mc2e(mat::Matrix{Float64}, alpha, len) =
 # spectral envelope estimation.
 function world_mcep(x, fs, period::Float64=5.0, order::Int=25,
                     alpha::Float64=0.35)
-    w = World(fs=fs, period=period)
+    w = World(fs, period)
 
     # Fundamental frequency (f0) estimation by DIO
     f0, timeaxis = dio(w, x)

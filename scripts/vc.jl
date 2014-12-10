@@ -62,7 +62,7 @@ function main()
     end
 
     elapsed_fe = @elapsed begin
-        w = World(fs=fs, period=period)
+        w = World(fs, period)
         
         # Fundamental frequency (f0) estimation by DIO
         f0, timeaxis = dio(w, x)
