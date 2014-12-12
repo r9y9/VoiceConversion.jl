@@ -117,7 +117,10 @@ type TrajectoryGVGMMMap <: TrajectoryConverter
     Σᵛᵛ::Matrix{Float64}
     pᵥ::Matrix{Float64}
 
-    function TrajectoryGVGMMMap(tgmm::TrajectoryGMMMap, μᵛ, Σᵛᵛ)
+    function TrajectoryGVGMMMap(tgmm::TrajectoryGMMMap,
+                                μᵛ::Vector{Float64}, # mean of GV
+                                Σᵛᵛ::Matrix{Float64} # covars of GV
+        )
         @assert sum(μᵛ .< 0) == 0
         new(tgmm, μᵛ, Σᵛᵛ, inv(Σᵛᵛ))
     end
