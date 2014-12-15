@@ -26,9 +26,9 @@ function diffvc_base(src, mapper)
     converted[1,:] = 0.0
 
     # Waveform modification
-    mf = MLSADF(order)
+    mf = MLSADF(order, alpha)
     hopsize = int(fs / (1000 / period))
-    synthesis!(mf, x, converted, alpha, hopsize)
+    synthesis!(mf, x, converted, hopsize)
 end
 
 # Female (`clb`) to female (`slt`) voice conversion demo

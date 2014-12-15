@@ -19,7 +19,7 @@ Options:
 using VoiceConversion
 using MCepAlpha
 using WAV
-using SPTK
+using SynthesisFilters
 using HDF5, JLD
 
 function main()
@@ -67,11 +67,9 @@ function main()
     
     
     # Waveform synthesis using Mel-Log Spectrum Approximation filter
-    mf = MLSADF(order)
+    mf = MLSADF(order, alpha)
     hopsize = int(fs / (1000 / period))
-    elapsed_syn = @elapsed begin
-        y = synthesis!(mf, x, converted, alpha, hopsize)
-    end
+    elapsed_syn = @elapsed y = synthesis!(mf, x, converted, hopsize)
     println("elapsed time in waveform moduration is $(elapsed_syn) sec.")
     
     wavwrite(float(y), args["<dst_wav>"], Fs=fs)

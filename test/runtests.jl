@@ -4,7 +4,7 @@ using Base.Test
 using MCepAlpha
 using WAV
 using HDF5, JLD
-using SPTK
+using SynthesisFilters
 using WORLD
 
 for fname in ["dtw",
