@@ -3,8 +3,8 @@ module VoiceConversion
 using NumericExtensions
 using ArrayViews
 using Distributions
+using MelGeneralizedCepstrums
 using WORLD
-using SPTK
 using HDF5, JLD
 
 export
