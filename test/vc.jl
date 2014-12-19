@@ -84,5 +84,6 @@ end
 
 ### Tests
 
+println("testing: voice conversion process using WORLD vocoder.")
 vc_clb2slt()
 trajectory_vc_clb2slt()

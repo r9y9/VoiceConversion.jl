@@ -13,4 +13,5 @@ function test_gmmmap()
     @test size(mapper) == (D, 1)
 end
 
+println("testing: GMM-based parameter conversion")
 test_gmmmap()

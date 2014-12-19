@@ -49,5 +49,6 @@ function test_trajectory(T::Int)
     @test size(mapper) == (2D, T)
 end
 
+println("testing: GMM-based trajectory paramter conversion")
 test_constructW(30, 40)
 test_trajectory(100)

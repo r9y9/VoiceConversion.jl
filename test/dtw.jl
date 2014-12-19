@@ -28,5 +28,6 @@ end
 
 ### Tests
 
+println("testing: Dynamic time warping")
 testdtw_case1()
 testdtw_case2()
