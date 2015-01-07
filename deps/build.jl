@@ -13,7 +13,6 @@ function install_non_official_pkg(path; build::Bool=false)
 end
 
 install_non_official_pkg("https://github.com/r9y9/WORLD.jl", build=true)
-install_non_official_pkg("https://github.com/r9y9/MCepAlpha.jl")
 install_non_official_pkg("https://github.com/r9y9/SynthesisFilters.jl",
                          build=true)
 install_non_official_pkg("https://github.com/r9y9/MelGeneralizedCepstrums.jl",
