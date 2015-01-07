@@ -17,7 +17,7 @@ Options:
 """
 
 using VoiceConversion
-using MCepAlpha
+using MelGeneralizedCepstrums
 using WAV
 using SynthesisFilters
 using HDF5, JLD
@@ -30,7 +30,7 @@ function main()
     x = float(vec(x))
     const fs = int(fs)
     println("length of input signal is $(length(x)/fs) sec.")
-    
+
     const period = float(args["--period"])
     const order = int(args["--order"])
     alpha = float(args["--alpha"])
@@ -38,7 +38,7 @@ function main()
         alpha = mcepalpha(fs)
     end
     const trajectory = args["--trajectory"]
-        
+
     # Load mapping model
     gmm = load(args["<model_jld>"])
     if !gmm["diff"]
@@ -60,18 +60,18 @@ function main()
 
     # remove power coef.
     src[1,:] = 0.0
-    
+
     # Perform conversion
     elapsed_vc = @elapsed converted = vc(mapper, src)
     println("elapsed time in conversion process is $(elapsed_vc) sec.")
-    
-    
+
+
     # Waveform synthesis using Mel-Log Spectrum Approximation filter
     mf = MLSADF(order, alpha)
     hopsize = int(fs / (1000 / period))
     elapsed_syn = @elapsed y = synthesis!(mf, x, converted, hopsize)
     println("elapsed time in waveform moduration is $(elapsed_syn) sec.")
-    
+
     wavwrite(float(y), args["<dst_wav>"], Fs=fs)
     println("Dumped to ", args["<dst_wav>"])
 end

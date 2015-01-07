@@ -1,6 +1,6 @@
 using DocOpt
 
-doc="""Voice conversion based on WORLD-based speech analysis and 
+doc="""Voice conversion based on WORLD-based speech analysis and
 synthesis framework
 
 Usage:
@@ -19,7 +19,7 @@ Options:
 """
 
 using VoiceConversion
-using MCepAlpha
+using MelGeneralizedCepstrums
 using WAV
 using HDF5, JLD
 using WORLD
@@ -32,7 +32,7 @@ function main()
     x = float(vec(x))
     const fs = int(fs)
     println("length of input signal is $(length(x)/fs) sec.")
-    
+
     const period = float(args["--period"])
     const order = int(args["--order"])
     alpha = float(args["--alpha"])
@@ -41,7 +41,7 @@ function main()
     end
     const trajectory = args["--trajectory"]
     const gvmodel = string(args["--gv"])
-        
+
     # Load mapping model
     gmm = load(args["<model_jld>"])
     if gmm["diff"]
@@ -63,13 +63,13 @@ function main()
 
     elapsed_fe = @elapsed begin
         w = World(fs, period)
-        
+
         # Fundamental frequency (f0) estimation by DIO
         f0, timeaxis = dio(w, x)
-        
+
         # F0 re-estimation by StoneMask
         f0 = stonemask(w, x, timeaxis, f0)
-        
+
         # Spectral envelope estimation
         spectrogram = cheaptrick(w, x, timeaxis, f0)
 
@@ -85,11 +85,11 @@ function main()
         # add delta feature
         src = [src[1,:], push_delta(src[2:end,:])]
     end
-    
+
     # Perform conversion
     elapsed_vc = @elapsed converted = vc(mapper, src)
     println("elapsed time in conversion process is $(elapsed_vc) sec.")
-    
+
     # Mel-Cepstrum to spectrum
     converted_spectrogram = mc2wsp(converted, size(spectrogram,1), -alpha)
 
@@ -99,7 +99,7 @@ function main()
                                         length(x))
     end
     println("elapsed time in waveform synthesis is $(elapsed_syn) sec.")
-    
+
     wavwrite(float(y), args["<dst_wav>"], Fs=fs)
     println("Dumped to ", args["<dst_wav>"])
 end

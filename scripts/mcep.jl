@@ -15,7 +15,7 @@ Options:
 """
 
 using VoiceConversion
-using MCepAlpha
+using MelGeneralizedCepstrums
 using WORLD: get_fftsize_for_cheaptrick
 using WAV
 using HDF5, JLD
@@ -34,7 +34,7 @@ function _mcep(path, period::Float64, order::Int, alpha::Float64, dstpath)
     end
 
     mcgram = world_mcep(x, fs, period, order, alpha)
-    
+
     save(dstpath,
          "description", "WORLD-based Mel-cepstrum",
          "period", period,

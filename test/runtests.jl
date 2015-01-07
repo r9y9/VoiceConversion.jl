@@ -1,7 +1,7 @@
 using VoiceConversion
 using Base.Test
 
-using MCepAlpha
+using MelGeneralizedCepstrums
 using WAV
 using HDF5, JLD
 using SynthesisFilters
