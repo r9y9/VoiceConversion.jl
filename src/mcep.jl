@@ -22,20 +22,6 @@ function mc2logamp(mc::Vector{Float64}, freqbins::Int, alpha::Float64)
     real(fft(actualceps))
 end
 
-# mc2e computes energy from mel-cepstrum.
-function mc2e(mc::Vector{Float64}, alpha::Float64, len::Int)
-    # back to linear frequency domain
-    c = freqt(mc, len-1, -alpha)
-
-    # compute impule response from cepsturm
-    ir = c2ir(c, len)
-
-    sumabs2(ir)
-end
-
-mc2e(mat::Matrix{Float64}, alpha, len) =
-    [mc2e(mat[:,i], alpha, len) for i=1:size(mat, 2)]
-
 # world_mcep computes mel-cepstrum for whole input signal using WORLD-based
 # spectral envelope estimation.
 function world_mcep(x, fs, period::Float64=5.0, order::Int=25,

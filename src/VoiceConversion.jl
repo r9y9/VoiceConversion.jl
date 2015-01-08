@@ -37,7 +37,6 @@ export
     # Feature conversion, extractions and alignment
     logamp2mc,
     mc2logamp,
-    mc2e,
     world_mcep,
     align_mcep,
     wsp2mc,
