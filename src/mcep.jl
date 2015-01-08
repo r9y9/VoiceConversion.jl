@@ -16,8 +16,8 @@ function mc2logamp(mc::Vector{Float64}, freqbins::Int, alpha::Float64)
     actualceps = zeros(eltype(mc), freqbins)
     actualceps[1] = ceps[1]
     for i=2:length(ceps)
-        actualceps[i] = ceps[i]
-        actualceps[freqbins-i+2] = ceps[i]
+        @inbounds actualceps[i] = ceps[i]
+        @inbounds actualceps[freqbins-i+2] = ceps[i]
     end
     real(fft(actualceps))
 end
@@ -56,7 +56,7 @@ function wsp2mc(spectrogram::Matrix{Float64}, order::Int, alpha::Float64)
     const T = size(spectrogram, 2)
     mcgram = zeros(order+1, T)
     for i=1:T
-        mcgram[:,i] = wsp2mc(spectrogram[:,i], order, alpha)
+        @inbounds mcgram[:,i] = wsp2mc(spectrogram[:,i], order, alpha)
     end
     mcgram
 end
@@ -73,7 +73,7 @@ function mc2wsp(mcgram::Matrix{Float64}, freqbins::Int, alpha::Float64)
     const T = size(mcgram, 2)
     spectrogram = Array(eltype(mcgram), freqbins, T)
     for t=1:T
-        spectrogram[:,t] = mc2wsp(mcgram[:,t], freqbins, alpha)
+        @inbounds spectrogram[:,t] = mc2wsp(mcgram[:,t], freqbins, alpha)
     end
     spectrogram
 end

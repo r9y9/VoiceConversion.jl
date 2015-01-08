@@ -24,8 +24,9 @@ function align_mcep(src::Matrix{Float64}, # feature matrix of source speaker
     hole = setdiff([path[1]:path[end]], path)
     for i in hole
         if i > 1 && i < size(src, 2)
-            newtgt[:,i] =
-                (newtgt[:,i-1] + newtgt[:,i+1]) / 2.0
+            for j=1:size(newtgt, 1)
+                @inbounds newtgt[j,i] = (newtgt[j,i-1] + newtgt[j,i+1]) / 2.0
+            end
         end
     end
 
