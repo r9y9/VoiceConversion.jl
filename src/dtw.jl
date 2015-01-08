@@ -22,7 +22,7 @@ function transition(d::DTW, i::Int, j::Int)
     2.0 # abs(i-j)
 end
 
-function observation(d::DTW, v::Vector{Float64}, i::Int)
+function observation(d::DTW, v::AbstractVector, i::Int)
     sumabs2(v  - d.template[:,i])
 end
 
@@ -50,7 +50,7 @@ end
 # update! updates cost table for a given vector in an on-line manner.
 # In off-line situations, please use fit! because it is more efficient
 # and faster than this on-line version.
-function update!(d::DTW, v::Vector{Float64})
+function update!(d::DTW, v::AbstractVector)
     # S: length of tempalte, T: current time length
     const S, T = size(d.costtable)
     const lastcost = d.costtable[:, T]
@@ -94,11 +94,11 @@ function fit!(d::DTW, template::Matrix{Float64}, sequence::Matrix{Float64})
     d.template = template
 
     for t=1:T
-        const v = sequence[:,t]
+        v = sequence[:,t]
         for i=1:S
             minindex = i
-            const ocost = observation(d, v, i)
-            const tcost = transition(d, minindex, i)
+            ocost = observation(d, v, i)
+            tcost = transition(d, minindex, i)
             @inbounds mincost = d.costtable[minindex, t] + ocost + tcost
 
             # search minindex
