@@ -10,7 +10,7 @@ Usage:
 Options:
     -h --help        show this message
     --period=PERIOD  frame period in msec [default: 5.0]
-    --order=ORDER    order of mel cepsrum [default: 25]
+    --order=ORDER    order of mel cepsrum [default: 40]
     --alpha=ALPHA    all-pass constant [default: 0.0]
     --trajectory     trajectory-based parameter conversion
     --T=t            maximum length for one-step trajectory conversion [default: 100]
