@@ -17,6 +17,9 @@ Options:
 using VoiceConversion
 using HDF5, JLD
 
+using Logging
+@Logging.configure(level=DEBUG, output=STDOUT)
+
 searchdir(path, key) = filter(x -> contains(x, key), readdir(path))
 
 function _align(srcpath, tgtpath, threshold::Float64, dstpath)
@@ -33,7 +36,7 @@ function _align(srcpath, tgtpath, threshold::Float64, dstpath)
                                     framelen=int(src["framelen"]))
     println("The number of aligned frames: $(size(src_mcep, 2))")
     if size(src_mcep, 2) ==  0
-        warn("No frame found in aligned data. Probably threshold is too high.")
+        @warn("No frame found in aligned data. Probably threshold is too high.")
     end
 
     @assert !any(isnan(src_mcep))
@@ -60,7 +63,7 @@ function main()
     tgtdir = args["<tgt_dir>"]
     dstdir = args["<dst_dir>"]
     if !isdir(dstdir)
-        info("Create $(dstdir)")
+        @info("Create $(dstdir)")
         run(`mkdir -p $dstdir`)
     end
 
@@ -68,7 +71,7 @@ function main()
     const nmax = int(args["--max"])
 
     files = searchdir(srcdir, ".jld")
-    info("$(length(files)) data found.")
+    @info("$(length(files)) data found.")
 
     count = 0
     for filename in files
@@ -78,10 +81,10 @@ function main()
         dstpath = joinpath(dstdir, string(splitext(basename(srcpath))[1],
                                       "_parallel.jld"))
 
-        info("Start processing $(srcpath) and $(tgtpath)")
+        @info("Start processing $(srcpath) and $(tgtpath)")
         elapsed = @elapsed _align(srcpath, tgtpath, threshold, dstpath)
-        info("Elapsed time in alignment is $(elapsed) sec.")
-        info("Dumped to $(dstpath)")
+        @info("Elapsed time in alignment is $(elapsed) sec.")
+        @info("Dumped to $(dstpath)")
 
         count += 1
         if count >= nmax
@@ -89,7 +92,7 @@ function main()
         end
     end
 
-    println("Finished")
+    @info("Finished")
 end
 
 main()

@@ -16,9 +16,12 @@ Options:
 
 using VoiceConversion
 using MelGeneralizedCepstrums
-using WORLD: get_fftsize_for_cheaptrick
+using WORLD
 using WAV
 using HDF5, JLD
+
+using Logging
+@Logging.configure(level=DEBUG, output=STDOUT)
 
 searchdir(path, key) = filter(x -> contains(x, key), readdir(path))
 
@@ -52,7 +55,7 @@ function main()
     srcdir = args["<src_dir>"]
     dstdir = args["<dst_dir>"]
     if !isdir(dstdir)
-        info("Create $(dstdir)")
+        @info("Create $(dstdir)")
         run(`mkdir -p $dstdir`)
     end
 
@@ -62,17 +65,17 @@ function main()
     alpha = float(args["--alpha"])
 
     files = searchdir(srcdir, ".wav")
-    info("$(length(files)) data found.")
+    @info("$(length(files)) data found.")
 
     count = 0
     for filename in files
         path = joinpath(srcdir, filename)
         dstpath = joinpath(dstdir, string(splitext(basename(path))[1], ".jld"))
 
-        info("Start processing $(path)")
+        @info("Start processing $(path)")
         elapsed = @elapsed _mcep(path, period, order, alpha, dstpath)
-        info("Elapsed time in feature extraction is $(elapsed) sec.")
-        info("Dumped to $(dstpath)")
+        @info("Elapsed time in feature extraction is $(elapsed) sec.")
+        @info("Dumped to $(dstpath)")
 
         count += 1
         if count >= nmax
@@ -80,7 +83,7 @@ function main()
         end
     end
 
-    println("Finished")
+    @info("Finished")
 end
 
 main()

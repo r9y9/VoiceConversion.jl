@@ -35,7 +35,7 @@ immutable ParallelDataset
         files = searchdir(path, suffix)
         sort!(files)
 
-        info("$(length(files)) training data found")
+        @debug("$(length(files)) training data found")
 
         XY = ones(1,1)
         totalframes::Int = 0
@@ -81,8 +81,8 @@ immutable ParallelDataset
             end
         end
 
-        info("total number of frames: $(totalframes)")
-        info("total number of phrases: $(totalphrases)")
+        @debug("total number of frames: $(totalframes)")
+        @debug("total number of phrases: $(totalphrases)")
 
         X = ones(1,1)
         Y = ones(1,1)
@@ -140,7 +140,7 @@ immutable GVDataset
         files = searchdir(path, suffix)
         sort!(files)
 
-        info("$(length(files)) training data found")
+        @debug("$(length(files)) training data found")
 
         X = zeros(0, 0)
         totalphrases::Int = 0
@@ -174,7 +174,7 @@ immutable GVDataset
             end
         end
 
-        info("total number of phrases: $(totalphrases)")
+        @debug("total number of phrases: $(totalphrases)")
 
         @assert !any(isnan(X))
 

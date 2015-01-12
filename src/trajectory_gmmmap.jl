@@ -26,7 +26,7 @@ type TrajectoryGMMMap <: TrajectoryConverter
             Dʸ[:,:,m] = Σʸʸ[:,:,m] - ΣʸˣΣˣˣ⁻¹[:,:,m] * Σˣʸ[:,:,m]
             Dʸ[:,:,m] = Dʸ[:,:,m]^-1
         end
-        
+
         new(g, W, zeros(0), Dʸ, spzeros(0, 0))
     end
 end
@@ -41,14 +41,14 @@ function compute_wt(t::Int, D::Int, T::Int)
     w⁰ = spzeros(D, D*T)
     w¹ = spzeros(D, D*T)
     w⁰[:, (t-1)*D+1:t*D] = speye(D)
-    
+
     if t >= 2
         w¹[:, (t-2)*D+1:(t-1)*D] = -0.5*speye(D)
     end
     if t < T
         w¹[:, t*D+1:(t+1)*D] = 0.5*speye(D)
     end
-    
+
     [w⁰, w¹]
 end
 
@@ -60,13 +60,13 @@ function constructW(D::Int, T::Int)
     W
 end
 
-# Mapping source spectral feature x to target spectral feature y 
+# Mapping source spectral feature x to target spectral feature y
 # so that maximize the likelihood of y given x.
 function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     # input feature vector must contain delta feature
     const D, T = div(size(X, 1), 2), size(X, 2)
     2D == dim(tgmm) || throw(DimensionMismatch("Inconsistent dimentions."))
-    
+
     if T != length(tgmm)
         tgmm.W = constructW(D, T)
     end
@@ -80,7 +80,7 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
 
     # A suboptimum mixture sequence  eq. (37)
     m̂ = predict(g.px, X)
-    
+
     # Compute Eʸ eq.(40)
     Eʸ = Array(Float64, 2D, T)
     for t=1:T
@@ -131,7 +131,7 @@ dim(t::TrajectoryGVGMMMap) = dim(t.tgmm)
 ncomponents(t::TrajectoryGVGMMMap) = ncomponents(t.tgmm)
 Base.size(g::TrajectoryGVGMMMap) = Base.size(t.tgmm)
 
-# Mapping source spectral feature x to target spectral feature y 
+# Mapping source spectral feature x to target spectral feature y
 # so that maximize the likelihood of y given x with considering
 # global variance.
 # Note that step size `α` should be carefully chosen.
@@ -155,13 +155,13 @@ function fvconvert(tgv::TrajectoryGVGMMMap, X::Matrix{Float64};
     W = tgv.tgmm.W
     Dʸ⁻¹ = tgv.tgmm.Dʸ⁻¹
     WᵀDʸ⁻¹ = W' * Dʸ⁻¹
-    
+
     # update y based on gradient decent
     yⁱ = y⁰
     for epoch=1:epochs
         Δyⁱ = ω*(-WᵀDʸ⁻¹ * W * vec(yⁱ) + WᵀDʸ⁻¹ * Eʸ) + vec(gvgrad(tgv, yⁱ))
         if verbose
-            println("Epoch #$(epoch): norm $(norm(Δyⁱ))")
+            @debug("Epoch #$(epoch): norm $(norm(Δyⁱ))")
         end
         @assert !any(isnan(Δyⁱ))
         Δyⁱ = reshape(Δyⁱ, D, T)
@@ -175,16 +175,16 @@ end
 # gvgrad computes gradient of the likelihood with regard to GV.
 function gvgrad(tgv::TrajectoryGVGMMMap, y::Matrix{Float64})
     const D, T = size(y)
-    
+
     gv = var(y, 2) # global variance over time
     @assert size(gv) == (D, 1)
     μʸ = mean(y, 2)
     @assert size(μʸ) == (D, 1)
-    
+
     v = Array(Float64, D, T)
     for t=1:T
         @inbounds v[:,t] = -2.0/T*(tgv.pᵥ'*(gv - tgv.μᵛ)) .* (y[:,t] - μʸ)
     end
-    
+
     v
 end

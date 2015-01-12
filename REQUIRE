@@ -1,12 +1,12 @@
 # Dependencies for src/
-# SPTK
 # WORLD
-# MCepAlpha
+# MelGeneralizedCepstrums
 julia 0.3
 HDF5 0.4.0
 NumericExtensions
 Distributions 0.6.2
 ArrayViews
+Logging
 
 # Dependenciies for scripts/
 DocOpt

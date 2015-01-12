@@ -22,6 +22,9 @@ using WAV
 using SynthesisFilters
 using HDF5, JLD
 
+using Logging
+@Logging.configure(level=DEBUG, output=STDOUT)
+
 function main()
     args = docopt(doc, version=v"0.0.1")
 
@@ -29,7 +32,7 @@ function main()
     @assert size(x, 2) == 1 "The input data must be monoral."
     x = float(vec(x))
     const fs = int(fs)
-    println("length of input signal is $(length(x)/fs) sec.")
+    @info("length of input signal is $(length(x)/fs) sec.")
 
     const period = float(args["--period"])
     const order = int(args["--order"])
@@ -42,7 +45,7 @@ function main()
     # Load mapping model
     gmm = load(args["<model_jld>"])
     if !gmm["diff"]
-        warn("The model doesn't seem to be trained on differencial features")
+        @warn("The model doesn't seem to be trained on differencial features")
     end
 
     mapper = GMMMap(gmm["weights"], gmm["means"], gmm["covars"])
@@ -52,7 +55,7 @@ function main()
 
     # shape (order+1, number of frames)
     elapsed_fe = @elapsed src = world_mcep(x, fs, period, order, alpha)
-    println("elapsed time in feature extraction is $(elapsed_fe) sec.")
+    @info("elapsed time in feature extraction is $(elapsed_fe) sec.")
     if trajectory
         # add delta feature
         src = [src[1,:], push_delta(src[2:end,:])]
@@ -63,17 +66,17 @@ function main()
 
     # Perform conversion
     elapsed_vc = @elapsed converted = vc(mapper, src)
-    println("elapsed time in conversion process is $(elapsed_vc) sec.")
+    @info("elapsed time in conversion process is $(elapsed_vc) sec.")
 
 
     # Waveform synthesis using Mel-Log Spectrum Approximation filter
     mf = MLSADF(order, alpha)
     hopsize = int(fs / (1000 / period))
     elapsed_syn = @elapsed y = synthesis!(mf, x, converted, hopsize)
-    println("elapsed time in waveform moduration is $(elapsed_syn) sec.")
+    @info("elapsed time in waveform moduration is $(elapsed_syn) sec.")
 
     wavwrite(float(y), args["<dst_wav>"], Fs=fs)
-    println("Dumped to ", args["<dst_wav>"])
+    @info("Dumped to ", args["<dst_wav>"])
 end
 
-@time main()
+main()

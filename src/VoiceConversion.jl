@@ -1,11 +1,15 @@
 module VoiceConversion
 
+using Logging
+@Logging.configure(level=DEBUG, output=STDOUT)
+
 using NumericExtensions
 using ArrayViews
 using Distributions
 using MelGeneralizedCepstrums
 using WORLD
 using HDF5, JLD
+
 
 export
     # Voice conversion

@@ -21,6 +21,9 @@ using VoiceConversion
 using HDF5, JLD
 using PyCall
 
+using Logging
+@Logging.configure(level=DEBUG, output=STDOUT)
+
 @pyimport sklearn.mixture as mixture
 
 function main()
@@ -49,7 +52,7 @@ function main()
 
     # pass transposed matrix because python is row-major language
     elapsed = @elapsed gmm[:fit](dataset.X')
-    info("Elapsed time in training is $(elapsed) sec.")
+    @info("Elapsed time in training is $(elapsed) sec.")
 
 
     # save transposed parameters because julia is column-major language

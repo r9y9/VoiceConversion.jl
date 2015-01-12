@@ -23,6 +23,9 @@ using VoiceConversion
 using HDF5, JLD
 using PyCall
 
+using Logging
+@Logging.configure(level=DEBUG, output=STDOUT)
+
 @pyimport sklearn.mixture as mixture
 
 # pygmmmean2jl return transposed parameters because julia is column-major
@@ -91,7 +94,7 @@ function main()
         if !isfile(dstpath)
             error("$(dstpath) not found. Cannot refine model.")
         end
-        println("refine pre-trained GMM")
+        @info("refine pre-trained GMM")
         pretrained_jlgmm = load(dstpath)
         copy2pygmm!(pretrained_jlgmm, gmm)
     end
@@ -102,7 +105,7 @@ function main()
 
     # pass transposed matrix because python is row-major language
     elapsed = @elapsed gmm[:fit](X')
-    info("Elapsed time in training is $(elapsed) sec., $(elapsed/60) mins. \n $(elapsed/3600) hours.")
+    @info("Elapsed time in training is $(elapsed) sec., $(elapsed/60) mins. \n $(elapsed/3600) hours.")
 
     save(dstpath,
          "description", "Parameters of Gaussian Mixture Model",
@@ -113,7 +116,7 @@ function main()
          "covars", pygmmcovar2jl(gmm[:covars_])
          )
 
-    info("Dumped to $(dstpath)")
+    @info("Dumped to $(dstpath)")
 end
 
 main()

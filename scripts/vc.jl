@@ -24,6 +24,9 @@ using WAV
 using HDF5, JLD
 using WORLD
 
+using Logging
+@Logging.configure(level=DEBUG, output=STDOUT)
+
 function main()
     args = docopt(doc, version=v"0.0.1")
 
@@ -31,7 +34,7 @@ function main()
     @assert size(x, 2) == 1 "The input data must be monoral."
     x = float(vec(x))
     const fs = int(fs)
-    println("length of input signal is $(length(x)/fs) sec.")
+    @info("length of input signal is $(length(x)/fs) sec.")
 
     const period = float(args["--period"])
     const order = int(args["--order"])
@@ -45,7 +48,7 @@ function main()
     # Load mapping model
     gmm = load(args["<model_jld>"])
     if gmm["diff"]
-        warn("The model seem to be trained on differencial features")
+        @warn("The model seem to be trained on differencial features")
     end
 
     mapper = GMMMap(gmm["weights"], gmm["means"], gmm["covars"])
@@ -80,7 +83,7 @@ function main()
         ap = aperiodicityratio(w, x, f0, timeaxis)
     end
 
-    println("elapsed time in feature extraction is $(elapsed_fe) sec.")
+    @info("elapsed time in feature extraction is $(elapsed_fe) sec.")
     if trajectory
         # add delta feature
         src = [src[1,:], push_delta(src[2:end,:])]
@@ -88,7 +91,7 @@ function main()
 
     # Perform conversion
     elapsed_vc = @elapsed converted = vc(mapper, src)
-    println("elapsed time in conversion process is $(elapsed_vc) sec.")
+    @info("elapsed time in conversion process is $(elapsed_vc) sec.")
 
     # Mel-Cepstrum to spectrum
     converted_spectrogram = mc2wsp(converted, size(spectrogram,1), -alpha)
@@ -98,10 +101,10 @@ function main()
         y = synthesis_from_aperiodicity(w, f0, converted_spectrogram, ap,
                                         length(x))
     end
-    println("elapsed time in waveform synthesis is $(elapsed_syn) sec.")
+    @info("elapsed time in waveform synthesis is $(elapsed_syn) sec.")
 
     wavwrite(float(y), args["<dst_wav>"], Fs=fs)
-    println("Dumped to ", args["<dst_wav>"])
+    @info("Dumped to ", args["<dst_wav>"])
 end
 
-@time main()
+main()
