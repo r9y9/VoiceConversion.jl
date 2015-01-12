@@ -1,5 +1,7 @@
 # Dynamic Time Warping (DTW)
 
+using VoiceConversion.DTWs
+
 function testdtw_case1()
     # template sequence [1,2,3,4]
     v1 = float64([1 2 3;1 2 4;1 8 5;10 3 6])'

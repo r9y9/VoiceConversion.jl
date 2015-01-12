@@ -1,15 +1,19 @@
 # Alignment functions to create parallel data
 
+using .DTWs
+
 # align_mcep performs dtw-based mel-cesptrum feature alignment between two
 # speakers.
-function align_mcep(src::Matrix{Float64}, # feature matrix of source speaker
-                    tgt::Matrix{Float64}; # feature matrix of target speaker
+function align_mcep(src::AbstractMatrix{Float64}, # feature matrix of source speaker
+                    tgt::AbstractMatrix{Float64}; # feature matrix of target speaker
                     th::Float64=-14.0,    # threshold to cut off silence frames
                     alpha::Float64=0.35,  # all-pass constant
-                    framelen::Int=1024
+                    framelen::Int=1024,
+                    remove_silence::Bool=true
                     )
-    @assert size(src, 1) == size(tgt, 1) ||
-        error("order of feature vector must be equal")
+    if size(src, 1) != size(tgt, 1)
+        throw(DimentionMismatch("order of feature vector must be equal"))
+    end
 
     # Alignment
     d = DTW(fstep=0, bstep=2) # allow one skip
@@ -30,10 +34,11 @@ function align_mcep(src::Matrix{Float64}, # feature matrix of source speaker
         end
     end
 
-    # Remove silence segment
-    E = log(mc2e(src, alpha, framelen))
-    src = src[:, E .> th]
-    newtgt = newtgt[:, E .> th]
+    if remove_silence
+        E = log(mc2e(src, alpha, framelen))
+        src = src[:, E .> th]
+        newtgt = newtgt[:, E .> th]
+    end
 
     src, newtgt
 end

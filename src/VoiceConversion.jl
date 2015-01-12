@@ -26,13 +26,6 @@ export
     fvpostf!,
     fvpostf,
 
-    # Dynamic Time Warping (DTW) related functions
-    DTW,
-    fit!,
-    update!,
-    set_template!,
-    backward,
-
     # Feature conversion, extractions and alignment
     logamp2mc,
     mc2logamp,
@@ -46,13 +39,10 @@ export
     GVDataset,
     push_delta
 
-## Type Hierarchy ##
-abstract AbstractConverter
-abstract FrameByFrameConverter <: AbstractConverter
-abstract TrajectoryConverter <: AbstractConverter
-
-for fname in ["align",
+for fname in [
+              "common",
               "dtw",
+              "align",
               "datasets",
               "mcep",
               "gmm",
@@ -60,7 +50,8 @@ for fname in ["align",
               "diffgmm",
               "trajectory_gmmmap",
               "gv",
-              "vc"]
+              "vc"
+    ]
     include(string(fname, ".jl"))
 end
 

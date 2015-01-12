@@ -6,7 +6,7 @@ searchdir(path, key) = filter(x -> contains(x, key), readdir(path))
 function push_delta(src)
     const D, T = size(src)
     src = repmat(src, 2)
-    for t=2:T-1        
+    for t=2:T-1
         src[D+1:end,t] = -0.5*src[1:D,t-1] + 0.5*src[1:D,t+1]
     end
     src
@@ -56,7 +56,7 @@ immutable ParallelDataset
                 src_x = push_delta(src_x)
                 tgt_x = push_delta(tgt_x)
             end
-            
+
             # use differencial
             if diff
                 tgt_x = tgt_x - src_x
@@ -166,7 +166,7 @@ immutable GVDataset
                     X = hcat(X, gv)
                 end
             end
-            
+
             totalphrases += 1
 
             if totalphrases >= nmax

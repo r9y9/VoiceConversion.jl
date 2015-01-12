@@ -1,3 +1,9 @@
+module DTWs
+
+## A small module to perform Dynamic Time Warping alignment. ##
+
+export DTW, fit!, update!, set_template!, backward
+
 # type DTW represents a dynamic time warping.
 # TODO(ryuichi) should be more generic
 type DTW
@@ -135,3 +141,5 @@ function backward(d::DTW)
 
     minpath
 end
+
+end # module
