@@ -21,8 +21,8 @@ function mc2wsp(mc::Vector{Float64}, fftlen::Int, α::Float64)
 
     symc = zeros(eltype(mc), fftlen)
     copy!(symc, c)
-    for i=2:length(c)
-        @inbounds symc[end-i+1] = c[i]
+    for i=1:length(c)-1
+        @inbounds symc[end-i+1] = symc[i+1]
     end
 
     # back to spectrum
