@@ -27,8 +27,6 @@ export
     fvpostf,
 
     # Feature conversion, extractions and alignment
-    logamp2mc,
-    mc2logamp,
     world_mcep,
     align_mcep,
     wsp2mc,
@@ -44,7 +42,7 @@ for fname in [
               "dtw",
               "align",
               "datasets",
-              "mcep",
+              "wmcep",
               "gmm",
               "gmmmap",
               "diffgmm",
