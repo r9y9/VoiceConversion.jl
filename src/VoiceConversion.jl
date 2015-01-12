@@ -22,7 +22,6 @@ export
     dim,
 
     # Post filters
-    PeseudoGV,
     VarianceScaling,
     fvpostf!,
     fvpostf,
