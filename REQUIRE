@@ -1,8 +1,9 @@
 # Dependencies for src/
-# WORLD
+#
 # MelGeneralizedCepstrums
 julia 0.3
 HDF5 0.4.0
+WORLD
 NumericExtensions
 Distributions 0.6.2
 ArrayViews
