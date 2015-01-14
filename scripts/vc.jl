@@ -94,7 +94,8 @@ function main()
     @info("elapsed time in conversion process is $(elapsed_vc) sec.")
 
     # Mel-Cepstrum to spectrum
-    converted_spectrogram = mc2wsp(converted, size(spectrogram,1), -alpha)
+    fftlen = size(spectrogram,1)*2-1
+    converted_spectrogram = mc2wsp(converted, fftlen, alpha)
 
     # Waveform synthesis using WORLD
     elapsed_syn = @elapsed begin
