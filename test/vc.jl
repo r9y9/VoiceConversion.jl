@@ -37,7 +37,8 @@ x_clb28 = copy(x)
 function vc_base(src, mapper)
     converted = vc(mapper, src)
     @test !any(isnan(converted))
-    converted_spectrogram = mc2wsp(converted, size(spectrogram,1), -alpha)
+    fftlen = size(spectrogram,1)*2-1
+    converted_spectrogram = mc2wsp(converted, fftlen, alpha)
     synthesis_from_aperiodicity(w, f0, converted_spectrogram, ap, length(x_clb28))
 end
 
