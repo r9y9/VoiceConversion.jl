@@ -38,7 +38,7 @@ function diffvc_clb2slt()
 
     # Load GMM to convert speech signal of `clb` to that of `slt`,
     # mixture: 32, order of mel-cepstrum: 40
-    modelpath = joinpath(Pkg.dir("VoiceConversion"), "test", "model",
+    modelpath = joinpath(Pkg.dir("VoiceConversion"), "models",
                          "clb_to_slt_gmm32_order40_diff.jld")
     gmm = load(modelpath)
     @assert gmm["diff"]
@@ -54,13 +54,13 @@ end
 # trajectory-based paramter mapping
 function trajectory_diffvc_clb2slt()
     x = copy(src_clb28)
-    
+
     # add dynamic feature
     x = [x[1,:], push_delta(x[2:end,:])]
 
     # Load GMM to convert speech signal of `clb` to that of `slt`,
     # mixture: 32, order of mel-cepstrum: 40+40 (with delta feature)
-    modelpath = joinpath(Pkg.dir("VoiceConversion"), "test", "model",
+    modelpath = joinpath(Pkg.dir("VoiceConversion"), "models",
                          "clb_to_slt_gmm32_order40_diff_with_delta.jld")
     gmm = load(modelpath)
     @assert gmm["diff"]

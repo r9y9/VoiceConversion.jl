@@ -34,7 +34,7 @@ function test_constructW(D::Int, T::Int)
 end
 
 function test_trajectory(T::Int)
-    modelpath = joinpath(Pkg.dir("VoiceConversion"), "test", "model",
+    modelpath = joinpath(Pkg.dir("VoiceConversion"), "models",
                          "clb_to_slt_gmm32_order40_diff_with_delta.jld")
     gmm = load(modelpath)
     @assert gmm["diff"]

@@ -1,9 +1,9 @@
 function test_gmmmap()
-    modelpath = joinpath(Pkg.dir("VoiceConversion"), "test", "model",
+    modelpath = joinpath(Pkg.dir("VoiceConversion"), "models",
                          "clb_to_slt_gmm32_order40_diff.jld")
     gmm = load(modelpath)
     @assert gmm["diff"]
-    
+
     mapper = GMMMap(gmm["weights"], gmm["means"], gmm["covars"])
     @test length(mapper) == 1
 
