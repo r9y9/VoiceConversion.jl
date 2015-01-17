@@ -1,18 +1,18 @@
 using DocOpt
 
-doc="""WORLD-based mel-cepstrum extraction for audio signals.
+doc="""WORLD-based F0 extraction for audio signals.
 Usage:
-    mcep.jl [options] <src_dir> <dst_dir>
-    mcep.jl --version
-    mcep.jl -h | --help
+    f0.jl [options] <src_dir> <dst_dir>
+    f0.jl --version
+    f0.jl -h | --help
 
 Options:
     -h --help        show this message
     --period=PERIOD  frame period in msec [default: 5.0]
-    --order=ORDER    order of mel cepsrum [default: 40]
-    --alpha=ALPHA    all-pass constant [default: 0.0]
     --max=MAX        Maximum number that will be processed [default: 200]
 """
+
+# TODO(ryuichi) allow to specify DioOption as command line options
 
 using VoiceConversion.Tools
 
@@ -29,9 +29,7 @@ let
     mkdir_if_not_exist(dstdir)
 
     period = float(args["--period"])
-    order = int(args["--order"])
     nmax = int(args["--max"])
-    α = float(args["--alpha"])
 
     files = searchdir(srcdir, ".wav")
     @info("$(length(files)) data found.")
@@ -40,11 +38,12 @@ let
     count = 0
     for filename in files
         path = joinpath(srcdir, filename)
-        dstpath = joinpath(dstdir, string(splitext(basename(path))[1], "_wmcep.jld"))
+        dstpath = joinpath(dstdir, string(splitext(basename(path))[1],
+                                          "_f0.jld"))
 
         @info("Start processing $(path)")
-        elapsed = @elapsed wmcep(path, period, order, α, dstpath)
-        @info("Elapsed time in feature extraction is $(elapsed) sec.")
+        elapsed = @elapsed wf0(path, period, dstpath)
+        @info("Elapsed time in F0 estimation is $(elapsed) sec.")
         @info("Dumped to $(dstpath)")
 
         count += 1

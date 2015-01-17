@@ -135,7 +135,7 @@ immutable GVDataset
     function GVDataset(path;
                        ignore0th::Bool=true,
                        add_delta::Bool=false,
-                       suffix::String=".jld",
+                       suffix::String="_gv.jld",
                        nmax::Int=100)
         files = searchdir(path, suffix)
         sort!(files)

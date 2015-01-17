@@ -1,9 +1,9 @@
 function test_constructW(D::Int, T::Int)
     W = VoiceConversion.constructW(D, T)
-    
+
     @test issparse(W)
     @test size(W) == (2D*T, D*T)
-    
+
     for t=1:T
         # coef. for static feature
         s = 2D*(t-1)+1
@@ -49,6 +49,6 @@ function test_trajectory(T::Int)
     @test size(mapper) == (2D, T)
 end
 
-println("testing: GMM-based trajectory paramter conversion")
+println("testing: GMM-based trajectory parameter conversion")
 test_constructW(30, 40)
 test_trajectory(100)

@@ -10,7 +10,7 @@ function vc(c::FrameByFrameConverter,
     # Split src feature matrix to power and spectral features
     power, src =  fm[1,:], fm[2:end,:]
 
-    const D, T = size(src)
+    const T = size(src, 2)
     converted = similar(fm)
 
     # Perform feature mapping for each time

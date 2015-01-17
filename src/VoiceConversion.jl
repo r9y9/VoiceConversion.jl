@@ -3,17 +3,13 @@ module VoiceConversion
 using Logging
 @Logging.configure(level=DEBUG, output=STDOUT)
 
-using NumericExtensions
-using ArrayViews
+using StatsBase
 using Distributions
 using MelGeneralizedCepstrums
 using WORLD
-using HDF5, JLD
-
 
 export
     # Voice conversion
-    AbstractConverter,
     FrameByFrameConverter,
     TrajectoryConverter,
     GMMMapParam,
@@ -31,10 +27,9 @@ export
     fvpostf,
 
     # Feature conversion, extractions and alignment
-    world_mcep,
-    align_mcep,
     wsp2mc,
     mc2wsp,
+    world_mcep, # to be removed
 
     # Datasets
     ParallelDataset,
@@ -44,7 +39,6 @@ export
 for fname in [
               "common",
               "dtw",
-              "align",
               "datasets",
               "wmcep",
               "gmm",
@@ -52,7 +46,8 @@ for fname in [
               "diffgmm",
               "trajectory_gmmmap",
               "gv",
-              "vc"
+              "vc",
+              "tools/tools"
     ]
     include(string(fname, ".jl"))
 end
