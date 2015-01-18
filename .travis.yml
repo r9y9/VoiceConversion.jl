@@ -13,6 +13,8 @@ before_install:
   - sudo apt-get update -qq -y
   - sudo apt-get install libpcre3-dev julia -y
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+  - sudo apt-get install build-essential python-dev python-setuptools python-numpy python-scipy
+  - sudo pip install scikit-learn
 script:
   - julia -e 'Pkg.init()'
   - julia -e 'Pkg.clone(pwd()); Pkg.build("VoiceConversion"); Pkg.test("VoiceConversion")'
