@@ -7,6 +7,7 @@ using StatsBase
 using Distributions
 using MelGeneralizedCepstrums
 using WORLD
+using HDF5, JLD
 
 export
     # Voice conversion
@@ -32,6 +33,7 @@ export
     world_mcep, # to be removed
 
     # Datasets
+    Dataset,
     ParallelDataset,
     GVDataset,
     push_delta

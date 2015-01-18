@@ -20,103 +20,29 @@ Options:
 """
 
 using VoiceConversion
-using HDF5, JLD
-using PyCall
+using VoiceConversion.Tools
 
-using Logging
-@Logging.configure(level=DEBUG, output=STDOUT)
-
-@pyimport sklearn.mixture as mixture
-
-# pygmmmean2jl return transposed parameters because julia is column-major
-pygmmmean2jl(means::Matrix{Float64}) = means'
-
-# shape (M, D, D) -> (D, D, M)
-# where M is the # of mixtures and D is the dimention of feature vector
-function pygmmcovar2jl(py_covars::Array{Float64,3})
-    const n_components = size(py_covars, 1)
-    const order = size(py_covars, 2)
-    covars = Array(eltype(py_covars), order, order, n_components)
-    for m=1:n_components
-        covars[:,:,m] = reshape(py_covars[m,:,:], order, order)
-    end
-    covars
-end
-
-jlgmmmean2py(means::Matrix{Float64}) = means'
-
-# shape (D, D, M) -> (M, D, D)
-function jlgmmcovar2py(jl_covars::Array{Float64,3})
-    const n_components = size(jl_covars, 3)
-    const order = size(jl_covars, 2)
-    covars = Array(eltype(jl_covars), n_components, order, order)
-    for m=1:n_components
-        covars[m,:,:] = reshape(jl_covars[:,:,m], 1, order, order)
-    end
-    covars
-end
-
-function copy2pygmm!(jlgmm, pygmm)
-    pygmm[:means_] = jlgmmmean2py(jlgmm["means"])
-    pygmm[:covars_] = jlgmmcovar2py(jlgmm["covars"])
-    pygmm[:weights_] = jlgmm["weights"]
-    pygmm[:init_params] = ""
-end
-
-function main()
+let
     args = docopt(doc, version=v"0.0.2")
-
-    const nmax::Int = int(args["--max"])
-    const diff = args["--diff"]
-    const add_delta = args["--add_delta"]
-
-    const n_components::Int = int(args["--n_components"])
-    const n_iter::Int = int(args["--n_iter"])
-    const n_init::Int = int(args["--n_init"])
-    const min_covar::Float64 = float64(args["--min_covar"])
-    const refine = args["--refine"]
 
     dataset = ParallelDataset(args["<parallel_dir>"],
                               joint=true,
-                              diff=diff,
-                              add_delta=add_delta,
-                              nmax=nmax)
+                              diff=args["--diff"],
+                              add_delta=args["--add_delta"],
+                              nmax=int(args["--max"]))
 
-    gmm = mixture.GMM(n_components=n_components,
-                      covariance_type="full",
-                      n_iter=n_iter,
-                      n_init=n_init,
-                      min_covar=min_covar
-                      )
+    savepath = args["<dst_jld>"]
 
-    dstpath = args["<dst_jld>"]
-    if refine
-        if !isfile(dstpath)
-            error("$(dstpath) not found. Cannot refine model.")
-        end
-        @info("refine pre-trained GMM")
-        pretrained_jlgmm = load(dstpath)
-        copy2pygmm!(pretrained_jlgmm, gmm)
-    end
+    gmm = train_gmm(dataset, savepath;
+                    n_components=int(args["--n_components"]),
+                    n_iter=int(args["--n_iter"]),
+                    n_init=int(args["--n_init"]),
+                    min_covar=float64(args["--min_covar"]),
+                    refine=args["--refine"],
+                    pretrained_gmm_path=args["--refine"] ? savepath : nothing
+                    )
 
-    @show gmm
+    save_gmm(savepath, gmm, diff=dataset.diff)
 
-    X = dataset.X
-
-    # pass transposed matrix because python is row-major language
-    elapsed = @elapsed gmm[:fit](X')
-    @info("Elapsed time in training is $(elapsed) sec., $(elapsed/60) mins. \n $(elapsed/3600) hours.")
-
-    save(dstpath,
-         "description", "Parameters of Gaussian Mixture Model",
-         "diff", diff,
-         "n_components", n_components,
-         "weights", gmm[:weights_],
-         "means", pygmmmean2jl(gmm[:means_]),
-         "covars", pygmmcovar2jl(gmm[:covars_])
-         )
-
-    @info("Dumped to $(dstpath)")
+    println("Finished")
 end
-
-main()

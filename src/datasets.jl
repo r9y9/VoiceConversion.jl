@@ -12,7 +12,9 @@ function push_delta(src)
     src
 end
 
-immutable ParallelDataset
+abstract Dataset
+
+immutable ParallelDataset <: Dataset
     X::Matrix{Float64}
     Y::Matrix{Float64}
 
@@ -22,6 +24,8 @@ immutable ParallelDataset
     Xstd::Matrix{Float64}
     Ymean::Matrix{Float64}
     Ystd::Matrix{Float64}
+
+    diff::Bool
 
     function ParallelDataset(path;
                              diff::Bool=false,
@@ -124,18 +128,18 @@ immutable ParallelDataset
             Ystd = ones(1,1)
         end
 
-        new(X, Y, Xmean, Xstd, Ymean, Ystd)
+        new(X, Y, Xmean, Xstd, Ymean, Ystd, diff)
     end
 end
 
 # GVDataset represents a global variance dataset.
-immutable GVDataset
+immutable GVDataset <: Dataset
     X::Matrix{Float64}
 
     function GVDataset(path;
                        ignore0th::Bool=true,
                        add_delta::Bool=false,
-                       suffix::String="_gv.jld",
+                       suffix::String=".jld",
                        nmax::Int=100)
         files = searchdir(path, suffix)
         sort!(files)

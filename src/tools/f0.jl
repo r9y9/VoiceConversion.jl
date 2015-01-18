@@ -21,8 +21,8 @@ end
 function wf0_save(f0::AbstractVector,
                   fs::Integer,
                   period::FloatingPoint,
-                  dstpath)
-    save(dstpath,
+                  savepath)
+    save(savepath,
          "description", "WORLD-based F0",
          "type", "f0",
          "fs", fs,
@@ -33,7 +33,7 @@ end
 
 function wf0(wavpath,
              period::FloatingPoint,
-             dstpath;
+             savepath;
              opt::DioOption=WORLD.defaultdioopt,
              f0refine::Bool=true,
              )
@@ -42,5 +42,5 @@ function wf0(wavpath,
     x = vec(x)
 
     f0 = _wf0(x, fs, period, opt=opt, f0refine=f0refine)
-    wf0_save(f0, fs, period, dstpath)
+    wf0_save(f0, fs, period, savepath)
 end

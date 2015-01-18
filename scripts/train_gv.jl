@@ -18,63 +18,26 @@ Options:
 """
 
 using VoiceConversion
-using HDF5, JLD
-using PyCall
+using VoiceConversion.Tools
 
-using Logging
-@Logging.configure(level=DEBUG, output=STDOUT)
-
-@pyimport sklearn.mixture as mixture
-
-function main()
+let
     args = docopt(doc, version=v"0.0.1")
 
-    const nmax::Int = int(args["--max"])
-    const add_delta = args["--add_delta"]
-
-    const n_components::Int = int(args["--n_components"])
-    const n_iter::Int = int(args["--n_iter"])
-    const n_init::Int = int(args["--n_init"])
-    const min_covar::Float64 = float64(args["--min_covar"])
-
     dataset = GVDataset(args["<tgt_dir>"],
-                        add_delta=add_delta,
-                        nmax=nmax)
+                        add_delta=args["--add_delta"],
+                        nmax=int(args["--max"]))
 
-    gmm = mixture.GMM(n_components=n_components,
-                      covariance_type="full",
-                      n_iter=n_iter,
-                      n_init=n_init,
-                      min_covar=min_covar
-                      )
+    savepath = args["<dst_jld>"]
 
-    @show gmm
+    gmm = train_gmm(dataset, savepath;
+                    n_components=int(args["--n_components"]),
+                    n_iter=int(args["--n_iter"]),
+                    n_init=int(args["--n_init"]),
+                    min_covar=float64(args["--min_covar"]),
+                    refine=false
+                    )
 
-    # pass transposed matrix because python is row-major language
-    elapsed = @elapsed gmm[:fit](dataset.X')
-    @info("Elapsed time in training is $(elapsed) sec.")
+    save_gmm(savepath, gmm)
 
-
-    # save transposed parameters because julia is column-major language
-    # convert means
-    py_means = gmm[:means_]
-    means = py_means'
-
-    # convert covar tensor
-    py_covars = gmm[:covars_] # shape: (n_components, order, order)
-    order = size(py_covars, 2)
-    covars = Array(eltype(py_covars), order, order, n_components)
-    for m=1:n_components
-        covars[:,:,m] = reshape(py_covars[m,:,:], order, order)
-    end
-
-    save(args["<dst_jld>"],
-         "description", "Parameters of Gaussian Mixture Model for GV",
-         "n_components", n_components,
-         "weights", gmm[:weights_],
-         "means", means,
-         "covars", covars
-         )
+    println("Finished")
 end
-
-main()

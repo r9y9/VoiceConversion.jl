@@ -30,8 +30,8 @@ function wmcep_save(mc::AbstractMatrix,
                     period::FloatingPoint,
                     order::Int,
                     α::FloatingPoint,
-                    dstpath)
-    save(dstpath,
+                    savepath)
+    save(savepath,
          "description", "WORLD-based Mel-cepstrum",
          "type", "MelCepstrum",
          "fs", fs,
@@ -47,7 +47,7 @@ function wmcep(wavpath, # filepath for the target wav file
                period::FloatingPoint,
                order::Integer,
                α::FloatingPoint,
-               dstpath;
+               savepath;
                autoalpha::Bool=true,
                f0refine::Bool=true)
     x, fs = wavread(wavpath)
@@ -59,5 +59,5 @@ function wmcep(wavpath, # filepath for the target wav file
     end
 
     mc = _wmcep(x, fs, period, order, α; f0refine=f0refine)
-    wmcep_save(mc, fs, period, order, α, dstpath)
+    wmcep_save(mc, fs, period, order, α, savepath)
 end

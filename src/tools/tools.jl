@@ -9,6 +9,7 @@ using MelGeneralizedCepstrums
 using WAV
 using HDF5, JLD
 using WORLD
+using PyCall
 
 using Logging
 @Logging.configure(level=DEBUG, output=STDOUT)
@@ -23,6 +24,9 @@ export
     # Feature alignment
     align,
 
+    train_gmm,
+    save_gmm,
+
     # utils
     mkdir_if_not_exist
 
@@ -30,7 +34,8 @@ for fname in [
               "util",
               "f0",
               "wmcep",
-              "align"
+              "align",
+              "train_gmm",
     ]
     include(string(fname, ".jl"))
 end

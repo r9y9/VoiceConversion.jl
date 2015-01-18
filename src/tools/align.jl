@@ -50,7 +50,7 @@ function _align_mcep(src::AbstractMatrix,       # source feature matrix
 end
 
 function align_save(src, tgt, dst)
-    save(dstpath,
+    save(savepath,
          "description", "Parallel data",
          "src", src,
          "tgt", tgt
@@ -59,7 +59,7 @@ end
 
 function align(srcpath,
                tgtpath,
-               dstpath;
+               savepath;
                threshold::FloatingPoint=-14.0,
                )
     src = load(srcpath)
@@ -99,5 +99,5 @@ function align(srcpath,
 
     align_save(Dict{UTF8String, Any}(src),
                Dict{UTF8String, Any}(tgt),
-               dstpath)
+               savepath)
 end
