@@ -15,6 +15,7 @@ Options:
 # TODO(ryuichi) allow to specify DioOption as command line options
 
 using VoiceConversion.Tools
+using WAV
 
 using Logging
 @Logging.configure(level=DEBUG, output=STDOUT)
@@ -38,13 +39,19 @@ let
     count = 0
     for filename in files
         path = joinpath(srcdir, filename)
-        dstpath = joinpath(dstdir, string(splitext(basename(path))[1],
+        savepath = joinpath(dstdir, string(splitext(basename(path))[1],
                                           "_f0.jld"))
 
         @info("Start processing $(path)")
-        elapsed = @elapsed wf0(path, period, dstpath)
+        elapsed = @elapsed begin
+            x, fs = wavread(path)
+            size(x, 2) != 1 && error("The input data must be monoral.")
+            x = vec(x)
+            f0, _ = wf0(x, fs, period; f0refine=true)
+            save_wf0(savepath, f0, fs, period)
+        end
         @info("Elapsed time in F0 estimation is $(elapsed) sec.")
-        @info("Dumped to $(dstpath)")
+        @info("Dumped to $(savepath)")
 
         count += 1
         count >= nmax && break

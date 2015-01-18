@@ -6,7 +6,6 @@ using ..DTWs
 using ..VoiceConversion
 
 using MelGeneralizedCepstrums
-using WAV
 using HDF5, JLD
 using WORLD
 using PyCall
@@ -17,12 +16,15 @@ using Logging
 export
     # Fundamental frequency estimation
     wf0,
+    save_wf0,
 
     # Spectral envelope estimation
     wmcep,
+    save_wmcep,
 
     # Feature alignment
-    align,
+    align!,
+    save_align,
 
     train_gmm,
     save_gmm,

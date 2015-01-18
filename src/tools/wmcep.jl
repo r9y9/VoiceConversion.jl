@@ -1,11 +1,11 @@
 # WORLD-based mel-cesptrum extraction.
-function _wmcep(x::AbstractVector,
-                fs::Integer,
-                period::FloatingPoint,
-                order::Integer,
-                α::FloatingPoint;
-                f0refine::Bool=true,
-                )
+function wmcep(x::AbstractVector,
+               fs::Integer,
+               period::FloatingPoint,
+               order::Integer,
+               α::FloatingPoint;
+               f0refine::Bool=true,
+               )
     w = World(fs, period)
 
     # Fundamental frequency (f0) estimation by DIO
@@ -25,12 +25,12 @@ function _wmcep(x::AbstractVector,
     mc
 end
 
-function wmcep_save(mc::AbstractMatrix,
+function save_wmcep(savepath,
+                    mc::AbstractMatrix,
                     fs::Integer,
                     period::FloatingPoint,
                     order::Int,
-                    α::FloatingPoint,
-                    savepath)
+                    α::FloatingPoint)
     save(savepath,
          "description", "WORLD-based Mel-cepstrum",
          "type", "MelCepstrum",
@@ -41,23 +41,4 @@ function wmcep_save(mc::AbstractMatrix,
          "alpha", α,
          "feature_matrix", mc
          )
-end
-
-function wmcep(wavpath, # filepath for the target wav file
-               period::FloatingPoint,
-               order::Integer,
-               α::FloatingPoint,
-               savepath;
-               autoalpha::Bool=true,
-               f0refine::Bool=true)
-    x, fs = wavread(wavpath)
-    size(x, 2) != 1 && error("The input data must be monoral.")
-    x = vec(x)
-
-    if autoalpha
-        α = mcepalpha(fs)
-    end
-
-    mc = _wmcep(x, fs, period, order, α; f0refine=f0refine)
-    wmcep_save(mc, fs, period, order, α, savepath)
 end

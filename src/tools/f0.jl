@@ -1,10 +1,10 @@
 # WORLD-based f0 estimation
-function _wf0(x::AbstractVector,
-              fs::Integer,
-              period::FloatingPoint;
-              opt::DioOption=WORLD.defaultdioopt,
-              f0refine::Bool=true,
-              )
+function wf0(x::AbstractVector,
+             fs::Integer,
+             period::FloatingPoint;
+             opt::DioOption=WORLD.defaultdioopt,
+             f0refine::Bool=true,
+             )
     # F0 estimation
     w = World(fs, period)
 
@@ -15,13 +15,14 @@ function _wf0(x::AbstractVector,
         f0 = stonemask(w, x, timeaxis, f0)
     end
 
-    f0
+    f0, timeaxis
 end
 
-function wf0_save(f0::AbstractVector,
+function save_wf0(savepath,
+                  f0::AbstractVector,
                   fs::Integer,
                   period::FloatingPoint,
-                  savepath)
+                  )
     save(savepath,
          "description", "WORLD-based F0",
          "type", "f0",
@@ -29,18 +30,4 @@ function wf0_save(f0::AbstractVector,
          "period", period,
          "feature_vector", f0
          )
-end
-
-function wf0(wavpath,
-             period::FloatingPoint,
-             savepath;
-             opt::DioOption=WORLD.defaultdioopt,
-             f0refine::Bool=true,
-             )
-    x, fs = wavread(wavpath)
-    size(x, 2) != 1 && error("The input data must be monoral.")
-    x = vec(x)
-
-    f0 = _wf0(x, fs, period, opt=opt, f0refine=f0refine)
-    wf0_save(f0, fs, period, savepath)
 end

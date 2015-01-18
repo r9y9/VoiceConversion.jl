@@ -15,6 +15,8 @@ Options:
 """
 
 using VoiceConversion.Tools
+using WAV
+using MelGeneralizedCepstrums
 
 using Logging
 @Logging.configure(level=DEBUG, output=STDOUT)
@@ -40,12 +42,22 @@ let
     count = 0
     for filename in files
         path = joinpath(srcdir, filename)
-        dstpath = joinpath(dstdir, string(splitext(basename(path))[1], "_wmcep.jld"))
+        savepath = joinpath(dstdir, string(splitext(basename(path))[1], "_wmcep.jld"))
 
         @info("Start processing $(path)")
-        elapsed = @elapsed wmcep(path, period, order, α, dstpath)
+        elapsed = @elapsed begin
+            x, fs = wavread(path)
+            size(x, 2) != 1 && error("The input data must be monoral.")
+            x = vec(x)
+            @info("The length of input audio is $(length(x)/fs) sec.")
+            if α == 0.0
+                α = mcepalpha(fs)
+            end
+            mc = wmcep(x, fs, period, order, α)
+            save_wmcep(savepath, mc, fs, period, order, α)
+        end
         @info("Elapsed time in feature extraction is $(elapsed) sec.")
-        @info("Dumped to $(dstpath)")
+        @info("Dumped to $(savepath)")
 
         count += 1
         count >= nmax && break

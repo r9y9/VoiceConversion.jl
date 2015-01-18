@@ -15,6 +15,7 @@ Options:
 """
 
 using VoiceConversion.Tools
+using HDF5, JLD
 
 using Logging
 @Logging.configure(level=DEBUG, output=STDOUT)
@@ -40,13 +41,18 @@ let
         # filename is assumed to be same between src and tgt
         srcpath = joinpath(srcdir, filename)
         tgtpath = joinpath(tgtdir, filename)
-        dstpath = joinpath(dstdir, string(splitext(basename(srcpath))[1],
+        savepath = joinpath(dstdir, string(splitext(basename(srcpath))[1],
                                       "_parallel.jld"))
 
         @info("Start processing $(srcpath) and $(tgtpath)")
-        elapsed = @elapsed align(srcpath, tgtpath, dstpath, threshold=threshold)
+        elapsed = @elapsed begin
+            src = load(srcpath)
+            tgt = load(tgtpath)
+            src, tgt = align!(src, tgt, threshold=threshold)
+            save_align(savepath, src, tgt)
+        end
         @info("Elapsed time in alignment is $(elapsed) sec.")
-        @info("Dumped to $(dstpath)")
+        @info("Dumped to $(savepath)")
 
         count += 1
         count >= nmax && break

@@ -38,7 +38,7 @@ function _align_mcep(src::AbstractMatrix,       # source feature matrix
                      threshold::Float64=-14.0,  # threshold to remove silence frames
                      remove_silence::Bool=true
                      )
-    src, newtgt = align(src, tgt)
+    src, newtgt = _align(src, tgt)
 
     if remove_silence
         E = log(mc2e(src, α, fftlen))
@@ -49,7 +49,7 @@ function _align_mcep(src::AbstractMatrix,       # source feature matrix
     src, newtgt
 end
 
-function align_save(src, tgt, dst)
+function save_align(savepath, src, tgt)
     save(savepath,
          "description", "Parallel data",
          "src", src,
@@ -57,18 +57,13 @@ function align_save(src, tgt, dst)
          )
 end
 
-function align(srcpath,
-               tgtpath,
-               savepath;
-               threshold::FloatingPoint=-14.0,
-               )
-    src = load(srcpath)
-    tgt = load(tgtpath)
-
+function align!(src::Dict,
+                tgt::Dict;
+                threshold::FloatingPoint=-14.0,
+                )
     src_fm = src["feature_matrix"]
     tgt_fm = tgt["feature_matrix"]
 
-    src_fm, tgt_fm = zeros(0,0), zeros(0,0)
     if src["type"] == "MelCepstrum"
         src_fm, tgt_fm = _align_mcep(src_fm, tgt_fm,
                                      float(src["alpha"]),
@@ -97,7 +92,6 @@ function align(srcpath,
     @assert isa(src, Dict{Union(UTF8String, ASCIIString), Any})
     @assert isa(tgt, Dict{Union(UTF8String, ASCIIString), Any})
 
-    align_save(Dict{UTF8String, Any}(src),
-               Dict{UTF8String, Any}(tgt),
-               savepath)
+
+    Dict{UTF8String, Any}(src), Dict{UTF8String, Any}(tgt)
 end
