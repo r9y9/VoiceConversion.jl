@@ -66,7 +66,7 @@ function _train_gmm(X::AbstractMatrix;
     @show gmm
 
     # pass transposed matrix because python is row-major language
-    @info("Start training GMM using sklearn.mixture.")
+    @info("Start training GMM using sklearn.mixture. This may take hours to finish.")
     elapsed = @elapsed gmm[:fit](X')
     @info("Elapsed time in training $(elapsed/3600) hours.")
 
@@ -113,9 +113,9 @@ function train_gmm(dataset::Dataset,
     gmm = _train_gmm(dataset.X,
                      n_components=n_components,
                      n_iter=n_iter,
-                     n_init=2,
-                     min_covar=1.0e-7,
-                     covariance_type="full",
+                     n_init=n_init,
+                     min_covar=min_covar,
+                     covariance_type=covariance_type,
                      refine=refine,
                      pretrained_gmm_path=pretrained_gmm_path)
     gmm
