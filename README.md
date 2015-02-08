@@ -34,6 +34,10 @@ julia> Pkg.build("VoiceConversion")
 
 All dependencies are resolved with `Pkg.clone` and `Pkg.build`.
 
+## Demonstration using [CMU Arctic](http://festvox.org/cmu_arctic/)
+
+Please check [examples/cmu_arctic/cmu_arctic_demo.sh](examples/cmu_arctic/cmu_arctic_demo.sh). 
+
 ## References
 
 - [[Toda 2007] T. Toda, A. W. Black, and K. Tokuda, “Voice conversion based on maximum likelihood estimation of spectral parameter trajectory,” IEEE
