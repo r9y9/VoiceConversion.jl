@@ -28,15 +28,14 @@ Please note that this package is still under developement. Both bug reports and 
 Run the following commands on your julia interactive settion (REPL):
 
 ```julia
+julia> Pkg.clone("https://github.com/r9y9/MelGeneralizedCepstrums.jl")
+julia> Pkg.clone("https://github.com/r9y9/SynthesisFilters.jl")
 julia> Pkg.clone("https://github.com/r9y9/VoiceConversion.jl")
-julia> Pkg.build("VoiceConversion")
 ```
-
-All dependencies are resolved with `Pkg.clone` and `Pkg.build`.
 
 ## Demonstration using [CMU Arctic](http://festvox.org/cmu_arctic/)
 
-Please check [examples/cmu_arctic/cmu_arctic_demo.sh](examples/cmu_arctic/cmu_arctic_demo.sh). 
+Please check [examples/cmu_arctic/cmu_arctic_demo.sh](examples/cmu_arctic/cmu_arctic_demo.sh).
 
 ## References
 

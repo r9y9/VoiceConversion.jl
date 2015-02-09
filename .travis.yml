@@ -17,4 +17,5 @@ before_install:
   - sudo pip install scikit-learn
 script:
   - julia -e 'Pkg.init()'
-  - julia -e 'Pkg.clone(pwd()); Pkg.build("VoiceConversion"); Pkg.test("VoiceConversion")'
+  - julia -e 'Pkg.clone("MelGeneralizedCepstrums"); Pkg.clone("SynthesisFilters"); '
+  - julia -e 'Pkg.clone(pwd()); Pkg.test("VoiceConversion")'
