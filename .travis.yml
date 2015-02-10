@@ -1,21 +1,12 @@
-language: cpp
-compiler:
-  - clang
-notifications:
-  email: false
-env:
-  matrix:
-    - JULIAVERSION="juliareleases"
-    - JULIAVERSION="julianightlies"
+language: julia
+julia:
+  - release
+  - nightly
 before_install:
-  - sudo add-apt-repository ppa:staticfloat/julia-deps -y
-  - sudo add-apt-repository ppa:staticfloat/${JULIAVERSION} -y
-  - sudo apt-get update -qq -y
-  - sudo apt-get install libpcre3-dev julia -y
-  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - sudo apt-get install build-essential python-dev python-setuptools python-numpy python-scipy
   - sudo pip install scikit-learn
 script:
-  - julia -e 'Pkg.init()'
-  - julia -e 'Pkg.clone("MelGeneralizedCepstrums"); Pkg.clone("SynthesisFilters"); '
-  - julia -e 'Pkg.clone(pwd()); Pkg.test("VoiceConversion")'
+  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+  - julia --check-bounds=yes -e 'Pkg.init(); Pkg.clone(pwd()); Pkg.clone("https://github.com/r9y9/MelGeneralizedCepstrums.jl"); Pkg.clone("https://github.com/r9y9/SynthesisFilters.jl"); Pkg.test("VoiceConversion", coverage=true)'
+after_success:
+- julia -e 'cd(Pkg.dir("VoiceConversion")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
