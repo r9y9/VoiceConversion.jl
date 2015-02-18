@@ -2,6 +2,8 @@ language: julia
 julia:
   - release
   - nightly
+notifications:
+    email: false
 before_install:
   - sudo apt-get install build-essential python-dev python-setuptools python-numpy python-scipy
   - sudo pip install scikit-learn
