@@ -14,7 +14,7 @@ mix = 8     # number of mixtures of GMMs
 power_threshold = -14.0 # power threshold to select frames used in training
 niter = 30  # number of iteration in EM algorithm
 
-skip_feature_extraction = true
+skip_feature_extraction = false
 skip_feature_alignment = false
 skip_model_training = false
 skip_voice_conversion = false
@@ -44,7 +44,7 @@ run(`mkdir -p $(vc_save_dir)`)
 if !skip_feature_extraction
     for s in [src_id, tgt_id]
         tgt_wav_path = joinpath(cmu_arctic_root, "cmu_us_$(s)_arctic/wav")
-        options ["--max", max, "--order", order]
+        options = ["--max", max, "--order", order]
         cmd = `julia $(SCRIPT_DIR)/mcep.jl
         $(tgt_wav_path) $(feature_save_dir)/speakers/$(s) $options`
         run(cmd)
