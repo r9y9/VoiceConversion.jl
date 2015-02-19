@@ -12,7 +12,7 @@ Options:
     --max=MAX        Maximum number that will be processed [default: 200]
 """
 
-# TODO(ryuichi) allow to specify DioOption as command line options
+# TODO(ryuichi) allow to specify DioOption as command line options?
 
 using VoiceConversion.Tools
 using WAV
@@ -47,8 +47,18 @@ let
             x, fs = wavread(path)
             size(x, 2) != 1 && error("The input data must be monoral.")
             x = vec(x)
-            f0, _ = wf0(x, fs, period; f0refine=true)
-            save_wf0(savepath, f0, fs, period)
+
+            w = World(fs, period)
+            f0, timeaxis = dio(w, x; opt=opt)
+            f0 = stonemask(w, x, timeaxis, f0)
+
+            save(savepath,
+                 "description", "WORLD-based F0",
+                 "type", "f0",
+                 "fs", fs,
+                 "period", period,
+                 "feature_vector", f0
+                 )
         end
         @info("Elapsed time in F0 estimation is $(elapsed) sec.")
         @info("Dumped to $(savepath)")

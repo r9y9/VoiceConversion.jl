@@ -33,17 +33,17 @@ function main()
     x, fs = wavread(args["<input_wav>"])
     @assert size(x, 2) == 1 "The input data must be monoral."
     x = float(vec(x))
-    const fs = int(fs)
+    fs = int(fs)
     @info("length of input signal is $(length(x)/fs) sec.")
 
-    const period = float(args["--period"])
-    const order = int(args["--order"])
-    alpha = float(args["--alpha"])
-    if alpha == 0.0
-        alpha = mcepalpha(fs)
+    period = float(args["--period"])
+    order = int(args["--order"])
+    α = float(args["--alpha"])
+    if α == 0.0
+        α = mcepalpha(fs)
     end
-    const trajectory = args["--trajectory"]
-    const gvmodel = string(args["--gv"])
+    trajectory = args["--trajectory"]
+    gvmodel = string(args["--gv"])
 
     # Load mapping model
     gmm = load(args["<model_jld>"])
@@ -77,7 +77,7 @@ function main()
         spectrogram = cheaptrick(w, x, timeaxis, f0)
 
         # Spectral envelop -> Mel-cesptrum
-        src = wsp2mc(spectrogram, order, alpha)
+        src = sp2mc(spectrogram, order, α)
 
         # aperiodicity ratio estimation
         ap = aperiodicityratio(w, x, f0, timeaxis)
@@ -95,7 +95,7 @@ function main()
 
     # Mel-Cepstrum to spectrum
     fftlen = size(spectrogram,1)*2-1
-    converted_spectrogram = mc2wsp(converted, fftlen, alpha)
+    converted_spectrogram = mc2sp(converted, α, fftlen)
 
     # Waveform synthesis using WORLD
     elapsed_syn = @elapsed begin

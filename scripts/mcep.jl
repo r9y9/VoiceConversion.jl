@@ -14,14 +14,53 @@ Options:
     --max=MAX        Maximum number that will be processed [default: 200]
 """
 
-using VoiceConversion.Tools
+using VoiceConversion
 using WAV
-using MelGeneralizedCepstrums
+using WORLD
+using HDF5, JLD
+
+import MelGeneralizedCepstrums: mcepalpha
 
 using Logging
 @Logging.configure(level=DEBUG, output=STDOUT)
 
 searchdir(path, key) = filter(x -> contains(x, key), readdir(path))
+
+function mkdir_if_not_exist(dir)
+    if !isdir(dir)
+        println("Create $(dir)")
+        run(`mkdir -p $dir`)
+    end
+end
+
+# process one file
+function _mcep(path, period, order, α, savepath)
+    x, fs = wavread(path)
+    @assert size(x, 2) == 1 "The input data must be monoral."
+    x = float(vec(x))
+    fs = int(fs)
+
+    if α == 0.0
+        α = mcepalpha(fs)
+    end
+
+    w = World(fs, period)
+    f0, timeaxis = dio(w, x)
+    f0 = stonemask(w, x, timeaxis, f0)
+    spectrogram = cheaptrick(w, x, timeaxis, f0)
+    mc = sp2mc(spectrogram, order, α)
+
+    save(savepath,
+         "description", "WORLD-based Mel-cepstrum",
+         "type", "MelCepstrum",
+         "fs", fs,
+         "period", period,
+         "order", order,
+         "fftlen", get_fftsize_for_cheaptrick(fs),
+         "alpha", α,
+         "feature_matrix", mc
+         )
+end
 
 let
     args = docopt(doc, version=v"0.0.2")
@@ -45,17 +84,7 @@ let
         savepath = joinpath(dstdir, string(splitext(basename(path))[1], "_wmcep.jld"))
 
         @info("Start processing $(path)")
-        elapsed = @elapsed begin
-            x, fs = wavread(path)
-            size(x, 2) != 1 && error("The input data must be monoral.")
-            x = vec(x)
-            @info("The length of input audio is $(length(x)/fs) sec.")
-            if α == 0.0
-                α = mcepalpha(fs)
-            end
-            mc = wmcep(x, fs, period, order, α)
-            save_wmcep(savepath, mc, fs, period, order, α)
-        end
+        elapsed = @elapsed _mcep(path, period, order, α, savepath)
         @info("Elapsed time in feature extraction is $(elapsed) sec.")
         @info("Dumped to $(savepath)")
 

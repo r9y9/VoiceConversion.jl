@@ -21,6 +21,7 @@ using MelGeneralizedCepstrums
 using WAV
 using SynthesisFilters
 using HDF5, JLD
+using WORLD
 
 using Logging
 @Logging.configure(level=DEBUG, output=STDOUT)
@@ -31,16 +32,16 @@ function main()
     x, fs = wavread(args["<input_wav>"])
     @assert size(x, 2) == 1 "The input data must be monoral."
     x = float(vec(x))
-    const fs = int(fs)
+    fs = int(fs)
     @info("length of input signal is $(length(x)/fs) sec.")
 
-    const period = float(args["--period"])
-    const order = int(args["--order"])
-    alpha = float(args["--alpha"])
-    if alpha == 0.0
-        alpha = mcepalpha(fs)
+    period = float(args["--period"])
+    order = int(args["--order"])
+    α = float(args["--alpha"])
+    if α == 0.0
+        α = mcepalpha(fs)
     end
-    const trajectory = args["--trajectory"]
+    trajectory = args["--trajectory"]
 
     # Load mapping model
     gmm = load(args["<model_jld>"])
@@ -54,7 +55,13 @@ function main()
     end
 
     # shape (order+1, number of frames)
-    elapsed_fe = @elapsed src = world_mcep(x, fs, period, order, alpha)
+    elapsed_fe = @elapsed begin
+        w = World(fs, period)
+        f0, timeaxis = dio(w, x)
+        f0 = stonemask(w, x, timeaxis, f0)
+        spectrogram = cheaptrick(w, x, timeaxis, f0)
+        src = sp2mc(spectrogram, order, α)
+    end
     @info("elapsed time in feature extraction is $(elapsed_fe) sec.")
     if trajectory
         # add delta feature
@@ -70,9 +77,10 @@ function main()
 
 
     # Waveform synthesis using Mel-Log Spectrum Approximation filter
-    mf = MLSADF(order, alpha)
+    mf = MLSADF(order, α)
     hopsize = int(fs / (1000 / period))
-    elapsed_syn = @elapsed y = synthesis!(mf, x, converted, hopsize)
+
+    elapsed_syn = @elapsed y = synthesis!(mf, x, mc2b(converted, α), hopsize)
     @info("elapsed time in waveform moduration is $(elapsed_syn) sec.")
 
     wavwrite(float(y), args["<dst_wav>"], Fs=fs)

@@ -32,6 +32,9 @@ export
     mc2wsp,
     world_mcep, # to be removed
 
+    align,
+    align_mcep,
+
     # Datasets
     Dataset,
     ParallelDataset,
@@ -42,14 +45,14 @@ for fname in [
               "common",
               "dtw",
               "datasets",
+              "align",
               "wmcep",
               "gmm",
               "gmmmap",
               "diffgmm",
               "trajectory_gmmmap",
               "gv",
-              "vc",
-              "tools/tools"
+              "vc"
     ]
     include(string(fname, ".jl"))
 end

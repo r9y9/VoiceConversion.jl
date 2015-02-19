@@ -18,26 +18,60 @@ Options:
 """
 
 using VoiceConversion
-using VoiceConversion.Tools
+using HDF5, JLD
+using PyCall
+
+@pyimport sklearn.mixture as mixture
+
+using Logging
+@Logging.configure(level=DEBUG, output=STDOUT)
 
 let
     args = docopt(doc, version=v"0.0.1")
 
-    dataset = GVDataset(args["<tgt_dir>"],
-                        add_delta=args["--add_delta"],
-                        nmax=int(args["--max"]))
+    nmax = int(args["--max"])
+    add_delta = args["--add_delta"]
 
-    savepath = args["<dst_jld>"]
+    n_components  = int(args["--n_components"])
+    n_iter = int(args["--n_iter"])
+    n_init = int(args["--n_init"])
+    min_covar = float64(args["--min_covar"])
 
-    gmm = train_gmm(dataset, savepath;
-                    n_components=int(args["--n_components"]),
-                    n_iter=int(args["--n_iter"]),
-                    n_init=int(args["--n_init"]),
-                    min_covar=float64(args["--min_covar"]),
-                    refine=false
-                    )
+    dataset = GVDataset(args["<tgt_dir>"], add_delta=add_delta, nmax=nmax)
 
-    save_gmm(savepath, gmm)
+    gmm = mixture.GMM(n_components=n_components,
+                      covariance_type="full",
+                      n_iter=n_iter,
+                      n_init=n_init,
+                      min_covar=min_covar
+                      )
 
-    println("Finished")
+    @show gmm
+
+    # pass transposed matrix because python is row-major language
+    elapsed = @elapsed gmm[:fit](dataset.X')
+    info("Elapsed time in training is $(elapsed) sec.")
+
+    # save transposed parameters because julia is column-major language
+    # convert means
+    py_means = gmm[:means_]
+    means = py_means'
+
+    # convert covar tensor
+    py_covars = gmm[:covars_] # shape: (n_components, order, order)
+    order = size(py_covars, 2)
+    covars = Array(eltype(py_covars), order, order, n_components)
+    for m=1:n_components
+        covars[:,:,m] = reshape(py_covars[m,:,:], order, order)
+    end
+
+    save(args["<dst_jld>"],
+         "description", "Parameters of Gaussian Mixture Model for GV",
+         "n_components", n_components,
+         "weights", gmm[:weights_],
+         "means", means,
+         "covars", covars
+         )
 end
+
+main()
