@@ -2,7 +2,9 @@
 
 using VoiceConversion.DTWs
 
-function testdtw_case1()
+println("testing: Dynamic time warping")
+
+let
     # template sequence [1,2,3,4]
     v1 = float64([1 2 3;1 2 4;1 8 5;10 3 6])'
     # sequence to be aligned [1 2 2 3 4]
@@ -16,7 +18,7 @@ function testdtw_case1()
     @test indices == expected
 end
 
-function testdtw_case2()
+let
     v1 = float64([0; 1; 2; 3; 4; 5])'
     v2 = float64([0; 0; 1; 2; 3; 4; 4; 5;])'
 
@@ -27,9 +29,3 @@ function testdtw_case2()
     expected = Int[1, 1, 2, 3, 4, 5, 5, 6]
     @test indices == expected
 end
-
-### Tests
-
-println("testing: Dynamic time warping")
-testdtw_case1()
-testdtw_case2()

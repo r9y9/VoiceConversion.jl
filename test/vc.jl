@@ -14,22 +14,13 @@ order = 40
 alpha = mcepalpha(fs)
 
 w = World(fs=fs, period=period)
-
-# Fundamental frequency (f0) estimation by DIO
 f0, timeaxis = dio(w, x)
-
-# F0 re-estimation by StoneMask
 f0 = stonemask(w, x, timeaxis, f0)
-
-# Spectral envelope estimation
 spectrogram = cheaptrick(w, x, timeaxis, f0)
-
-# Spectral envelop -> Mel-cesptrum
-src_clb28 = wsp2mc(spectrogram, order, alpha)
+src_clb28 = sp2mc(spectrogram, order, alpha)
 @test !any(isnan(src_clb28))
-
-# aperiodicity ratio estimation
 ap = aperiodicityratio(w, x, f0, timeaxis)
+@test !any(isnan(ap))
 
 x_clb28 = copy(x)
 
@@ -38,13 +29,15 @@ function vc_base(src, mapper)
     converted = vc(mapper, src)
     @test !any(isnan(converted))
     fftlen = size(spectrogram,1)*2-1
-    converted_spectrogram = mc2wsp(converted, fftlen, alpha)
+    converted_spectrogram = mc2sp(converted, alpha, fftlen)
     synthesis_from_aperiodicity(w, f0, converted_spectrogram, ap, length(x_clb28))
 end
 
-# Female (`clb`) to female (`slt`) voice conversion demo
-# frame-by-frame mapping
-function vc_clb2slt()
+println("testing: voice conversion using the WORLD vocoder.")
+
+let
+    println("Female (`clb`) to female (`slt`) voice conversion")
+    println("GMM-based frame-by-frame mapping")
     x = copy(src_clb28)
 
     # Load GMM to convert speech signal of `clb` to that of `slt` and vise versa,
@@ -61,9 +54,9 @@ function vc_clb2slt()
     @test !any(isnan(y))
 end
 
-# Female (`clb`) to female (`slt`) voice conversion demo
-# trajectory-based paramter mapping
-function trajectory_vc_clb2slt()
+let
+    println("Female (`clb`) to female (`slt`) voice conversion")
+    println("GMM-based trajectory parameter mapping")
     x = copy(src_clb28)
 
     # add dynamic feature
@@ -82,9 +75,3 @@ function trajectory_vc_clb2slt()
     y = vc_base(x, mapper)
     @test !any(isnan(y))
 end
-
-### Tests
-
-println("testing: voice conversion process using WORLD vocoder.")
-vc_clb2slt()
-trajectory_vc_clb2slt()

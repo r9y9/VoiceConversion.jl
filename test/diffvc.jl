@@ -14,8 +14,14 @@ order = 40
 alpha = mcepalpha(fs)
 
 # Mel-cepstrum extraction based on WORLD.
-src_clb28 = world_mcep(x, fs, period, order, alpha)
+w = World(fs=fs, period=period)
+f0, timeaxis = dio(w, x)
+f0 = stonemask(w, x, timeaxis, f0)
+spectrogram = cheaptrick(w, x, timeaxis, f0)
+src_clb28 = sp2mc(spectrogram, order, alpha)
 @test !any(isnan(src_clb28))
+
+x_clb28 = copy(x)
 
 function diffvc_base(src, mapper)
     # Perform parameter conversion
@@ -28,12 +34,14 @@ function diffvc_base(src, mapper)
     # Waveform modification
     mf = MLSADF(order, alpha)
     hopsize = int(fs / (1000 / period))
-    synthesis!(mf, x, converted, hopsize)
+    synthesis!(mf, x_clb28, mc2b(converted, alpha), hopsize)
 end
 
-# Female (`clb`) to female (`slt`) voice conversion demo
-# frame-by-frame mapping
-function diffvc_clb2slt()
+println("testing: voice conversion based on direct waveform modification")
+
+let
+    println("Female (`clb`) to female (`slt`) voice conversion")
+    println("GMM-based frame-by-frame mapping")
     x = copy(src_clb28)
 
     # Load GMM to convert speech signal of `clb` to that of `slt`,
@@ -50,9 +58,9 @@ function diffvc_clb2slt()
     @test !any(isnan(y))
 end
 
-# Female (`clb`) to female (`slt`) voice conversion demo
-# trajectory-based paramter mapping
-function trajectory_diffvc_clb2slt()
+let
+    println("Female (`clb`) to female (`slt`) voice conversion")
+    println("GMM-based trajectory paramter mapping")
     x = copy(src_clb28)
 
     # add dynamic feature
@@ -72,9 +80,3 @@ function trajectory_diffvc_clb2slt()
     y = diffvc_base(x, mapper)
     @test !any(isnan(y))
 end
-
-### Tests
-
-println("testing: voice conversion process based on direct waveform modification")
-diffvc_clb2slt()
-trajectory_diffvc_clb2slt()

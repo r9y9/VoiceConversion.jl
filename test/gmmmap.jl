@@ -1,4 +1,5 @@
-function test_gmmmap()
+let
+    println("testing: GMM-based parameter conversion")
     modelpath = joinpath(Pkg.dir("VoiceConversion"), "models",
                          "clb_to_slt_gmm32_order40_diff.jld")
     gmm = load(modelpath)
@@ -12,6 +13,3 @@ function test_gmmmap()
     @test ncomponents(mapper) == length(gmm["weights"])
     @test size(mapper) == (D, 1)
 end
-
-println("testing: GMM-based parameter conversion")
-test_gmmmap()
