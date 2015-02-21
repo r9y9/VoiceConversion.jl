@@ -27,11 +27,7 @@ export
     fvpostf!,
     fvpostf,
 
-    # Feature conversion, extractions and alignment
-    wsp2mc,
-    mc2wsp,
-    world_mcep, # to be removed
-
+    # Alignment
     align,
     align_mcep,
 
@@ -46,7 +42,6 @@ for fname in [
               "dtw",
               "datasets",
               "align",
-              "wmcep",
               "gmm",
               "gmmmap",
               "diffgmm",
