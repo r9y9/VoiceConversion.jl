@@ -44,8 +44,8 @@ function lazy_init!(d::DTW, S::Int, T::Int)
     d.costtable = zeros(Float64, S, T+1)
     d.backpointer = ones(Int, S, T+1)
 
-    d.costtable[:,1] = [1:S]
-    d.backpointer[:,1] = [1:S]
+    d.costtable[:,1] = [1:S;]
+    d.backpointer[:,1] = [1:S;]
 end
 
 function set_template!(d::DTW, template::Matrix{Float64})

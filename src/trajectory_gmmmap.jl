@@ -49,7 +49,7 @@ function compute_wt(t::Int, D::Int, T::Int)
         w¹[:, t*D+1:(t+1)*D] = 0.5*speye(D)
     end
 
-    [w⁰, w¹]
+    [w⁰; w¹]
 end
 
 function constructW(D::Int, T::Int)
