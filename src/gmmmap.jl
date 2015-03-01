@@ -38,6 +38,19 @@ immutable GMMMapParam
     end
 end
 
+function split_joint_gmm(μ::Matrix{Float64}, Σ::Array{Float64,3})
+    D = size(μ, 1)>>1
+
+    μˣ = μ[1:D, :]
+    μʸ = μ[D+1:end, :]
+    Σˣˣ = Σ[1:D,1:D, :]
+    Σˣʸ = Σ[1:D,D+1:end, :]
+    Σʸˣ = Σ[D+1:end,1:D, :]
+    Σʸʸ = Σ[D+1:end,D+1:end, :]
+
+    μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ
+end
+
 # GMMMap represents a composite type to transform spectral features of a source
 # speaker to that of a target speaker based on GMM of source and target joint
 # spectral features.
@@ -50,17 +63,12 @@ type GMMMap <: FrameByFrameConverter
                     μ::Matrix{Float64},      # shape: (D, M)
                     Σ::Array{Float64,3};     # shape: (D, D, M)
                     swap::Bool=false)
-        const M = length(weights)
+        M = length(weights)
 
         # Split mean and covariance matrices into source and target
         # speaker's ones
-        const D = div(size(μ, 1), 2) # dimension of feature vector
-        μˣ = μ[1:D, :]
-        μʸ = μ[D+1:end, :]
-        Σˣˣ = Σ[1:D,1:D, :]
-        Σˣʸ = Σ[1:D,D+1:end, :]
-        Σʸˣ = Σ[D+1:end,1:D, :]
-        Σʸʸ = Σ[D+1:end,D+1:end, :]
+        D = size(μ, 1)>>1 # dimension of feature vector
+        μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ = split_joint_gmm(μ, Σ)
 
         # swap src and target parameters
         if swap
