@@ -13,13 +13,12 @@ period = 5.0
 order = 40
 alpha = mcepalpha(fs)
 
-w = World(fs=fs, period=period)
-f0, timeaxis = dio(w, x)
-f0 = stonemask(w, x, timeaxis, f0)
-spectrogram = cheaptrick(w, x, timeaxis, f0)
+f0, timeaxis = dio(x, fs, DioOption(period=period))
+f0 = stonemask(x, fs, timeaxis, f0)
+spectrogram = cheaptrick(x, fs, timeaxis, f0)
 src_clb28 = sp2mc(spectrogram, order, alpha)
 @test !any(isnan(src_clb28))
-ap = aperiodicityratio(w, x, f0, timeaxis)
+ap = d4c(x, fs, timeaxis, f0)
 @test !any(isnan(ap))
 
 x_clb28 = copy(x)
@@ -30,7 +29,7 @@ function vc_base(src, mapper)
     @test !any(isnan(converted))
     fftlen = size(spectrogram,1)*2-1
     converted_spectrogram = mc2sp(converted, alpha, fftlen)
-    synthesis_from_aperiodicity(w, f0, converted_spectrogram, ap, length(x_clb28))
+    synthesis(f0, converted_spectrogram, ap, period, fs, length(x_clb28))
 end
 
 println("testing: voice conversion using the WORLD vocoder.")

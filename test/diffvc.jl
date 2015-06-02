@@ -14,10 +14,9 @@ order = 40
 alpha = mcepalpha(fs)
 
 # Mel-cepstrum extraction based on WORLD.
-w = World(fs=fs, period=period)
-f0, timeaxis = dio(w, x)
-f0 = stonemask(w, x, timeaxis, f0)
-spectrogram = cheaptrick(w, x, timeaxis, f0)
+f0, timeaxis = dio(x, fs, DioOption(period=period))
+f0 = stonemask(x, fs, timeaxis, f0)
+spectrogram = cheaptrick(x, fs, timeaxis, f0)
 src_clb28 = sp2mc(spectrogram, order, alpha)
 @test !any(isnan(src_clb28))
 
