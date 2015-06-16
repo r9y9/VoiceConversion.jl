@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/r9y9/VoiceConversion.jl.svg?branch=master)](https://travis-ci.org/r9y9/VoiceConversion.jl)
 [![Build status](https://ci.appveyor.com/api/projects/status/byf0ru7b8d7hf2dn/branch/master?svg=true)](https://ci.appveyor.com/project/r9y9/voiceconversion-jl/branch/master)
 [![Coverage Status](https://coveralls.io/repos/r9y9/VoiceConversion.jl/badge.svg)](https://coveralls.io/r/r9y9/VoiceConversion.jl)
+[![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE.md)
 
 `VoiceConverision.jl` is a statistical voice conversion library for Julia.
 
