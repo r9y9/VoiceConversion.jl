@@ -46,8 +46,7 @@ for fname in [
               "gmmmap",
               "diffgmm",
               "trajectory_gmmmap",
-              "gv",
-              "vc"
+              "gv"
     ]
     include(string(fname, ".jl"))
 end
