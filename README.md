@@ -25,6 +25,7 @@ Please note that this package is still under developement. Both bug reports and 
 
 - Linux
 - Mac OS X
+- Windows
 
 ## Installation
 
