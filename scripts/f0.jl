@@ -48,9 +48,8 @@ let
             size(x, 2) != 1 && error("The input data must be monoral.")
             x = vec(x)
 
-            w = World(fs, period)
-            f0, timeaxis = dio(w, x; opt=opt)
-            f0 = stonemask(w, x, timeaxis, f0)
+            f0, timeaxis = dio(x, fs, DioOption(period=period))
+            f0 = stonemask(x, fs, timeaxis, f0)
 
             save(savepath,
                  "description", "WORLD-based F0",

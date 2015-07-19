@@ -44,10 +44,9 @@ function _mcep(path, period, order, α, savepath)
         α = mcepalpha(fs)
     end
 
-    w = World(fs, period)
-    f0, timeaxis = dio(w, x)
-    f0 = stonemask(w, x, timeaxis, f0)
-    spectrogram = cheaptrick(w, x, timeaxis, f0)
+    f0, timeaxis = dio(x, fs, DioOption(period=period))
+    f0 = stonemask(x, fs, timeaxis, f0)
+    spectrogram = cheaptrick(x, fs, timeaxis, f0)
     mc = sp2mc(spectrogram, order, α)
 
     save(savepath,

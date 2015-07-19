@@ -65,22 +65,11 @@ function main()
     end
 
     elapsed_fe = @elapsed begin
-        w = World(fs, period)
-
-        # Fundamental frequency (f0) estimation by DIO
-        f0, timeaxis = dio(w, x)
-
-        # F0 re-estimation by StoneMask
-        f0 = stonemask(w, x, timeaxis, f0)
-
-        # Spectral envelope estimation
-        spectrogram = cheaptrick(w, x, timeaxis, f0)
-
-        # Spectral envelop -> Mel-cesptrum
+        f0, timeaxis = dio(x, fs, DioOption(period=period))
+        f0 = stonemask(x, fs, timeaxis, f0)
+        spectrogram = cheaptrick(x, fs, timeaxis, f0)
         src = sp2mc(spectrogram, order, α)
-
-        # aperiodicity ratio estimation
-        ap = aperiodicityratio(w, x, f0, timeaxis)
+        ap = d4c(x, fs, timeaxis, f0)
     end
 
     @info("elapsed time in feature extraction is $(elapsed_fe) sec.")
@@ -99,8 +88,7 @@ function main()
 
     # Waveform synthesis using WORLD
     elapsed_syn = @elapsed begin
-        y = synthesis_from_aperiodicity(w, f0, converted_spectrogram, ap,
-                                        length(x))
+        y = synthesis(f0, converted_spectrogram, ap, period, fs, length(x))
     end
     @info("elapsed time in waveform synthesis is $(elapsed_syn) sec.")
 
