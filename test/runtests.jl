@@ -2,7 +2,6 @@ using VoiceConversion
 using Base.Test
 
 using MelGeneralizedCepstrums
-using WAV
 using HDF5, JLD
 using SynthesisFilters
 using WORLD

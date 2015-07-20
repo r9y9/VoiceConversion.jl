@@ -8,10 +8,10 @@ immutable VarianceScaling
 end
 
 function fvpostf!(vs::VarianceScaling, src::AbstractMatrix)
-    const D = size(src, 1)
+    D = size(src, 1)
     μ = mean(src, 2)
     src[:,:] = sqrt(vs.σ² ./ var(src[1:D,:], 2)) .* (src .- μ) .+ μ
-    nothing
+    src
 end
 
 function fvpostf(vs::VarianceScaling, src::AbstractMatrix)

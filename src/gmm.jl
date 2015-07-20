@@ -4,7 +4,7 @@ typealias GMM{Cov,Mean} MixtureModel{Multivariate,Continuous,MvNormal{Cov,Mean}}
 
 # proxy to MixtureModel{Multivariate,Continuous,MvNormal{Cov, Mean}}
 function GaussianMixtureModel(means, covars, weights)
-    const n_components::Int = size(means, 2)
+    n_components = size(means, 2)
     normals = Array(MvNormal, n_components)
     for m=1:n_components
         normals[m] = MvNormal(means[:,m], covars[:,:,m])
@@ -36,7 +36,7 @@ end
 # predict label for x.
 function predict(gmm::GMM, x)
     posterior = predict_proba(gmm, x)
-    indmax(posterior)
+    indmax(posterior)::Int
 end
 
 function predict!(r::AbstractArray, gmm::GMM, X::DenseMatrix)
@@ -47,5 +47,5 @@ function predict!(r::AbstractArray, gmm::GMM, X::DenseMatrix)
 end
 
 function predict(gmm::GMM, X::DenseMatrix)
-    predict!(Array(Float64, size(X,2)), gmm, X)
+    predict!(Array(Int, size(X,2)), gmm, X)
 end

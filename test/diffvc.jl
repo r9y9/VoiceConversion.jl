@@ -3,12 +3,9 @@
 ### basic setup
 
 # Load source speaker's (`clb`) speech signal.
-wavpath = joinpath(Pkg.dir("VoiceConversion", "test", "data",
-                           "clb_a0028.wav"))
-x, fs = wavread(wavpath)
-@assert size(x, 2) == 1 "The input data must be monoral."
-x = float(vec(x))
-fs = int(fs)
+path = joinpath(Pkg.dir("VoiceConversion", "test", "data", "clb_a0028.txt"))
+x = vec(readdlm(path))
+fs = 16000
 period = 5.0
 order = 40
 alpha = mcepalpha(fs)
@@ -32,7 +29,7 @@ function diffvc_base(src, mapper)
 
     # Waveform modification
     mf = MLSADF(order, alpha)
-    hopsize = int(fs / (1000 / period))
+    hopsize = convert(Int, round(fs / (1000 / period)))
     synthesis!(mf, x_clb28, mc2b(converted, alpha), hopsize)
 end
 

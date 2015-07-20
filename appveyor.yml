@@ -1,6 +1,6 @@
 environment:
   matrix:
-#  - JULIAVERSION: "win32"
+  - JULIAVERSION: "win32"
   - JULIAVERSION: "win64"
 
 skip_commits:

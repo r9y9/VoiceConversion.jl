@@ -58,8 +58,8 @@ end
 # and faster than this on-line version.
 function update!(d::DTW, v::AbstractVector)
     # S: length of tempalte, T: current time length
-    const S, T = size(d.costtable)
-    const lastcost = d.costtable[:, T]
+    S, T = size(d.costtable)
+    lastcost = d.costtable[:, T]
     currentcost = zeros(S)
     current_backpointer = zeros(Int, S)
 
@@ -90,7 +90,7 @@ end
 # fit! aligns two sequences using dynamic time warping algorithm.
 function fit!(d::DTW, template::Matrix{Float64}, sequence::Matrix{Float64})
     # S: length of template, T: length of target sequence
-    const S, T = size(template, 2), size(sequence, 2)
+    S, T = size(template, 2), size(sequence, 2)
 
     # pre-allocations
     lazy_init!(d, S, T)
@@ -129,7 +129,7 @@ fit!(d::DTW, sequence::Matrix{Float64}) = fit!(d, d.template, sequence)
 
 # backward searches the path that minimizes the total cost.
 function backward(d::DTW)
-    const T  = size(d.costtable, 2) - 1 # exclude the initial state
+    T  = size(d.costtable, 2) - 1 # exclude the initial state
     minpath = zeros(Int, T)
 
     minpath[end] = indmin(d.costtable[:,T+1])

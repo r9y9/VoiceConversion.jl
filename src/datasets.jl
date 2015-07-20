@@ -4,7 +4,7 @@ searchdir(path, key) = filter(x -> contains(x, key), readdir(path))
 
 # TODO(ryuichi): should be more generic
 function push_delta(src)
-    const D, T = size(src)
+    D, T = size(src)
     src = repmat(src, 2)
     for t=2:T-1
         src[D+1:end,t] = -0.5*src[1:D,t-1] + 0.5*src[1:D,t+1]
@@ -80,9 +80,7 @@ immutable ParallelDataset <: Dataset
             totalphrases += 1
 
             count += 1
-            if count >= nmax
-                break
-            end
+            count >= nmax && break
         end
 
         @debug("total number of frames: $(totalframes)")
@@ -173,9 +171,7 @@ immutable GVDataset <: Dataset
 
             totalphrases += 1
 
-            if totalphrases >= nmax
-                break
-            end
+            totalphrases >= nmax && break
         end
 
         @debug("total number of phrases: $(totalphrases)")
