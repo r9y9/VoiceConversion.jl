@@ -29,7 +29,7 @@ function diffvc_base(src, mapper)
 
     # Waveform modification
     mf = MLSADF(order, alpha)
-    hopsize = int(fs / (1000 / period))
+    hopsize = convert(Int, round(fs / (1000 / period)))
     synthesis!(mf, x_clb28, mc2b(converted, alpha), hopsize)
 end
 

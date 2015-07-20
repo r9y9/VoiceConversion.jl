@@ -10,7 +10,7 @@ function vc(c::FrameByFrameConverter,
     # Split src feature matrix to power and spectral features
     power, src =  fm[1,:], fm[2:end,:]
 
-    const T = size(src, 2)
+    T = size(src, 2)
     converted = similar(fm)
 
     # Perform feature mapping for each time
@@ -35,7 +35,7 @@ function vc(c::TrajectoryConverter,
     power, src =  fm[1,:], fm[2:end,:]
 
     # D = length/2 + 1: order of static spectral features + power
-    const D, T = size(src, 1)>>1 + 1, size(src, 2)
+    D, T = size(src, 1)>>1 + 1, size(src, 2)
     converted = Array(eltype(fm), D, T)
 
     # Perform Trajectory-based mapping

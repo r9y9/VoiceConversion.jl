@@ -9,12 +9,12 @@ type TrajectoryGMMMap <: TrajectoryConverter
     Dʸ⁻¹::SparseMatrixCSC{Float64, Int}  # Dʸ^-1 in eq. (41)
 
     function TrajectoryGMMMap(g::GMMMap, T::Int)
-        const D = div(dim(g), 2) # dimension of static feature vector
+        D = dim(g)>>1 # dimension of static feature vector
 
         W = constructW(D, T)
 
         # the number of mixtures
-        const M = ncomponents(g)
+        M = ncomponents(g)
 
         Σˣʸ = g.params.Σˣʸ
         Σʸʸ = g.params.Σʸʸ
@@ -64,7 +64,7 @@ end
 # so that maximize the likelihood of y given x.
 function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     # input feature vector must contain delta feature
-    const D, T = div(size(X, 1), 2), size(X, 2)
+    D, T = size(X, 1)>>1, size(X, 2)
     2D == dim(tgmm) || throw(DimensionMismatch("Inconsistent dimentions."))
 
     if T != length(tgmm)
@@ -84,8 +84,8 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     # Compute Eʸ eq.(40)
     Eʸ = Array(Float64, 2D, T)
     for t=1:T
-        @inbounds m = m̂[t]
-        @inbounds Eʸ[:,t] = μʸ[:,m] + ΣʸˣΣˣˣ⁻¹[:,:,m] * (X[:,t] - μˣ[:,m])
+        m = m̂[t]::Int
+        Eʸ[:,t] = μʸ[:,m] + ΣʸˣΣˣˣ⁻¹[:,:,m] * (X[:,t] - μˣ[:,m])
     end
     Eʸ = vec(Eʸ)
     tgmm.Eʸ = Eʸ # keep Eʸ for GV optimization
@@ -142,13 +142,12 @@ function fvconvert(tgv::TrajectoryGVGMMMap, X::Matrix{Float64};
                    )
     # Initialize target static features without considering GV
     y⁰ = fvconvert(tgv.tgmm, X)
-    const D, T = size(y⁰)
+    D, T = size(y⁰)
 
     # Better initial value based on eq. (58)
     y⁰ = sqrt(tgv.μᵛ ./ var(y⁰[1:D,:], 2)) .* (y⁰ .- mean(y⁰, 2)) .+ mean(y⁰, 2)
-    # y⁰ = sqrt(tgv.μᵛ ./ var(X[1:D,:], 2)) .* (y⁰ .- mean(y⁰, 2)) .+ mean(y⁰, 2)
 
-    const ω = 1.0/(2T)
+    ω = 1.0/(2T)
 
     # aliases
     Eʸ = tgv.tgmm.Eʸ
@@ -174,7 +173,7 @@ end
 
 # gvgrad computes gradient of the likelihood with regard to GV.
 function gvgrad(tgv::TrajectoryGVGMMMap, y::Matrix{Float64})
-    const D, T = size(y)
+    D, T = size(y)
 
     gv = var(y, 2) # global variance over time
     @assert size(gv) == (D, 1)
