@@ -1,11 +1,14 @@
 environment:
   matrix:
-  - JULIAVERSION: "win32"
-  - JULIAVERSION: "win64"
+#  - JULIAVERSION: "julialang/bin/winnt/x86/0.3/julia-0.3-latest-win32.exe"
+#  - JULIAVERSION: "julialang/bin/winnt/x64/0.3/julia-0.3-latest-win64.exe"
+  - JULIAVERSION: "julianightlies/bin/winnt/x86/julia-latest-win32.exe"
+  - JULIAVERSION: "julianightlies/bin/winnt/x64/julia-latest-win64.exe"
 
-skip_commits:
-# Add [av skip] to commit messages for docfixes, etc to reduce load on queue
-  message: /\[av skip\]/
+branches:
+  only:
+    - master
+    - /release-.*/
 
 notifications:
   - provider: Email
@@ -15,15 +18,22 @@ notifications:
 
 install:
 # Download most recent Julia Windows binary
-  - ps: (new-object net.webclient).DownloadFile($("http://status.julialang.org/download/"+$env:JULIAVERSION), "C:\projects\julia-binary.exe")
+  - ps: (new-object net.webclient).DownloadFile(
+        $("http://s3.amazonaws.com/"+$env:JULIAVERSION),
+        "C:\projects\julia-binary.exe")
 # Run installer silently, output to C:\projects\julia
   - C:\projects\julia-binary.exe /S /D=C:\projects\julia
 
 build_script:
-  # Need to convert from shallow to complete for Pkg.clone to work
+# Need to convert from shallow to complete for Pkg.clone to work
   - IF EXIST .git\shallow (git fetch --unshallow)
-  - C:\projects\julia\bin\julia -e "versioninfo(); Pkg.init(); Pkg.clone(\"https://github.com/r9y9/MelGeneralizedCepstrums.jl\")"
-  - C:\projects\julia\bin\julia -e "Pkg.clone(\"https://github.com/r9y9/SynthesisFilters.jl\")"
-  - C:\projects\julia\bin\julia -e "Pkg.clone(pwd(), \"VoiceConversion\")"
+  - C:\projects\julia\bin\julia -e "versioninfo();
+      Pkg.clone(pwd(), \"VoiceConversion\"); Pkg.build(\"VoiceConversion\");
+      Pkg.clone(\"https://github.com/r9y9/SPTK.jl\"); Pkg.build(\"SPTK\");
+      Pkg.clone(\"https://github.com/r9y9/MelGeneralilzedCepstrums.jl\");
+      Pkg.build(\"MelGeneralilzedCepstrums\");
+      Pkg.clone(\"https://github.com/r9y9/SynthesisFilters.jl\");
+      Pkg.build(\"SynthesisFilters\")"
+
 test_script:
-  - C:\projects\julia\bin\julia -e "Pkg.test(\"VoiceConversion\")"
+  - C:\projects\julia\bin\julia --check-bounds=yes -e "Pkg.test(\"VoiceConversion\")"
