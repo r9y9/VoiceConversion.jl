@@ -2,6 +2,8 @@
 
 using .DTWs
 
+import MelGeneralizedCepstrums: mc2e
+
 # general feature alignment
 function align(src::AbstractMatrix, # source feature matrix
                tgt::AbstractMatrix  # target feature matrix
@@ -20,7 +22,7 @@ function align(src::AbstractMatrix, # source feature matrix
 
     # interpolation
     # TODO(ryuichi) better solution
-    hole = setdiff([path[1]:path[end]], path)
+    hole = setdiff(collect(path[1]:path[end]), path)
     for i in hole
         if i > 1 && i < size(src, 2)
             for j=1:size(newtgt, 1)
@@ -43,7 +45,8 @@ function align_mcep(src::AbstractMatrix,       # source feature matrix
     src, newtgt = align(src, tgt)
 
     if remove_silence
-        E = log(mc2e(src, α, fftlen))
+        e = mc2e(src, α, fftlen)
+        E = log(e)
         src = src[:, E .> threshold]
         newtgt = newtgt[:, E .> threshold]
     end

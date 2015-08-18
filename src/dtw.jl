@@ -2,6 +2,8 @@ module DTWs
 
 ## A small module to perform Dynamic Time Warping alignment. ##
 
+import StatsBase: fit!
+
 export DTW, fit!, update!, set_template!, backward
 
 # type DTW represents a dynamic time warping.

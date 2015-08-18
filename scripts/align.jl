@@ -36,10 +36,12 @@ function align!(src::Dict,
     src_fm = src["feature_matrix"]
     tgt_fm = tgt["feature_matrix"]
 
+    max_num_frames = max(size(src_fm, 2), size(tgt_fm, 2))
+
     if src["type"] == "MelCepstrum"
         src_fm, tgt_fm = align_mcep(src_fm, tgt_fm,
-                                    float(src["alpha"]),
-                                    int(src["fftlen"]);
+                                    src["alpha"],
+                                    src["fftlen"];
                                     threshold=threshold)
     else
         src_fm, tgt_fm = _align(src_fm, tgt_fm)
@@ -47,7 +49,7 @@ function align!(src::Dict,
 
     @assert size(src_fm) == size(tgt_fm)
 
-    @info("The number of aligned frames: $(size(src_fm, 2))")
+    @info("The number of aligned frames: $(size(src_fm, 2))/$(max_num_frames)")
     if size(src_fm, 2) ==  0
         @warn("No frame found in aligned data. Probably threshold is too high.")
     end
@@ -76,8 +78,8 @@ let
     dstdir = args["<dst_dir>"]
     mkdir_if_not_exist(dstdir)
 
-    threshold = float(args["--threshold"])
-    nmax = int(args["--max"])
+    threshold = parse(Float64, args["--threshold"])
+    nmax = parse(Int, args["--max"])
 
     files = searchdir(srcdir, ".jld")
     @info("$(length(files)) data found.")

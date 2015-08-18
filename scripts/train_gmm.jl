@@ -67,17 +67,17 @@ end
 let
     args = docopt(doc, version=v"0.0.2")
     diff = args["--diff"]
-    n_components = int(args["--n_components"])
-    n_iter = int(args["--n_iter"])
-    n_init = int(args["--n_init"])
-    min_covar = float64(args["--min_covar"])
+    n_components = parse(Int, args["--n_components"])
+    n_iter = parse(Int, args["--n_iter"])
+    n_init = parse(Int, args["--n_init"])
+    min_covar = parse(Float64, args["--min_covar"])
     refine = args["--refine"]
 
     dataset = ParallelDataset(args["<parallel_dir>"],
                               joint=true,
                               diff=diff,
                               add_delta=args["--add_delta"],
-                              nmax=int(args["--max"]))
+                              nmax=parse(Int, args["--max"]))
 
     savepath = args["<dst_jld>"]
 

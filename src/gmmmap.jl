@@ -27,8 +27,8 @@ immutable GMMMapParam
                          Σˣʸ::Array{Float64, 3},
                          Σʸˣ::Array{Float64, 3},
                          Σʸʸ::Array{Float64, 3})
-        const M = length(weights)
-        const D = size(μˣ, 1)
+        M = length(weights)
+        D = size(μˣ, 1)
         # pre-allocation and pre-computations
         ΣʸˣΣˣˣ⁻¹ = Array(Float64, D, D, M)
         for m=1:M

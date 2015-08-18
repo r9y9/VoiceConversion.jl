@@ -31,13 +31,13 @@ function main()
 
     x, fs = wavread(args["<input_wav>"])
     @assert size(x, 2) == 1 "The input data must be monoral."
-    x = float(vec(x))
-    fs = int(fs)
+    x = map(Float64, vec(x))
+    fs = Int(fs)
     @info("length of input signal is $(length(x)/fs) sec.")
 
-    period = float(args["--period"])
-    order = int(args["--order"])
-    α = float(args["--alpha"])
+    period = parse(Float64, args["--period"])
+    order = parse(Int, args["--order"])
+    α = parse(Float64, args["--alpha"])
     if α == 0.0
         α = mcepalpha(fs)
     end
@@ -64,7 +64,7 @@ function main()
     @info("elapsed time in feature extraction is $(elapsed_fe) sec.")
     if trajectory
         # add delta feature
-        src = [src[1,:], push_delta(src[2:end,:])]
+        src = [src[1,:]; push_delta(src[2:end,:])]
     end
 
     # remove power coef.
@@ -74,15 +74,14 @@ function main()
     elapsed_vc = @elapsed converted = vc(mapper, src)
     @info("elapsed time in conversion process is $(elapsed_vc) sec.")
 
-
     # Waveform synthesis using Mel-Log Spectrum Approximation filter
     mf = MLSADF(order, α)
-    hopsize = int(fs / (1000 / period))
+    hopsize = round(Int, (fs / (1000 / period)))
 
     elapsed_syn = @elapsed y = synthesis!(mf, x, mc2b(converted, α), hopsize)
     @info("elapsed time in waveform moduration is $(elapsed_syn) sec.")
 
-    wavwrite(float(y), args["<dst_wav>"], Fs=fs)
+    wavwrite(map(Float64, y), args["<dst_wav>"], Fs=fs)
     @info("Dumped to ", args["<dst_wav>"])
 end
 

@@ -60,7 +60,7 @@ let
     x = copy(src_clb28)
 
     # add dynamic feature
-    x = [x[1,:], push_delta(x[2:end,:])]
+    x = [x[1,:]; push_delta(x[2:end,:])]
 
     # Load GMM to convert speech signal of `clb` to that of `slt`,
     # mixture: 32, order of mel-cepstrum: 40+40 (with delta feature)

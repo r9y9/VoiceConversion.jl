@@ -37,8 +37,8 @@ end
 function _mcep(path, period, order, α, savepath)
     x, fs = wavread(path)
     @assert size(x, 2) == 1 "The input data must be monoral."
-    x = float(vec(x))
-    fs = int(fs)
+    x = map(Float64, vec(x))
+    fs = Int(fs)
 
     if α == 0.0
         α = mcepalpha(fs)
@@ -68,10 +68,10 @@ let
     dstdir = args["<dst_dir>"]
     mkdir_if_not_exist(dstdir)
 
-    period = float(args["--period"])
-    order = int(args["--order"])
-    nmax = int(args["--max"])
-    α = float(args["--alpha"])
+    period = parse(Float64, args["--period"])
+    order = parse(Int, args["--order"])
+    nmax = parse(Int, args["--max"])
+    α = parse(Float64, args["--alpha"])
 
     files = searchdir(srcdir, ".wav")
     @info("$(length(files)) data found.")

@@ -32,13 +32,13 @@ function main()
 
     x, fs = wavread(args["<input_wav>"])
     @assert size(x, 2) == 1 "The input data must be monoral."
-    x = float(vec(x))
-    fs = int(fs)
+    x = map(Float64, vec(x))
+    fs = Int(fs)
     @info("length of input signal is $(length(x)/fs) sec.")
 
-    period = float(args["--period"])
-    order = int(args["--order"])
-    α = float(args["--alpha"])
+    period = parse(Float64, args["--period"])
+    order = parse(Int, args["--order"])
+    α = parse(Float64, args["--alpha"])
     if α == 0.0
         α = mcepalpha(fs)
     end
@@ -53,7 +53,7 @@ function main()
 
     mapper = GMMMap(gmm["weights"], gmm["means"], gmm["covars"])
     if trajectory
-        mapper = TrajectoryGMMMap(mapper, int(args["--T"]))
+        mapper = TrajectoryGMMMap(mapper, parse(Int, args["--T"]))
     end
 
     if trajectory && !isempty(gvmodel)
@@ -92,7 +92,7 @@ function main()
     end
     @info("elapsed time in waveform synthesis is $(elapsed_syn) sec.")
 
-    wavwrite(float(y), args["<dst_wav>"], Fs=fs)
+    wavwrite(map(Float64, y), args["<dst_wav>"], Fs=fs)
     @info("Dumped to ", args["<dst_wav>"])
 end
 

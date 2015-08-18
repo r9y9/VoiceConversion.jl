@@ -29,8 +29,8 @@ let
     dstdir = args["<dst_dir>"]
     mkdir_if_not_exist(dstdir)
 
-    period = float(args["--period"])
-    nmax = int(args["--max"])
+    period = parse(Float64, args["--period"])
+    nmax = parse(Int, args["--max"])
 
     files = searchdir(srcdir, ".wav")
     @info("$(length(files)) data found.")
@@ -46,7 +46,7 @@ let
         elapsed = @elapsed begin
             x, fs = wavread(path)
             size(x, 2) != 1 && error("The input data must be monoral.")
-            x = vec(x)
+            x = map(Float64, vec(x))
 
             f0, timeaxis = dio(x, fs, DioOption(period=period))
             f0 = stonemask(x, fs, timeaxis, f0)

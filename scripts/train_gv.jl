@@ -29,13 +29,13 @@ using Logging
 let
     args = docopt(doc, version=v"0.0.1")
 
-    nmax = int(args["--max"])
+    nmax = parse(Int, args["--max"])
     add_delta = args["--add_delta"]
 
-    n_components  = int(args["--n_components"])
-    n_iter = int(args["--n_iter"])
-    n_init = int(args["--n_init"])
-    min_covar = float64(args["--min_covar"])
+    n_components  = parse(Int, args["--n_components"])
+    n_iter = parse(Int, args["--n_iter"])
+    n_init = parse(Int, args["--n_init"])
+    min_covar = parse(Float64, args["--min_covar"])
 
     dataset = GVDataset(args["<tgt_dir>"], add_delta=add_delta, nmax=nmax)
 
