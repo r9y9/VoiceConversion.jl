@@ -21,6 +21,8 @@ using MelGeneralizedCepstrums
 using WAV
 using SynthesisFilters
 using HDF5, JLD
+
+import WORLD: synthesis
 using WORLD
 
 using Logging

@@ -4,6 +4,8 @@ using Base.Test
 using MelGeneralizedCepstrums
 using HDF5, JLD
 using SynthesisFilters
+
+import WORLD: synthesis
 using WORLD
 
 for fname in ["dtw",
