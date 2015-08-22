@@ -8,3 +8,5 @@ Logging
 DocOpt
 WAV
 PyCall
+MelGeneralizedCepstrums
+SynthesisFilters

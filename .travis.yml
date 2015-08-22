@@ -9,10 +9,6 @@ before_install:
   - sudo pip install scikit-learn
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia --check-bounds=yes -e 'Pkg.init(); Pkg.clone(pwd());
-     Pkg.clone("https://github.com/r9y9/SPTK.jl"); Pkg.build("SPTK");
-     Pkg.clone("https://github.com/r9y9/MelGeneralizedCepstrums.jl");
-     Pkg.clone("https://github.com/r9y9/SynthesisFilters.jl");
-     Pkg.test("VoiceConversion", coverage=true)'
+  - julia --check-bounds=yes -e 'Pkg.init(); Pkg.clone(pwd()); Pkg.test("VoiceConversion", coverage=true)'
 after_success:
 - julia -e 'cd(Pkg.dir("VoiceConversion")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'

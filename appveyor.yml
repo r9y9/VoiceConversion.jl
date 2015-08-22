@@ -28,12 +28,7 @@ build_script:
 # Need to convert from shallow to complete for Pkg.clone to work
   - IF EXIST .git\shallow (git fetch --unshallow)
   - C:\projects\julia\bin\julia -e "versioninfo();
-      Pkg.clone(pwd(), \"VoiceConversion\"); Pkg.build(\"VoiceConversion\");
-      Pkg.clone(\"https://github.com/r9y9/SPTK.jl\"); Pkg.build(\"SPTK\");
-      Pkg.clone(\"https://github.com/r9y9/MelGeneralilzedCepstrums.jl\");
-      Pkg.build(\"MelGeneralilzedCepstrums\");
-      Pkg.clone(\"https://github.com/r9y9/SynthesisFilters.jl\");
-      Pkg.build(\"SynthesisFilters\")"
+      Pkg.clone(pwd(), \"VoiceConversion\"); Pkg.build(\"VoiceConversion\")"
 
 test_script:
   - C:\projects\julia\bin\julia --check-bounds=yes -e "Pkg.test(\"VoiceConversion\")"

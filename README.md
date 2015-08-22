@@ -32,8 +32,6 @@ Please note that this package is still under developement. Both bug reports and 
 Run the following commands on your julia interactive settion (REPL):
 
 ```julia
-julia> Pkg.clone("https://github.com/r9y9/MelGeneralizedCepstrums.jl")
-julia> Pkg.clone("https://github.com/r9y9/SynthesisFilters.jl")
 julia> Pkg.clone("https://github.com/r9y9/VoiceConversion.jl")
 ```
 
