@@ -33,7 +33,7 @@ immutable ParallelDataset <: Dataset
                              standarize::Bool=false,
                              ignore0th::Bool=true,
                              add_delta::Bool=false,
-                             suffix::String="_parallel.jld",
+                             suffix::AbstractString="_parallel.jld",
                              keepstat::Bool=false,
                              nmax::Int=100)
         files = searchdir(path, suffix)
@@ -137,7 +137,7 @@ immutable GVDataset <: Dataset
     function GVDataset(path;
                        ignore0th::Bool=true,
                        add_delta::Bool=false,
-                       suffix::String=".jld",
+                       suffix::AbstractString=".jld",
                        nmax::Int=100)
         files = searchdir(path, suffix)
         sort!(files)

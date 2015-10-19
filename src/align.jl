@@ -37,7 +37,7 @@ end
 # alignment function specialized for mel-cepstrum
 function align_mcep(src::AbstractMatrix,       # source feature matrix
                     tgt::AbstractMatrix,       # target feature matrix
-                    α::FloatingPoint,         # all-pass constant
+                    α::AbstractFloat,         # all-pass constant
                     fftlen::Integer;           # fft length
                     threshold::Float64=-14.0,  # threshold to remove silence frames
                     remove_silence::Bool=true
