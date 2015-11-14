@@ -160,7 +160,7 @@ function fvconvert(tgv::TrajectoryGVGMMMap, X::Matrix{Float64};
     for epoch=1:epochs
         Δyⁱ = ω*(-WᵀDʸ⁻¹ * W * vec(yⁱ) + WᵀDʸ⁻¹ * Eʸ) + vec(gvgrad(tgv, yⁱ))
         if verbose
-            @debug("Epoch #$(epoch): norm $(norm(Δyⁱ))")
+            println("Epoch #$(epoch): norm $(norm(Δyⁱ))")
         end
         @assert !any(isnan(Δyⁱ))
         Δyⁱ = reshape(Δyⁱ, D, T)

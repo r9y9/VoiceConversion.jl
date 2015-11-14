@@ -2,9 +2,6 @@
 
 module VoiceConversion
 
-using Logging
-@Logging.configure(level=DEBUG, output=STDOUT)
-
 using StatsBase
 using Distributions
 using MelGeneralizedCepstrums
