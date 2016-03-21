@@ -75,7 +75,7 @@ function main()
     @info("elapsed time in feature extraction is $(elapsed_fe) sec.")
     if trajectory
         # add delta feature
-        src = [src[1,:], push_delta(src[2:end,:])]
+        src = [reshape(src[1,:], 1, size(src,2)); push_delta(src[2:end,:])]
     end
 
     # Perform conversion
