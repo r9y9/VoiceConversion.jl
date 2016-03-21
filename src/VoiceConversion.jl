@@ -7,6 +7,7 @@ using Distributions
 using MelGeneralizedCepstrums
 using WORLD
 using HDF5, JLD
+using Compat
 
 export
     # Voice conversion

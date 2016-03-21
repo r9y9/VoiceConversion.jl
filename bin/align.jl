@@ -31,7 +31,7 @@ end
 
 function align!(src::Dict,
                 tgt::Dict;
-                threshold::FloatingPoint=-14.0,
+                threshold::AbstractFloat=-14.0,
                 )
     src_fm = src["feature_matrix"]
     tgt_fm = tgt["feature_matrix"]

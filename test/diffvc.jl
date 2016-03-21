@@ -42,7 +42,7 @@ let
 
     # Load GMM to convert speech signal of `clb` to that of `slt`,
     # mixture: 32, order of mel-cepstrum: 40
-    modelpath = joinpath(Pkg.dir("VoiceConversion"), "models",
+    modelpath = joinpath(Pkg.dir("VoiceConversion"), "test", "models",
                          "clb_to_slt_gmm32_order40_diff.jld")
     gmm = load(modelpath)
     @assert gmm["diff"]
@@ -64,7 +64,7 @@ let
 
     # Load GMM to convert speech signal of `clb` to that of `slt`,
     # mixture: 32, order of mel-cepstrum: 40+40 (with delta feature)
-    modelpath = joinpath(Pkg.dir("VoiceConversion"), "models",
+    modelpath = joinpath(Pkg.dir("VoiceConversion"), "test", "models",
                          "clb_to_slt_gmm32_order40_diff_with_delta.jld")
     gmm = load(modelpath)
     @assert gmm["diff"]

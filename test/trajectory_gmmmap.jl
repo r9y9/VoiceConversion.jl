@@ -1,4 +1,4 @@
-function test_constructW(D::Int, T::Int)
+function test_constructW(D, T)
     W = VoiceConversion.constructW(D, T)
 
     @test issparse(W)
@@ -33,8 +33,8 @@ function test_constructW(D::Int, T::Int)
     end
 end
 
-function test_trajectory(T::Int)
-    modelpath = joinpath(Pkg.dir("VoiceConversion"), "models",
+function test_trajectory(T)
+    modelpath = joinpath(Pkg.dir("VoiceConversion"), "test", "models",
                          "clb_to_slt_gmm32_order40_diff_with_delta.jld")
     gmm = load(modelpath)
     @assert gmm["diff"]
@@ -43,7 +43,7 @@ function test_trajectory(T::Int)
     mapper = TrajectoryGMMMap(mapper, T)
     @test length(mapper) == T
 
-    const D = div(size(gmm["means"], 1), 4)
+    D = div(size(gmm["means"], 1), 4)
     @test dim(mapper) == 2D # must contains delta
     @test ncomponents(mapper) == length(gmm["weights"])
     @test size(mapper) == (2D, T)

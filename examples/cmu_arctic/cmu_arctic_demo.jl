@@ -1,6 +1,6 @@
 # Julia version of cmu_arctic_demo.sh.
 
-SCRIPT_DIR = joinpath(Pkg.dir("VoiceConversion"), "scripts")
+BIN_DIR = joinpath(Pkg.dir("VoiceConversion"), "bin")
 
 ## Experimental conditions
 
@@ -45,7 +45,7 @@ if !skip_feature_extraction
     for s in [src_id, tgt_id]
         tgt_wav_path = joinpath(cmu_arctic_root, "cmu_us_$(s)_arctic/wav")
         options = ["--max", max, "--order", order]
-        cmd = `julia $(SCRIPT_DIR)/mcep.jl
+        cmd = `julia $(BIN_DIR)/mcep.jl
         $(tgt_wav_path) $(feature_save_dir)/speakers/$(s) $options`
         run(cmd)
     end
@@ -55,7 +55,7 @@ end
 
 if !skip_feature_alignment
     options = ["--max", max, "--threshold", power_threshold]
-    run(`julia $(SCRIPT_DIR)/align.jl
+    run(`julia $(BIN_DIR)/align.jl
         $(feature_save_dir)/speakers/$(src_id)
         $(feature_save_dir)/speakers/$(tgt_id)
         $(feature_save_dir)/parallel/$(src_id)_and_$(tgt_id) $options`)
@@ -73,7 +73,7 @@ if !skip_model_training
     options = ["--max", max, "--n_components", mix, "--n_iter", niter,
                "--n_init", 1]
     diff && push!(options, "--diff")
-    cmd = `julia $(SCRIPT_DIR)/train_gmm.jl
+    cmd = `julia $(BIN_DIR)/train_gmm.jl
     $(feature_save_dir)/parallel/$(src_id)_and_$(tgt_id)
     $(model_path) $options`
     run(cmd)
@@ -86,7 +86,7 @@ if !skip_voice_conversion
     for n=100:105
         tgt_wav_path = joinpath(cmu_arctic_root,
                                 "cmu_us_$(src_id)_arctic/wav/arctic_a0$(n).wav")
-        cmd = `julia $(SCRIPT_DIR)/$(synthesis_script)
+        cmd = `julia $(BIN_DIR)/$(synthesis_script)
         $(tgt_wav_path)
         $model_path
         $(vc_save_dir)/arctic_a0$(n)_$(src_id)_to_$(tgt_id).wav --order $order`

@@ -7,7 +7,11 @@
 # script. It is assumed that the dataset is downloaded in ~/data/cmu_arctic.
 # For downloading the dataset, you can use `download_cmu_arctic.sh`.
 
-SCRIPT_DIR="../../scripts"
+SCRIPT_DIR=$(cd $(dirname $0);pwd)
+cd $SCRIPT_DIR
+
+JULIABIN=/usr/local/bin/julia-master
+BIN_DIR="../../bin"
 
 ## Experimental conditions
 
@@ -47,11 +51,11 @@ mkdir -p $VC_SAVE_DIR
 
 if [ $SKIP_FEATURE_EXTRACTION == 0 ]
 then
-    julia ${SCRIPT_DIR}/mcep.jl \
+    ${JULIABIN} ${BIN_DIR}/mcep.jl \
 	~/data/cmu_arctic/cmu_us_${SRC}_arctic/wav/ \
 	${FEATURE_SAVE_DIR}/speakers/${SRC}/ --max $MAX --order $ORDER
 
-    julia ${SCRIPT_DIR}/mcep.jl \
+    ${JULIABIN} ${BIN_DIR}/mcep.jl \
 	~/data/cmu_arctic/cmu_us_${TGT}_arctic/wav/ \
 	${FEATURE_SAVE_DIR}/speakers/${TGT}/ --max $MAX --order $ORDER
 fi
@@ -60,7 +64,7 @@ fi
 
 if [ $SKIP_FEATURE_ALIGNMENT == 0 ]
 then
-    julia ${SCRIPT_DIR}/align.jl \
+    ${JULIABIN} ${BIN_DIR}/align.jl \
 	${FEATURE_SAVE_DIR}/speakers/${SRC} \
 	${FEATURE_SAVE_DIR}/speakers/${TGT} \
 	${FEATURE_SAVE_DIR}/parallel/${SRC}_and_${TGT}/ \
@@ -76,7 +80,7 @@ then
 
 	MODEL_PATH=${MODEL_SAVE_DIR}/${SRC}_to_${TGT}_gmm${MIX}_order${ORDER}_diff.jld
 
-	julia ${SCRIPT_DIR}/train_gmm.jl \
+	${JULIABIN} ${BIN_DIR}/train_gmm.jl \
 	    ${FEATURE_SAVE_DIR}/parallel/${SRC}_and_${TGT}/ \
 	    $MODEL_PATH \
 	    --max $MAX \
@@ -89,7 +93,7 @@ then
 
 	MODEL_PATH=${MODEL_SAVE_DIR}/${SRC}_and_${TGT}_gmm${MIX}_order${ORDER}.jld
 
-	julia ${SCRIPT_DIR}/train_gmm.jl \
+	${JULIABIN} ${BIN_DIR}/train_gmm.jl \
 	    ${FEATURE_SAVE_DIR}/parallel/${SRC}_and_${TGT}/ \
 	    $MODEL_PATH \
 	    --max $MAX \
@@ -105,14 +109,14 @@ if [ $SKIP_VOICE_CONVERSION == 0 ]
 then
     if [ $DIFF == 1 ]
     then
-	SYNTHESIS_SCRIPT_PATH=${SCRIPT_DIR}/diffvc.jl
+	SYNTHESIS_SCRIPT_PATH=${BIN_DIR}/diffvc.jl
     else
-	SYNTHESIS_SCRIPT_PATH=${SCRIPT_DIR}/vc.jl
+	SYNTHESIS_SCRIPT_PATH=${BIN_DIR}/vc.jl
     fi
 
     for n in `seq -w 100 1 105`
     do
-	julia ${SYNTHESIS_SCRIPT_PATH} \
+	${JULIABIN} ${SYNTHESIS_SCRIPT_PATH} \
 	    ~/data/cmu_arctic/cmu_us_${SRC}_arctic/wav/arctic_a0${n}.wav \
 	    $MODEL_PATH \
 	    ${VC_SAVE_DIR}/arctic_a0${n}_${SRC}_to_${TGT}.wav \
