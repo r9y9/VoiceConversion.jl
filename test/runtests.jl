@@ -1,12 +1,12 @@
 using VoiceConversion
+using MelGeneralizedCepstrums
+using HDF5
+using JLD
+using SynthesisFilters
+using WORLD
 using Base.Test
 
-using MelGeneralizedCepstrums
-using HDF5, JLD
-using SynthesisFilters
-
 import WORLD: synthesis
-using WORLD
 
 for fname in ["dtw",
               "gmmmap",

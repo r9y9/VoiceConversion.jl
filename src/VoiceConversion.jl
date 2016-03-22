@@ -1,11 +1,10 @@
- __precompile__(@unix? true : false)
+ __precompile__()
 
 module VoiceConversion
 
 using StatsBase
 using Distributions
 using MelGeneralizedCepstrums
-using WORLD
 using HDF5, JLD
 using Compat
 

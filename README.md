@@ -35,6 +35,12 @@ Run the following commands on your julia interactive settion (REPL):
 julia> Pkg.clone("https://github.com/r9y9/VoiceConversion.jl")
 ```
 
+This should resolve package dependencies property.
+
+### Additional requirements for CLI programs
+
+See [bin/REQUIRE](bin/REQUIRE).
+
 ## Demonstration using [CMU Arctic](http://festvox.org/cmu_arctic/)
 
 Please check [examples/cmu_arctic/cmu_arctic_demo.sh](examples/cmu_arctic/cmu_arctic_demo.sh).

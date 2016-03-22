@@ -2,12 +2,6 @@ julia 0.4
 Compat
 HDF5 0.4.0
 JLD
-Distributions 0.6.2
-WORLD 0.1.2
 StatsBase
-Logging
-DocOpt
-WAV
-PyCall
-MelGeneralizedCepstrums
-SynthesisFilters
+Distributions 0.6.2
+MelGeneralizedCepstrums 0.0.3

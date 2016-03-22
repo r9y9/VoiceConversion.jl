@@ -1,0 +1,6 @@
+WORLD 0.2.1
+SynthesisFilters 0.0.3
+Logging
+DocOpt
+WAV
+PyCall
