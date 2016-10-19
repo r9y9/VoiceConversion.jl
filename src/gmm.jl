@@ -3,11 +3,16 @@
 typealias GMM{Cov,Mean} MixtureModel{Multivariate,Continuous,MvNormal{Cov,Mean}}
 
 # proxy to MixtureModel{Multivariate,Continuous,MvNormal{Cov, Mean}}
-function GaussianMixtureModel(means, covars, weights)
+function GaussianMixtureModel(means, covars, weights; forcepd::Bool=true)
     n_components = size(means, 2)
     normals = Array(MvNormal, n_components)
     for m=1:n_components
-        normals[m] = MvNormal(means[:,m], covars[:,:,m])
+        # force covariance matrix to be positive definite to avoid error on
+        # creating PDMat internally
+        # TODO: is this really correct?
+        # caused by https://github.com/JuliaLang/julia/pull/16799
+        covar = forcepd ? Array(Hermitian(covars[:,:,m])) : covars[:,:,m]
+        normals[m] = MvNormal(means[:,m], covar)
     end
     MixtureModel(normals, weights)
 end

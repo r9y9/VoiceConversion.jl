@@ -3,6 +3,7 @@
 module VoiceConversion
 
 using StatsBase
+using StatsFuns
 using Distributions
 using MelGeneralizedCepstrums
 using HDF5, JLD
