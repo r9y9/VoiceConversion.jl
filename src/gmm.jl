@@ -1,5 +1,7 @@
 # Gaussian Mixture Model (GMM)
 
+import Compat: view
+
 typealias GMM{Cov,Mean} MixtureModel{Multivariate,Continuous,MvNormal{Cov,Mean}}
 
 # proxy to MixtureModel{Multivariate,Continuous,MvNormal{Cov, Mean}}
