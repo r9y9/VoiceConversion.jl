@@ -43,7 +43,7 @@ See [bin/REQUIRE](bin/REQUIRE).
 
 ## Demonstration using [CMU Arctic](http://festvox.org/cmu_arctic/)
 
-Please check [examples/cmu_arctic/cmu_arctic_demo.sh](examples/cmu_arctic/cmu_arctic_demo.sh).
+Please check [examples/cmu_arctic/cmu_arctic_demo.jl](examples/cmu_arctic/cmu_arctic_demo.jl).
 
 ## References
 

@@ -36,8 +36,7 @@ let
     @info("$(length(files)) data found.")
 
     # perform feature extraction for each file
-    count = 0
-    for filename in files
+    for (count, filename) in enumerate(files)
         path = joinpath(srcdir, filename)
         savepath = joinpath(dstdir, string(splitext(basename(path))[1],
                                           "_f0.jld"))
@@ -63,7 +62,7 @@ let
         @info("Dumped to $(savepath)")
 
         count += 1
-        count >= nmax && break
+        count > nmax && break
     end
 
     println("Finished")

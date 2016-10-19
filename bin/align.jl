@@ -63,11 +63,11 @@ function align!(src::Dict,
     # type Dict{Union(UTF8String, ASCIIString), Any} is saved as
     # Dict{UTF8String, Any} and cause error in reading JLD file.
     # remove off Union and then save do the trick (but why? bug in HDF5?)
-    @assert isa(src, Dict{Union(UTF8String, ASCIIString), Any})
-    @assert isa(tgt, Dict{Union(UTF8String, ASCIIString), Any})
+    @assert isa(src, Dict{String, Any})
+    @assert isa(tgt, Dict{String, Any})
 
 
-    Dict{UTF8String, Any}(src), Dict{UTF8String, Any}(tgt)
+    Dict{String, Any}(src), Dict{String, Any}(tgt)
 end
 
 let
