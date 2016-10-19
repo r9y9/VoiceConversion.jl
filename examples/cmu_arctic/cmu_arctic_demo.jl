@@ -3,7 +3,7 @@
 JULIABIN_PATH=get(ENV, "JULIABIN_PATH", "julia")
 
 BIN_DIR = joinpath(Pkg.dir("VoiceConversion"), "bin")
-JULIABIN = [JULIABIN_PATH, "--depwarn=no"]
+JULIABIN = [JULIABIN_PATH, "--depwarn=no", "--color=yes"]
 
 ## Experimental conditions
 
