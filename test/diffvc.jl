@@ -15,14 +15,14 @@ f0, timeaxis = dio(x, fs, DioOption(period=period))
 f0 = stonemask(x, fs, timeaxis, f0)
 spectrogram = cheaptrick(x, fs, timeaxis, f0)
 src_clb28 = sp2mc(spectrogram, order, alpha)
-@test !any(isnan(src_clb28))
+@test all(isfinite.(src_clb28))
 
 x_clb28 = copy(x)
 
 function diffvc_base(src, mapper)
     # Perform parameter conversion
     converted = vc(mapper, src)
-    @test !any(isnan(converted))
+    @test all(isfinite.(converted))
 
     # remove power coef. in the converted signal
     converted[1,:] = 0.0
@@ -51,7 +51,7 @@ let
     mapper = GMMMap(gmm["weights"], gmm["means"], gmm["covars"])
 
     y = diffvc_base(x, mapper)
-    @test !any(isnan(y))
+    @test all(isfinite.(y))
 end
 
 let
@@ -74,5 +74,5 @@ let
     mapper = TrajectoryGMMMap(mapper, 70)
 
     y = diffvc_base(x, mapper)
-    @test !any(isnan(y))
+    @test all(isfinite.(y))
 end

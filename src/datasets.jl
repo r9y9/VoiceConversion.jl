@@ -112,12 +112,12 @@ immutable ParallelDataset <: Dataset
             Ystd = ones(1,1)
         end
 
-        @assert !any(isnan(X))
-        @assert !any(isnan(Y))
-        @assert !any(isnan(Xmean))
-        @assert !any(isnan(Xstd))
-        @assert !any(isnan(Ymean))
-        @assert !any(isnan(Ystd))
+        @assert all(isfinite.(X))
+        @assert all(isfinite.(Y))
+        @assert all(isfinite.(Xmean))
+        @assert all(isfinite.(Xstd))
+        @assert all(isfinite.(Ymean))
+        @assert all(isfinite.(Ystd))
 
         if !keepstat
             Xmean = ones(1,1)
@@ -161,7 +161,7 @@ immutable GVDataset <: Dataset
             end
 
             gv = var(tgt, 2)
-            if sum(isnan(gv)) == 0
+            if sum(isnan.(gv)) == 0
                 if totalphrases == 0
                     X = gv
                 else
@@ -176,7 +176,7 @@ immutable GVDataset <: Dataset
 
         println("total number of phrases: $(totalphrases)")
 
-        @assert !any(isnan(X))
+        @assert all(isfinite.(X))
 
         new(X)
     end

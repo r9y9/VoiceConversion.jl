@@ -14,16 +14,16 @@ f0, timeaxis = dio(x, fs, DioOption(period=period))
 f0 = stonemask(x, fs, timeaxis, f0)
 spectrogram = cheaptrick(x, fs, timeaxis, f0)
 src_clb28 = sp2mc(spectrogram, order, alpha)
-@test !any(isnan(src_clb28))
+@test all(isfinite.(src_clb28))
 ap = d4c(x, fs, timeaxis, f0)
-@test !any(isnan(ap))
+@test all(isfinite.(ap))
 
 x_clb28 = copy(x)
 
 # peform conversion and return synthesized waveform
 function vc_base(src, mapper)
     converted = vc(mapper, src)
-    @test !any(isnan(converted))
+    @test all(isfinite.(converted))
     fftlen = size(spectrogram,1)*2-1
     converted_spectrogram = mc2sp(converted, alpha, fftlen)
     synthesis(f0, converted_spectrogram, ap, period, fs, length(x_clb28))
@@ -47,7 +47,7 @@ let
     mapper = GMMMap(gmm["weights"], gmm["means"], gmm["covars"])
 
     y = vc_base(x, mapper)
-    @test !any(isnan(y))
+    @test all(isfinite.(y))
 end
 
 let
@@ -69,5 +69,5 @@ let
     mapper = GMMMap(gmm["weights"], gmm["means"], gmm["covars"])
     mapper = TrajectoryGMMMap(mapper, 70)
     y = vc_base(x, mapper)
-    @test !any(isnan(y))
+    @test all(isfinite.(y))
 end

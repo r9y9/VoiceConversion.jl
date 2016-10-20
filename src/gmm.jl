@@ -26,7 +26,7 @@ function predict_proba(gmm::GMM, x)
     lpr = [(logpdf(gmm.components[i],x)+log(p[i]))::Float64
            for i in find(p .> 0.)]
     logprob = logsumexp(lpr)
-    posterior = exp(lpr - logprob)
+    posterior = exp.(lpr - logprob)
 end
 
 function predict_proba!(r::AbstractMatrix, gmm::GMM, X::DenseMatrix)
