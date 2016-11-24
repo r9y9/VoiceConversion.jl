@@ -157,7 +157,7 @@ immutable GVDataset <: Dataset
             end
 
             if add_delta
-                tgt = push_delta(tgt_x)
+                tgt = push_delta(tgt)
             end
 
             gv = var(tgt, 2)
