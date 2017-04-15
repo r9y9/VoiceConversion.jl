@@ -1,12 +1,10 @@
-# GMM-based frame-by-frame voice conversion
-#
-# Reference:
-# [Toda 2007] T. Toda, A. W. Black, and K. Tokuda, “Voice conversion based on
-# maximum likelihood estimation of spectral parameter trajectory,” IEEE
-# Trans. Audio, Speech, Lang. Process, vol. 15, no. 8, pp. 2222–2235, Nov. 2007.
-# http://isw3.naist.jp/~tomoki/Tomoki/Journals/IEEE-Nov-2007_MLVC.pdf
+"""
+GMMMapParm represents a set of immutable parameters of GMM-based conversion
 
-# GMMMapParm represents a set of immutable parameters of GMM-based conversion
+**Fields**
+
+$(FIELDS)
+"""
 immutable GMMMapParam
     weights::Vector{Float64}
     μˣ::Matrix{Float64}
@@ -15,27 +13,24 @@ immutable GMMMapParam
     Σˣʸ::Array{Float64, 3}
     Σʸˣ::Array{Float64, 3}
     Σʸʸ::Array{Float64, 3}
+    ΣʸˣΣˣˣ⁻¹::Array{Float64, 3} # pre-computed in constructor to avoid dupulicate computation in conversion process
+end
 
-    # pre-computed in constructor to avoid dupulicate computation
-    # in conversion process
-    ΣʸˣΣˣˣ⁻¹::Array{Float64, 3}
-
-    function GMMMapParam(weights::Vector{Float64},
-                         μˣ::Matrix{Float64},
-                         μʸ::Matrix{Float64},
-                         Σˣˣ::Array{Float64, 3},
-                         Σˣʸ::Array{Float64, 3},
-                         Σʸˣ::Array{Float64, 3},
-                         Σʸʸ::Array{Float64, 3})
-        M = length(weights)
-        D = size(μˣ, 1)
-        # pre-allocation and pre-computations
-        ΣʸˣΣˣˣ⁻¹ = Array(Float64, D, D, M)
-        for m=1:M
-            ΣʸˣΣˣˣ⁻¹[:,:,m] = Σʸˣ[:,:,m] * Σˣˣ[:,:,m]^-1
-        end
-        new(weights, μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ, ΣʸˣΣˣˣ⁻¹)
+function GMMMapParam(weights::Vector{Float64},
+                     μˣ::Matrix{Float64},
+                     μʸ::Matrix{Float64},
+                     Σˣˣ::Array{Float64, 3},
+                     Σˣʸ::Array{Float64, 3},
+                     Σʸˣ::Array{Float64, 3},
+                     Σʸʸ::Array{Float64, 3})
+    M = length(weights)
+    D = size(μˣ, 1)
+    # pre-allocation and pre-computations
+    ΣʸˣΣˣˣ⁻¹ = Array(Float64, D, D, M)
+    for m=1:M
+        ΣʸˣΣˣˣ⁻¹[:,:,m] = Σʸˣ[:,:,m] * Σˣˣ[:,:,m]^-1
     end
+    GMMMapParam(weights, μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ, ΣʸˣΣˣˣ⁻¹)
 end
 
 function split_joint_gmm(μ::Matrix{Float64}, Σ::Array{Float64,3})
@@ -51,54 +46,66 @@ function split_joint_gmm(μ::Matrix{Float64}, Σ::Array{Float64,3})
     μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ
 end
 
-# GMMMap represents a composite type to transform spectral features of a source
-# speaker to that of a target speaker based on GMM of source and target joint
-# spectral features.
+"""
+GMMMap represents a composite type to transform spectral features of a source
+speaker to that of a target speaker based on GMM of source and target joint
+spectral features.
+
+**Fields**
+
+$(FIELDS)
+
+**References**
+
+- [Toda 2007] T. Toda, A. W. Black, and K. Tokuda, “Voice conversion based on
+  maximum likelihood estimation of spectral parameter trajectory,” IEEE
+  Trans. Audio, Speech, Lang. Process, vol. 15, no. 8, pp. 2222–2235, Nov. 2007.
+  [Link](http://isw3.naist.jp/~tomoki/Tomoki/Journals/IEEE-Nov-2007_MLVC.pdf)
+"""
 type GMMMap <: FrameByFrameConverter
     params::GMMMapParam
     Eʸ::Matrix{Float64}    # Eq. (11)
-    px::GMM
+    px::GaussianMixtureModel
+end
 
-    function GMMMap(weights::Vector{Float64},# shape: (M,)
-                    μ::Matrix{Float64},      # shape: (D, M)
-                    Σ::Array{Float64,3};     # shape: (D, D, M)
-                    swap::Bool=false)
-        M = length(weights)
+function GMMMap(weights::Vector{Float64},# shape: (M,)
+                μ::Matrix{Float64},      # shape: (D, M)
+                Σ::Array{Float64,3};     # shape: (D, D, M)
+                swap::Bool=false)
+    M = length(weights)
 
-        # Split mean and covariance matrices into source and target
-        # speaker's ones
-        D = size(μ, 1)>>1 # dimension of feature vector
-        μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ = split_joint_gmm(μ, Σ)
+    # Split mean and covariance matrices into source and target
+    # speaker's ones
+    D = size(μ, 1)>>1 # dimension of feature vector
+    μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ = split_joint_gmm(μ, Σ)
 
-        # swap src and target parameters
-        if swap
-            μˣ, μʸ = μʸ, μˣ
-            Σˣˣ, Σʸʸ = Σʸʸ, Σˣˣ
-            Σˣʸ, Σʸˣ = Σʸˣ, Σˣʸ
-        end
-
-        # construct params
-        params = GMMMapParam(weights, μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ)
-
-        ## pre-allocations
-        Eʸ = zeros(D, M)
-
-        # p(x)
-        px = GaussianMixtureModel(μˣ, Σˣˣ, weights)
-
-        new(params, Eʸ, px)
+    # swap src and target parameters
+    if swap
+        μˣ, μʸ = μʸ, μˣ
+        Σˣˣ, Σʸʸ = Σʸʸ, Σˣˣ
+        Σˣʸ, Σʸˣ = Σʸˣ, Σˣʸ
     end
+
+    # construct params
+    params = GMMMapParam(weights, μˣ, μʸ, Σˣˣ, Σˣʸ, Σʸˣ, Σʸʸ)
+
+    ## pre-allocations
+    Eʸ = zeros(D, M)
+
+    # p(x)
+    px = GaussianMixtureModel(μˣ, Σˣˣ, weights)
+
+    GMMMap(params, Eʸ, px)
 end
 
 Base.length(g::GMMMap) = 1 # GMMMap represents `frame-by-frame` converter
+Base.size(g::GMMMap) = (dim(g), length(g))
 dim(g::GMMMap) = size(g.params.μˣ, 1)
 ncomponents(g::GMMMap) = length(g.params.weights)
-Base.size(g::GMMMap) = (dim(g), length(g))
 
-# Mapping source spectral feature x to target spectral feature y
-# so that minimize the mean least squared error.
-# More specifically, it returns the value E(p(y|x)].
-function fvconvert(g::GMMMap, x::Vector{Float64})
+# Mapping source feature x to target feature y so that minimize the mean least
+# squared error. More specifically, this returns the value E(p(y|x)].
+function fvconvert(g::GMMMap, x::Vector)
     dim(g) == length(x) || throw(DimensionMismatch("Inconsistent dimentions."))
 
     μˣ = g.params.μˣ

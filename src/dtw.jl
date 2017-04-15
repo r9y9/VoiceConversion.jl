@@ -1,6 +1,7 @@
+"""
+A small module to perform Dynamic Time Warping alignment
+"""
 module DTWs
-
-## A small module to perform Dynamic Time Warping alignment. ##
 
 import StatsBase: fit!
 

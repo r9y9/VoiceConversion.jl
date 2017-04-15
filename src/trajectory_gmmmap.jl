@@ -1,5 +1,11 @@
-# Trajectory-based speech parameter mapping for voice conversion
-# based on the maximum likelihood criterion.
+"""
+Trajectory-based speech parameter mapping for voice conversion
+based on the maximum likelihood criterion.
+
+**FIELDS**
+
+$(FIELDS)
+"""
 type TrajectoryGMMMap <: TrajectoryConverter
     gmmmap::GMMMap
 
@@ -7,34 +13,34 @@ type TrajectoryGMMMap <: TrajectoryConverter
     Eʸ::Vector{Float64}                  # vectorized version of eq. (40)
     Dʸ::Array{Float64, 3}                # diagonal components of eq. (41)
     Dʸ⁻¹::SparseMatrixCSC{Float64, Int}  # Dʸ^-1 in eq. (41)
+end
 
-    function TrajectoryGMMMap(g::GMMMap, T::Int)
-        D = dim(g)>>1 # dimension of static feature vector
+function TrajectoryGMMMap(g::GMMMap, T::Int)
+    D = dim(g)>>1 # dimension of static feature vector
 
-        W = constructW(D, T)
+    W = constructW(D, T)
 
-        # the number of mixtures
-        M = ncomponents(g)
+    # the number of mixtures
+    M = ncomponents(g)
 
-        Σˣʸ = g.params.Σˣʸ
-        Σʸʸ = g.params.Σʸʸ
-        ΣʸˣΣˣˣ⁻¹ = g.params.ΣʸˣΣˣˣ⁻¹
+    Σˣʸ = g.params.Σˣʸ
+    Σʸʸ = g.params.Σʸʸ
+    ΣʸˣΣˣˣ⁻¹ = g.params.ΣʸˣΣˣˣ⁻¹
 
-        # pre-computations
-        Dʸ = Array(Float64, 2D, 2D, M)
-        for m=1:M
-            Dʸ[:,:,m] = Σʸʸ[:,:,m] - ΣʸˣΣˣˣ⁻¹[:,:,m] * Σˣʸ[:,:,m]
-            Dʸ[:,:,m] = Dʸ[:,:,m]^-1
-        end
-
-        new(g, W, zeros(0), Dʸ, spzeros(0, 0))
+    # pre-computations
+    Dʸ = Array(Float64, 2D, 2D, M)
+    for m=1:M
+        Dʸ[:,:,m] = Σʸʸ[:,:,m] - ΣʸˣΣˣˣ⁻¹[:,:,m] * Σˣʸ[:,:,m]
+        Dʸ[:,:,m] = Dʸ[:,:,m]^-1
     end
+
+    TrajectoryGMMMap(g, W, zeros(0), Dʸ, spzeros(0, 0))
 end
 
 Base.length(t::TrajectoryGMMMap) = div(size(t.W, 2), div(dim(t), 2))
+Base.size(g::TrajectoryGMMMap) = (dim(g), length(g))
 dim(t::TrajectoryGMMMap) = dim(t.gmmmap)
 ncomponents(t::TrajectoryGMMMap) = ncomponents(t.gmmmap)
-Base.size(g::TrajectoryGMMMap) = (dim(g), length(g))
 
 function compute_wt(t::Int, D::Int, T::Int)
     @assert t > 0
@@ -60,8 +66,6 @@ function constructW(D::Int, T::Int)
     W
 end
 
-# Mapping source spectral feature x to target spectral feature y
-# so that maximize the likelihood of y given x.
 function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     # input feature vector must contain delta feature
     D, T = size(X, 1)>>1, size(X, 2)
@@ -109,27 +113,33 @@ function fvconvert(tgmm::TrajectoryGMMMap, X::Matrix{Float64})
     reshape(y, D, T)
 end
 
-# Trajectory-based speech parameter mapping considering global variance
-# based on the maximum likelihood criterion.
+"""
+Trajectory-based speech parameter mapping considering global variance
+based on the maximum likelihood criterion.
+
+**Fields**
+
+$(FIELDS)
+"""
 type TrajectoryGVGMMMap <: TrajectoryConverter
     tgmm::TrajectoryGMMMap
-    μᵛ::Vector{Float64}
-    Σᵛᵛ::Matrix{Float64}
+    μᵛ::Vector{Float64}  # mean of GV
+    Σᵛᵛ::Matrix{Float64} # covars of GV
     pᵥ::Matrix{Float64}
+end
 
-    function TrajectoryGVGMMMap(tgmm::TrajectoryGMMMap,
-                                μᵛ::Vector{Float64}, # mean of GV
-                                Σᵛᵛ::Matrix{Float64} # covars of GV
-        )
-        @assert sum(μᵛ .< 0) == 0
-        new(tgmm, μᵛ, Σᵛᵛ, inv(Σᵛᵛ))
-    end
+function TrajectoryGVGMMMap(tgmm::TrajectoryGMMMap,
+                            μᵛ::Vector{Float64},
+                            Σᵛᵛ::Matrix{Float64}
+    )
+    @assert sum(μᵛ .< 0) == 0
+    TrajectoryGVGMMMap(tgmm, μᵛ, Σᵛᵛ, inv(Σᵛᵛ))
 end
 
 Base.length(t::TrajectoryGVGMMMap) = Base.length(t.tgmm)
+Base.size(g::TrajectoryGVGMMMap) = Base.size(t.tgmm)
 dim(t::TrajectoryGVGMMMap) = dim(t.tgmm)
 ncomponents(t::TrajectoryGVGMMMap) = ncomponents(t.tgmm)
-Base.size(g::TrajectoryGVGMMMap) = Base.size(t.tgmm)
 
 # Mapping source spectral feature x to target spectral feature y
 # so that maximize the likelihood of y given x with considering
@@ -171,7 +181,11 @@ function fvconvert(tgv::TrajectoryGVGMMMap, X::Matrix{Float64};
     yⁱ
 end
 
-# gvgrad computes gradient of the likelihood with regard to GV.
+"""
+$(SIGNATURES)
+
+gvgrad computes gradient of the likelihood with regard to GV.
+"""
 function gvgrad(tgv::TrajectoryGVGMMMap, y::Matrix{Float64})
     D, T = size(y)
 

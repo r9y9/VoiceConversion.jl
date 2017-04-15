@@ -12,7 +12,7 @@ function push_delta(src)
     src
 end
 
-abstract Dataset
+@compat abstract type Dataset end
 
 immutable ParallelDataset <: Dataset
     X::Matrix{Float64}

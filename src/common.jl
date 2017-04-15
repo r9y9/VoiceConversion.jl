@@ -1,11 +1,20 @@
 ## Type Hierarchy ##
-abstract AbstractConverter
-abstract FrameByFrameConverter <: AbstractConverter
-abstract TrajectoryConverter <: AbstractConverter
+@compat abstract type AbstractConverter end
+
+"""
+$(SIGNATURES)
+
+Convert source feature x to target feature y.
+"""
+function fvconvert(c::AbstractConverter, x)
+end
+
+@compat abstract type FrameByFrameConverter <: AbstractConverter end
+@compat abstract type TrajectoryConverter <: AbstractConverter end
 
 # vc performs voice conversion based on specified converter.
 function vc(c::FrameByFrameConverter,
-            fm::AbstractMatrix{Float64} # feature matrix
+            fm::AbstractMatrix
             )
     # Split src feature matrix to power and spectral features
     power, src =  fm[1,:], fm[2:end,:]
@@ -29,8 +38,7 @@ end
 # complexiy in practice, we split the input sequence to a set of sub-sequences
 # and perform trajectory-based conversion for each sub-sequence.
 function vc(c::TrajectoryConverter,
-            fm::AbstractMatrix{Float64};  # feature matrix
-            )
+            fm::AbstractMatrix)
     # Split src feature matrix to power and spectral features
     power, src =  fm[1,:], fm[2:end,:]
 
